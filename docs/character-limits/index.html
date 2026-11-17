@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en" class="standalone">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Character Limits by Platform: How Each One Counts</title>
+<meta name="description" content="The post length limit for X, Bluesky, Mastodon, Discord, Slack and more, what each platform counts, and how far each figure has been checked.">
+<link rel="canonical" href="https://zalgoart.com/character-limits/">
+<script>if(location.hostname==='jackulau.github.io')location.replace('https://zalgoart.com'+location.pathname.replace(/^\/ZalgoArt(?=\/|$)/i,'')+location.search+location.hash)</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5000854236296816" crossorigin="anonymous"></script>
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Zalgo Art">
+<meta property="og:title" content="Character Limits by Platform: How Each One Counts">
+<meta property="og:description" content="The post length limit for X, Bluesky, Mastodon, Discord, Slack and more, what each platform counts, and how far each figure has been checked.">
+<meta property="og:url" content="https://zalgoart.com/character-limits/">
+<meta property="og:image" content="https://zalgoart.com/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The words Introducing ZalgoArt drawn as big letters with stacked combining marks">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Character Limits by Platform: How Each One Counts">
+<meta name="twitter:description" content="The post length limit for X, Bluesky, Mastodon, Discord, Slack and more, what each platform counts, and how far each figure has been checked.">
+<meta name="twitter:image" content="https://zalgoart.com/og.png">
+<link rel="icon" href="../favicon.ico" sizes="48x48">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-96x96.png" type="image/png" sizes="96x96">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="manifest" href="../site.webmanifest">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Zalgo Art","item":"https://zalgoart.com/"},{"@type":"ListItem","position":2,"name":"Character limits by platform","item":"https://zalgoart.com/character-limits/"}]},{"@type":"TechArticle","headline":"Character limits by platform","description":"The post length limit for X, Bluesky, Mastodon, Discord, Slack and more, what each platform counts, and how far each figure has been checked.","url":"https://zalgoart.com/character-limits/","mainEntityOfPage":"https://zalgoart.com/character-limits/","image":"https://zalgoart.com/og.png","inLanguage":"en","datePublished":"2026-11-17","dateModified":"2026-11-17","author":{"@type":"Person","name":"Jack Lau","url":"https://github.com/jackulau"},"publisher":{"@type":"Person","name":"Jack Lau","url":"https://github.com/jackulau"}}]}</script>
+<style>
+/* Shared by every page: the tool (src/site.html) and the reading pages (src/page.html). The build puts it at the
+   top of each page's <style>. Colours come from the host page when it provides them, and from these fallbacks
+   when opened on its own. */
+:root{
+  color-scheme:light dark;
+  --fg:var(--foreground,light-dark(#171717,#ededed));
+  --bg:var(--background,Canvas);
+  --dim:var(--muted-foreground,light-dark(#6b6b6b,#a1a1a1));
+  --soft:color-mix(in srgb,var(--fg) 78%,transparent);
+  --line:var(--border,light-dark(#0000001a,#ffffff24));
+  --tint:color-mix(in srgb,var(--fg) 5%,transparent);
+  --tint2:color-mix(in srgb,var(--fg) 10%,transparent);
+  --raised:light-dark(#fff,#ffffff1f);
+  --btn-bg:var(--primary,light-dark(#171717,#ededed));
+  --btn-fg:var(--primary-foreground,light-dark(#fff,#0a0a0a));
+  --good:var(--success,light-dark(#15803d,#4ade80));
+  --warn:var(--warning,light-dark(#b45309,#fbbf24));
+  --bad:var(--destructive,light-dark(#dc2626,#f87171));
+  --focus:var(--ring,light-dark(#2563eb,#60a5fa));
+  --r:var(--radius,8px);
+  --sans:var(--font-sans,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",system-ui,sans-serif);
+  --mono:var(--font-mono,ui-monospace,"SF Mono","Geist Mono",Menlo,Consolas,monospace);
+  --out:cubic-bezier(.23,1,.32,1);
+}
+*{box-sizing:border-box}
+body{margin:0;font:13px/1.5 var(--sans);color:var(--fg);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+[hidden]{display:none!important}
+/* The side padding grows to clear a phone's notch when the phone is held sideways. */
+.standalone body{padding:28px max(24px,env(safe-area-inset-right)) 48px max(24px,env(safe-area-inset-left))}
+.standalone .app{max-width:1200px;margin:0 auto}
+
+/* ---------- frame: header, footer and the two columns every page shares ---------- */
+.app{display:flex;flex-direction:column;gap:16px;min-width:0}
+.top{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px}
+.brand{display:flex;align-items:center;gap:10px;margin-right:auto;min-width:0;color:inherit;text-decoration:none}
+.brand svg{flex:none;display:block}
+.brand .mark{flex:none;color:inherit;border-radius:6px}
+/* The mark is 26 px; the area that takes a tap around it is 44 px. */
+.brand a.mark{position:relative}.brand a.mark::after{content:"";position:absolute;inset:-9px}
+.brand h1,.brand b{margin:0;font-size:14px;font-weight:600;letter-spacing:-.01em}
+.brand p{margin:0;color:var(--dim);font-size:12.5px}
+.foot{order:9;display:flex;flex-wrap:wrap;gap:4px 14px;justify-content:space-between;border-top:1px solid var(--line);padding-top:14px;color:var(--dim);font-size:12.5px}
+.foot nav{display:flex;flex-wrap:wrap;gap:4px 14px}
+.foot a{color:var(--fg);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
+.foot a:hover{text-decoration-color:currentColor}
+@media (min-width:980px){
+  .app{display:grid;grid-template-columns:300px minmax(0,1fr);gap:20px 28px;align-items:start}
+  .top,.foot,.doc{grid-column:1/-1}
+}
+
+/* buttons */
+.btn{appearance:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:30px;padding:0 11px;border-radius:calc(var(--r) - 2px);border:1px solid var(--line);
+  background:transparent;color:inherit;font:500 13px var(--sans);cursor:pointer;position:relative;white-space:nowrap;user-select:none;text-decoration:none;
+  transition:background-color .15s ease,border-color .15s ease,transform .16s var(--out)}
+.btn svg{flex:none;opacity:.8}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.45;pointer-events:none}
+.btn.primary{background:var(--btn-bg);color:var(--btn-fg);border-color:transparent}
+.btn.sm{height:26px;padding:0 9px;font-size:12px}
+@media (hover:hover) and (pointer:fine){
+  .btn:hover{background:var(--tint)}
+  .btn.primary:hover{background:color-mix(in srgb,var(--btn-bg) 86%,var(--btn-fg))}
+}
+:is(a,button,select,input):focus-visible,label.btn:focus-within{outline:2px solid var(--focus);outline-offset:2px}
+
+/* ---------- reading: the copy under the tool, and the guides ----------
+   A heading on the left and its text on the right, on the same two columns as the tool. One column on a phone. */
+.doc{order:8;min-width:0;margin-top:12px;font-size:14px;line-height:1.65}
+.doc section{border-top:1px solid var(--line);padding:24px 0 12px}
+.doc .lead{padding:20px 0 16px}
+.doc h1{margin:0 0 12px;font-size:28px;line-height:1.15;font-weight:600;letter-spacing:-.025em;text-wrap:balance;color:var(--fg)}
+.doc h2{margin:0 0 10px;font-size:15px;line-height:1.45;font-weight:600;letter-spacing:-.01em;text-wrap:balance}
+.doc h3{margin:20px 0 4px;font-size:14px;font-weight:600;color:var(--fg)}
+.doc .body{max-width:680px;min-width:0;color:var(--soft)}
+.doc .body>:first-child{margin-top:0}
+.doc p,.doc ul,.doc ol,.doc pre,.doc .scroll,.doc figure{margin:0 0 12px}
+.doc .lead p{font-size:15px}
+.doc ul,.doc ol{padding-left:20px}
+.doc li{margin:4px 0}
+.doc b,.doc strong{font-weight:600;color:var(--fg)}
+.doc a{color:var(--fg);text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--fg) 32%,transparent);text-underline-offset:3px}
+.doc a:hover{text-decoration-color:currentColor}
+.doc code{font:12.5px var(--mono);color:var(--fg);background:var(--tint);padding:1px 5px;border-radius:4px}
+.doc pre{overflow-x:auto;padding:12px 14px;border:1px solid var(--line);border-radius:var(--r);background:var(--tint);font:12px/1.6 var(--mono);color:var(--fg)}
+.doc pre code{font:inherit;background:none;padding:0}
+.doc .crumb{margin:4px 0 10px;color:var(--dim);font-size:12.5px}
+.doc .crumb a{color:inherit}
+.doc .scroll{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r)}
+.doc table{border-collapse:collapse;width:100%;font-size:13px}
+.doc th,.doc td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+.doc th{font-weight:500;font-size:12px;color:var(--dim);white-space:nowrap}
+.doc tbody tr:last-child>*{border-bottom:0}
+.doc tbody th{font-size:13px;color:var(--fg)}
+.doc td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right;color:var(--fg);white-space:nowrap}
+.doc th.n{text-align:right}
+.doc dl{margin:0 0 12px}
+.doc dt{margin-top:12px;font-weight:600;color:var(--fg)}
+.doc dd{margin:2px 0 0}
+/* A piece of the tool's own output, set in the font it was sized for. */
+.doc figure>div{border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;overflow-x:auto;overflow-y:hidden;color:var(--fg)}
+.doc .zalgo{font:28px Helvetica,Arial,sans-serif;white-space:pre}
+.doc .ascii{font:12px/1.25 var(--mono);white-space:pre}
+.doc .ascii.prop{font-family:var(--sans)}
+.doc figcaption{margin-top:6px;color:var(--dim);font-size:12.5px}
+.doc .links{list-style:none;margin:0 0 12px;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:0 28px;max-width:none}
+.doc .links li{margin:0;padding:10px 0;border-bottom:1px solid var(--line)}
+.doc .links a{display:block;font-weight:500;text-decoration:none}
+.doc .links a:hover{text-decoration:underline}
+.doc .links span{display:block;color:var(--dim);font-size:13px;line-height:1.5}
+@media (min-width:980px){
+  .doc section,.doc .lead{display:grid;grid-template-columns:300px minmax(0,1fr);column-gap:28px}
+  .doc h2{margin:0}
+  .doc .crumb{margin:9px 0 0}
+  .doc .wide{max-width:none}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important}.btn:active{transform:none}}
+</style>
+
+<div class="app">
+  <header class="top">
+    <a class="brand" href="../">
+      <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 6.6h13L5.5 17.4h13" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/><g fill="currentColor"><rect x="13.3" y="2.15" width="4.6" height="1.5" rx=".75"/><rect x="14.5" y="0" width="2.2" height="1.5" rx=".75"/><rect x="6.1" y="20.35" width="4.6" height="1.5" rx=".75"/><rect x="7.3" y="22.5" width="2.2" height="1.5" rx=".75"/></g></svg>
+      <b>Zalgo Art</b>
+    </a>
+    <a class="btn primary" href="../">Open the tool</a>
+  </header>
+<article class="doc">
+<div class="lead">
+<div><nav class="crumb" aria-label="Breadcrumb"><a href="../">Zalgo Art</a> / Character limits by platform</nav><p class="crumb">Updated <time datetime="2026-11-17">17 November 2026</time></p></div>
+<div class="body">
+<h1>Character limits by platform</h1>
+<p>A character limit is only half of the answer. The other half is what the platform counts as a character, and platforms do not agree. For text made of combining marks the difference is large. These are the limits Zalgo Art uses to size a post.</p>
+</div>
+</div>
+<section>
+<h2>The limits</h2>
+<div class="body wide">
+<div class="scroll"><table><thead><tr><th scope="col">Platform</th><th scope="col" class="n">Limit</th><th scope="col">Counted in</th><th scope="col">Where the figure comes from</th></tr></thead>
+<tbody>
+<tr data-platform="x"><th scope="row">X (280)</th><td class="n">280</td><td>weighted characters</td><td>Measured on the live site</td></tr>
+<tr data-platform="xpremium"><th scope="row">X Premium (25,000)</th><td class="n">25,000</td><td>weighted characters</td><td>Measured on the live site</td></tr>
+<tr data-platform="bluesky"><th scope="row">Bluesky</th><td class="n">300</td><td>graphemes and <span data-limit="bluesky.second">3,000</span> UTF-8 bytes</td><td>Measured on the live site</td></tr>
+<tr data-platform="mastodon"><th scope="row">Mastodon</th><td class="n">500</td><td>characters, as the web composer counts</td><td>From documentation</td></tr>
+<tr data-platform="discord"><th scope="row">Discord</th><td class="n">2,000</td><td>UTF-16 units</td><td>From documentation</td></tr>
+<tr data-platform="discordnitro"><th scope="row">Discord Nitro</th><td class="n">4,000</td><td>UTF-16 units</td><td>From documentation</td></tr>
+<tr data-platform="reddit"><th scope="row">Reddit comment</th><td class="n">10,000</td><td>code points</td><td>From documentation</td></tr>
+<tr data-platform="telegram"><th scope="row">Telegram</th><td class="n">4,096</td><td>UTF-16 units</td><td>From documentation</td></tr>
+<tr data-platform="threads"><th scope="row">Threads</th><td class="n">500</td><td>UTF-16 units</td><td>Not verified</td></tr>
+<tr data-platform="instagram"><th scope="row">Instagram caption</th><td class="n">2,200</td><td>UTF-16 units</td><td>Not verified</td></tr>
+<tr data-platform="tiktok"><th scope="row">TikTok comment</th><td class="n">150</td><td>UTF-16 units</td><td>Not verified</td></tr>
+<tr data-platform="youtube"><th scope="row">YouTube comment</th><td class="n">10,000</td><td>UTF-16 units</td><td>Not verified</td></tr>
+<tr data-platform="twitch"><th scope="row">Twitch chat</th><td class="n">500</td><td>UTF-16 units</td><td>From documentation</td></tr>
+<tr data-platform="whatsapp"><th scope="row">WhatsApp</th><td class="n">65,536</td><td>UTF-16 units</td><td>Not verified</td></tr>
+<tr data-platform="slack"><th scope="row">Slack</th><td class="n">4,000</td><td>UTF-16 units</td><td>Measured in its font</td></tr>
+<tr data-platform="facebook"><th scope="row">Facebook post</th><td class="n">63,206</td><td>UTF-16 units</td><td>Not verified</td></tr>
+<tr data-platform="sms"><th scope="row">SMS (one segment)</th><td class="n">70</td><td>UTF-16 units</td><td>From documentation</td></tr>
+</tbody></table></div>
+<p>The table is made from the same list the tool reads, so it shows what the tool will hold your post to. For anywhere that is not listed, choose Custom limit and type the number.</p>
+</div>
+</section>
+<section>
+<h2>What the units mean</h2>
+<div class="body">
+<dl>
+<dt>UTF-16 units</dt>
+<dd>The count most of the platforms in the table use. Every combining mark is one unit.</dd>
+<dt>Code points</dt>
+<dd>One for each Unicode character. Every combining mark is one code point.</dd>
+<dt>UTF-8 bytes</dt>
+<dd>The size of the text when it is stored. Every combining mark takes two bytes.</dd>
+<dt>Graphemes</dt>
+<dd>What a reader sees as one character. A letter with all the marks stacked on it is one grapheme, which is why Bluesky's second limit, in bytes, is the one a stack of marks reaches first.</dd>
+<dt>Weighted characters</dt>
+<dd>X's own count, in which not every character weighs the same. The note on X below gives the weights.</dd>
+<dt>Characters, as the web composer counts</dt>
+<dd>Mastodon's web composer does not count the way its server does, and it is the composer that blocks sending over the limit. The note on Mastodon below gives both counts.</dd>
+</dl>
+</div>
+</section>
+<section>
+<h2>One post, counted six ways</h2>
+<div class="body">
+<p>This is one piece of lettering, the file <code>examples/introducing-zalgoart.x.txt</code> in the project, counted by the command <code>zalgo count</code>:</p>
+<pre>UTF-16 units                                 253
+code points                                  253
+UTF-8 bytes                                  494
+graphemes                                     47
+characters, as the web composer counts       107
+weighted characters                          255</pre>
+<p>The same text is a different length to each platform, so a post that fits one may be far over on another.</p>
+</div>
+</section>
+<section>
+<h2>How far each figure was checked</h2>
+<div class="body">
+<dl>
+<dt>Measured on the live site</dt>
+<dd>The layout was measured on the live site in Chrome on macOS.</dd>
+<dt>Measured in its font</dt>
+<dd>Only the stacking was measured, in the platform's own font stack.</dd>
+<dt>From documentation</dt>
+<dd>The limit comes from the platform's documentation. Rendering was not measured.</dd>
+<dt>Not verified</dt>
+<dd>A best guess. Check before relying on it.</dd>
+</dl>
+<p>Platforms change their limits. If a figure here is out of date, <a href="https://github.com/jackulau/ZalgoArt/issues">open an issue</a>.</p>
+</div>
+</section>
+<section>
+<h2>Notes on each platform</h2>
+<div class="body">
+<p>These are the notes the tool shows beside its delivery check.</p>
+<dl>
+<dt>X (280)</dt><dd data-note="x">X counts every mark as 1 and an invisible spacer as 2. Picture columns stand on ˍ, which X's own font lacks, so the system font draws the whole column and stacks it. Checked with X's fonts in Chrome, Firefox and Safari's engine on macOS. The compose box, Windows and the phone apps were not.</dd>
+<dt>X Premium (25,000)</dt><dd data-note="xpremium">X counts every mark as 1 and an invisible spacer as 2. Picture columns stand on ˍ, which X's own font lacks, so the system font draws the whole column and stacks it. Checked with X's fonts in Chrome, Firefox and Safari's engine on macOS. The compose box, Windows and the phone apps were not. Over 280 the timeline shows only the start of the post until someone opens it, so the picture is cut there.</dd>
+<dt>Bluesky</dt><dd data-note="bluesky">A column is one grapheme, so the 3,000 byte cap is the real limit: each mark is 2 bytes. The feed folds posts of 25 lines or more.</dd>
+<dt>Mastodon</dt><dd data-note="mastodon">The server counts one per letter, but the web composer counts about one per three marks and blocks sending over the limit. Servers can raise the limit.</dd>
+<dt>Discord</dt><dd data-note="discord">Nitro allows 4,000. Blank width taken from Discord's own font in Chrome, which the desktop app is built on. Firefox, Safari and the phone apps were not checked.</dd>
+<dt>Discord Nitro</dt><dd data-note="discordnitro">Blank width taken from Discord's own font in Chrome, which the desktop app is built on. Firefox, Safari and the phone apps were not checked.</dd>
+<dt>Reddit comment</dt><dd data-note="reddit">Post bodies allow 40,000.</dd>
+<dt>Telegram</dt><dd data-note="telegram">Telegram Desktop draws at most 2 marks per letter, so pictures only have a chance in the phone apps.</dd>
+<dt>Threads</dt><dd data-note="threads">Threads does not say what it counts. If it counts bytes, each mark costs 2.</dd>
+<dt>Instagram caption</dt><dd data-note="instagram">Captions fold after a couple of lines until tapped.</dd>
+<dt>YouTube comment</dt><dd data-note="youtube">Live chat is 200 characters and rejects special characters. Comments fold after four lines until Read more is tapped.</dd>
+<dt>Twitch chat</dt><dd data-note="twitch">Twitch can drop a message for &quot;too many characters that cannot be processed&quot;.</dd>
+<dt>Slack</dt><dd data-note="slack">Slack asks for 4,000 and cuts text off at 40,000. Columns stand on ‧, checked on macOS only. If it comes out flat for someone on Windows, switch to ∆: coarser, but in the fallback font of both systems.</dd>
+<dt>Facebook post</dt><dd data-note="facebook">Comments allow 8,000.</dd>
+<dt>SMS (one segment)</dt><dd data-note="sms">Marks force the 16-bit encoding: 70 units per text, 67 each when it is split.</dd>
+</dl>
+</div>
+</section>
+<section>
+<h2>Check a post before you send it</h2>
+<div class="body">
+<p>Zalgo Art counts the way the platform you pick does and shows the count beside the limit. Make a post with the <a href="../zalgo-text-generator/">zalgo text generator</a>, or count any text with the <a href="../cli/">command line tool</a>.</p>
+</div>
+</section>
+</article>
+  <footer class="foot"><nav aria-label="Site"><a href="../">Zalgo Art</a><a href="../zalgo-text-generator/">Zalgo text generator</a><a href="../image-to-zalgo/">Image to zalgo text</a><a href="../zalgo-text-art/">Zalgo text art</a><a href="../draw/">Draw zalgo art</a><a href="../what-is-zalgo-text/">What is zalgo text?</a><a href="../zalgo-art-vs-ascii-art/">Zalgo art and ASCII art</a><a href="../character-limits/" aria-current="page">Character limits by platform</a><a href="../cli/">Command line tool</a><a href="../privacy/">Privacy</a></nav><span>Open source under the MIT licence. <a href="https://github.com/jackulau/ZalgoArt">Source and CLI on GitHub</a></span></footer>
+  <script>if(location.protocol==='file:')for(const a of document.querySelectorAll('a[href]')){const h=a.getAttribute('href');if(!/^[a-z][a-z0-9+.-]*:/i.test(h)&&/\/(#.*)?$/.test(h))a.setAttribute('href',h.replace(/\/(#.*)?$/,'/index.html$1'))}</script>
+</div>

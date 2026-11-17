@@ -1,0 +1,47 @@
+<!--{
+"path":"/zalgo-text-generator/","kind":"tool","mode":"glitch","order":1,"date":"2026-11-17",
+"label":"Zalgo text generator",
+"blurb":"Classic glitch text, thinned to fit where you post.",
+"h1":"Zalgo Text Generator",
+"tagline":"Glitch text with piles of marks on every letter, thinned so the post still fits.",
+"title":"Zalgo Text Generator: Glitch Text That Fits the Limit",
+"description":"A free zalgo text generator. Type your words, set how many marks pile above, below and through each letter, and copy glitch text thinned to fit your post."
+}-->
+<h2>How to make zalgo text</h2>
+<ol>
+<li>Type your words in the Text box.</li>
+<li>Choose where you will post it, in the menu at the top.</li>
+<li>Set Above, Below and Through, or leave Auto-fit on and let the generator choose.</li>
+<li>Press Reroll for the same text with new piles.</li>
+<li>Press Copy text and paste it into your post. The button beside it downloads the text as a file.</li>
+</ol>
+<figure>
+{{sample:glitch "zalgo text" -p x}}
+<figcaption>Made by this generator for X. How it looks here depends on the fonts on your device.</figcaption>
+</figure>
+
+<h2>What the sliders do</h2>
+<dl>
+<dt>Above and Below</dt>
+<dd>The tallest pile a letter can get above and below it, from {{ui:gup.min}} to {{ui:gup.max}} marks. Each letter gets a random share of the setting, which is what makes the text look uneven.</dd>
+<dt>Through</dt>
+<dd>Up to {{ui:gmid.max}} marks struck through the middle of each letter.</dd>
+<dt>Reroll</dt>
+<dd>Keeps the text and the settings and draws the marks again.</dd>
+</dl>
+
+<h2>Thinned to fit</h2>
+<p>Zalgo text is costly. Every mark is a character of its own and platforms count them, so a few words can use up a whole post. With Auto-fit on, the generator thins the marks until the text fits the platform you picked. Move a slider and Auto-fit turns off: you get exactly what you set, and the delivery check says so if it is over the limit.</p>
+<p>The check also covers what happens after you post. Piles taller than their line are cut off on many sites, so blank lines are reserved above and below. Safari and the iPhone, iPad and Mac apps stack only the first {{stack}} marks on a letter, so piles are kept to {{stack}} unless you turn that off. On X, glitch text comes out flat in Firefox, and the check warns about it.</p>
+<p>Limits differ a lot from place to place. See <a href="/character-limits/">how each platform counts</a>.</p>
+
+<h2 data-faq>Questions</h2>
+<h3>Is zalgo text the same as glitch text or cursed text?</h3>
+<p>They are names for the same effect: ordinary letters followed by many combining marks. Nothing in the text is broken. It is plain Unicode, which is why it can be copied and pasted like any other text.</p>
+<h3>Why is my zalgo text cut off after I post it?</h3>
+<p>The piles reach above and below their line, and many sites cut off whatever leaves the post. Leave Reserve lines for the stacks switched on and the generator adds blank lines to hold them.</p>
+<h3>Why does it look different on another phone or computer?</h3>
+<p>The piles are drawn by the font on the device that shows them. Some fonts stack marks high, some keep them flat, and Safari stacks only the first {{stack}} on a letter.</p>
+
+<h2>More than noise</h2>
+<p>The same marks can draw. Switch the source to <a href="/image-to-zalgo/">Image</a> to turn a picture into text, to <a href="/zalgo-text-art/">Text</a> for big letters built from marks, or to <a href="/draw/">Draw</a> to sketch your own. To see why any of it works, read <a href="/what-is-zalgo-text/">what zalgo text is</a>.</p>

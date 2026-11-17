@@ -1,0 +1,56 @@
+<!--{
+"path":"/zalgo-art-vs-ascii-art/","kind":"guide","order":6,"date":"2026-11-17",
+"label":"Zalgo art and ASCII art",
+"blurb":"Two ways to draw with text, and where each one holds together.",
+"h1":"Zalgo art and ASCII art",
+"title":"Zalgo Art vs ASCII Art: What Is the Difference?",
+"description":"ASCII art lines characters up in rows and needs a fixed-width font. Zalgo art is one line of characters with a stack of marks on each. Where each one works."
+}-->
+<p>Both draw pictures with text. ASCII art arranges characters in rows and columns. Zalgo art is one line of characters, each carrying a stack of marks. They hold together in different places.</p>
+
+<h2>ASCII art needs a fixed-width font</h2>
+<p>ASCII art is a grid. The picture is made of rows of characters, and it only reads as a picture when every character is the same width, so that each one sits exactly under the one above. A fixed-width font guarantees that.</p>
+<figure>
+<div class="ascii">   /\
+  /  \
+ /    \
+/______\
+|      |
+|  []  |
+|______|</div>
+<figcaption>A house in a fixed-width font. The columns line up.</figcaption>
+</figure>
+<p>In a proportional font the characters have different widths. A space is narrower than an underscore, a slash is narrower than a bracket, and the rows slide out of line.</p>
+<figure>
+<div class="ascii prop">   /\
+  /  \
+ /    \
+/______\
+|      |
+|  []  |
+|______|</div>
+<figcaption>The same characters in a proportional font.</figcaption>
+</figure>
+
+<h2>Zalgo art is one line</h2>
+<p>Zalgo art does not depend on rows lining up, because there is only one row. Each column of the picture is one letter with a stack of combining marks above and below it. The stack belongs to its letter and travels with it, so there is nothing to slide out of line.</p>
+<figure>
+{{sample:text art -p x}}
+<figcaption>The word "art", made by the <a href="/zalgo-text-art/">text tool</a> for X. How it looks here depends on the fonts on your device.</figcaption>
+</figure>
+
+<h2>What zalgo art needs instead</h2>
+<p>Zalgo art swaps one dependency for another. It does not need a fixed-width font, but it does need three things.</p>
+<ul>
+<li><b>A font that stacks marks.</b> Some fonts draw every mark in the same spot and the picture comes out flat. Others stack only so many: Safari stops at {{stack}}.</li>
+<li><b>Room above and below.</b> The stacks are taller than their line, and many sites cut off what leaves the post. Blank lines have to be reserved to hold them.</li>
+<li><b>A length that fits.</b> Every mark is a character, and every platform has a limit.</li>
+</ul>
+<p>For the platform you pick, Zalgo Art checks the length and the room, and warns where it knows the marks will not stack. See <a href="/character-limits/">character limits by platform</a> for the limits it uses.</p>
+
+<h2>What each can show</h2>
+<p>ASCII art can use any character for its shape or its darkness, and it can be as many rows tall as you like. Zalgo art has a few shades, set by how heavy the marks are, and its height is the height of a stack.</p>
+
+<h2>Which to use</h2>
+<p>Use ASCII art where a fixed-width font is certain: a terminal, a code block, a plain text file. Use zalgo art where the text will be shown in a proportional font, and check the result on the devices you care about.</p>
+<p>To try it, turn <a href="/image-to-zalgo/">an image</a> into text or <a href="/draw/">draw one</a>. For the background, read <a href="/what-is-zalgo-text/">what zalgo text is</a>.</p>

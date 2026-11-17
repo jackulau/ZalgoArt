@@ -1,0 +1,46 @@
+<!--{
+"path":"/cli/","kind":"guide","order":8,"date":"2026-11-17",
+"label":"Command line tool",
+"blurb":"Make zalgo art, count text and check a post from the terminal.",
+"h1":"The zalgo command line tool",
+"title":"Zalgo Command Line Tool: Zalgo Art from the Terminal",
+"description":"Install the zalgo command and make zalgo art from the terminal: turn images and words into text, count it the way each platform does, and check a post."
+}-->
+<p>Everything the site does is also a command, <code>zalgo</code>. The site and the command run the same file, and the project's tests compare their output byte for byte.</p>
+
+<h2>Install</h2>
+<p>It needs <a href="https://nodejs.org">Node.js</a> {{node}} or newer. There are no packages to install.</p>
+<pre>git clone {{repo}}.git
+cd ZalgoArt
+./bin/zalgo text "hello"</pre>
+<p>To have <code>zalgo</code> on your path:</p>
+<pre>npm install -g {{repo}}/archive/refs/heads/main.tar.gz</pre>
+<p>It is not on the npm registry, so install from the tarball as shown.</p>
+
+<h2>Commands</h2>
+<div class="scroll"><table>
+<thead><tr><th scope="col">Command</th><th scope="col">What it does</th></tr></thead>
+<tbody>
+<tr><td><code>zalgo image &lt;file&gt;</code></td><td>Turn a picture into one line of text</td></tr>
+<tr><td><code>zalgo text &lt;words...&gt;</code></td><td>Write words in big letters built from marks</td></tr>
+<tr><td><code>zalgo glitch &lt;text...&gt;</code></td><td>Classic glitch text</td></tr>
+<tr><td><code>zalgo count [file]</code></td><td>Count text every way a platform might</td></tr>
+<tr><td><code>zalgo check [file]</code></td><td>Will this text arrive whole on a platform</td></tr>
+<tr><td><code>zalgo platforms</code></td><td>The platforms, their limits and how well each is checked</td></tr>
+<tr><td><code>zalgo help</code></td><td>Every option</td></tr>
+</tbody></table></div>
+
+<h2>What a run looks like</h2>
+<p>The text goes to standard output and a summary to standard error, so a pipe or a redirect carries only the text. This is the summary for <code>zalgo glitch "hello" -p x</code>:</p>
+<pre>{{cli-summary:glitch "hello" -p x}}</pre>
+<p>The exit code is 0 when the checks pass, 1 when a check failed and 2 when the command could not be run, so <code>zalgo check</code> can gate a script. <code>--json</code> prints the text, the counts, the checks and the options used.</p>
+
+<h2>Pictures</h2>
+<p>PNG files are read directly on any system. JPEG, GIF, HEIC and WebP are converted with <code>sips</code>, which ships with macOS. On other systems, convert to PNG first.</p>
+
+<h2>Every option</h2>
+<p>This is what <code>zalgo help</code> prints.</p>
+<pre>{{cli:help}}</pre>
+
+<h2>The same thing in a browser</h2>
+<p>The site has the same four sources with a live preview: <a href="/image-to-zalgo/">image</a>, <a href="/zalgo-text-art/">text</a>, <a href="/draw/">draw</a> and <a href="/zalgo-text-generator/">glitch</a>. The limits both use are listed under <a href="/character-limits/">character limits by platform</a>.</p>

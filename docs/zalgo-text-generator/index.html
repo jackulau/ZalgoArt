@@ -1,0 +1,1635 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Zalgo Text Generator: Glitch Text That Fits the Limit</title>
+<meta name="description" content="A free zalgo text generator. Type your words, set how many marks pile above, below and through each letter, and copy glitch text thinned to fit your post.">
+<link rel="canonical" href="https://zalgoart.com/zalgo-text-generator/">
+<script>if(location.hostname==='jackulau.github.io')location.replace('https://zalgoart.com'+location.pathname.replace(/^\/ZalgoArt(?=\/|$)/i,'')+location.search+location.hash)</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5000854236296816" crossorigin="anonymous"></script>
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Zalgo Art">
+<meta property="og:title" content="Zalgo Text Generator: Glitch Text That Fits the Limit">
+<meta property="og:description" content="A free zalgo text generator. Type your words, set how many marks pile above, below and through each letter, and copy glitch text thinned to fit your post.">
+<meta property="og:url" content="https://zalgoart.com/zalgo-text-generator/">
+<meta property="og:image" content="https://zalgoart.com/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The words Introducing ZalgoArt drawn as big letters with stacked combining marks">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Zalgo Text Generator: Glitch Text That Fits the Limit">
+<meta name="twitter:description" content="A free zalgo text generator. Type your words, set how many marks pile above, below and through each letter, and copy glitch text thinned to fit your post.">
+<meta name="twitter:image" content="https://zalgoart.com/og.png">
+<link rel="icon" href="../favicon.ico" sizes="48x48">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-96x96.png" type="image/png" sizes="96x96">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="manifest" href="../site.webmanifest">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Zalgo Art","item":"https://zalgoart.com/"},{"@type":"ListItem","position":2,"name":"Zalgo text generator","item":"https://zalgoart.com/zalgo-text-generator/"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is zalgo text the same as glitch text or cursed text?","acceptedAnswer":{"@type":"Answer","text":"They are names for the same effect: ordinary letters followed by many combining marks. Nothing in the text is broken. It is plain Unicode, which is why it can be copied and pasted like any other text."}},{"@type":"Question","name":"Why is my zalgo text cut off after I post it?","acceptedAnswer":{"@type":"Answer","text":"The piles reach above and below their line, and many sites cut off whatever leaves the post. Leave Reserve lines for the stacks switched on and the generator adds blank lines to hold them."}},{"@type":"Question","name":"Why does it look different on another phone or computer?","acceptedAnswer":{"@type":"Answer","text":"The piles are drawn by the font on the device that shows them. Some fonts stack marks high, some keep them flat, and Safari stacks only the first 30 on a letter."}}]}]}</script>
+<style>
+/* Shared by every page: the tool (src/site.html) and the reading pages (src/page.html). The build puts it at the
+   top of each page's <style>. Colours come from the host page when it provides them, and from these fallbacks
+   when opened on its own. */
+:root{
+  color-scheme:light dark;
+  --fg:var(--foreground,light-dark(#171717,#ededed));
+  --bg:var(--background,Canvas);
+  --dim:var(--muted-foreground,light-dark(#6b6b6b,#a1a1a1));
+  --soft:color-mix(in srgb,var(--fg) 78%,transparent);
+  --line:var(--border,light-dark(#0000001a,#ffffff24));
+  --tint:color-mix(in srgb,var(--fg) 5%,transparent);
+  --tint2:color-mix(in srgb,var(--fg) 10%,transparent);
+  --raised:light-dark(#fff,#ffffff1f);
+  --btn-bg:var(--primary,light-dark(#171717,#ededed));
+  --btn-fg:var(--primary-foreground,light-dark(#fff,#0a0a0a));
+  --good:var(--success,light-dark(#15803d,#4ade80));
+  --warn:var(--warning,light-dark(#b45309,#fbbf24));
+  --bad:var(--destructive,light-dark(#dc2626,#f87171));
+  --focus:var(--ring,light-dark(#2563eb,#60a5fa));
+  --r:var(--radius,8px);
+  --sans:var(--font-sans,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",system-ui,sans-serif);
+  --mono:var(--font-mono,ui-monospace,"SF Mono","Geist Mono",Menlo,Consolas,monospace);
+  --out:cubic-bezier(.23,1,.32,1);
+}
+*{box-sizing:border-box}
+body{margin:0;font:13px/1.5 var(--sans);color:var(--fg);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+[hidden]{display:none!important}
+/* The side padding grows to clear a phone's notch when the phone is held sideways. */
+.standalone body{padding:28px max(24px,env(safe-area-inset-right)) 48px max(24px,env(safe-area-inset-left))}
+.standalone .app{max-width:1200px;margin:0 auto}
+
+/* ---------- frame: header, footer and the two columns every page shares ---------- */
+.app{display:flex;flex-direction:column;gap:16px;min-width:0}
+.top{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px}
+.brand{display:flex;align-items:center;gap:10px;margin-right:auto;min-width:0;color:inherit;text-decoration:none}
+.brand svg{flex:none;display:block}
+.brand .mark{flex:none;color:inherit;border-radius:6px}
+/* The mark is 26 px; the area that takes a tap around it is 44 px. */
+.brand a.mark{position:relative}.brand a.mark::after{content:"";position:absolute;inset:-9px}
+.brand h1,.brand b{margin:0;font-size:14px;font-weight:600;letter-spacing:-.01em}
+.brand p{margin:0;color:var(--dim);font-size:12.5px}
+.foot{order:9;display:flex;flex-wrap:wrap;gap:4px 14px;justify-content:space-between;border-top:1px solid var(--line);padding-top:14px;color:var(--dim);font-size:12.5px}
+.foot nav{display:flex;flex-wrap:wrap;gap:4px 14px}
+.foot a{color:var(--fg);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
+.foot a:hover{text-decoration-color:currentColor}
+@media (min-width:980px){
+  .app{display:grid;grid-template-columns:300px minmax(0,1fr);gap:20px 28px;align-items:start}
+  .top,.foot,.doc{grid-column:1/-1}
+}
+
+/* buttons */
+.btn{appearance:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:30px;padding:0 11px;border-radius:calc(var(--r) - 2px);border:1px solid var(--line);
+  background:transparent;color:inherit;font:500 13px var(--sans);cursor:pointer;position:relative;white-space:nowrap;user-select:none;text-decoration:none;
+  transition:background-color .15s ease,border-color .15s ease,transform .16s var(--out)}
+.btn svg{flex:none;opacity:.8}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.45;pointer-events:none}
+.btn.primary{background:var(--btn-bg);color:var(--btn-fg);border-color:transparent}
+.btn.sm{height:26px;padding:0 9px;font-size:12px}
+@media (hover:hover) and (pointer:fine){
+  .btn:hover{background:var(--tint)}
+  .btn.primary:hover{background:color-mix(in srgb,var(--btn-bg) 86%,var(--btn-fg))}
+}
+:is(a,button,select,input):focus-visible,label.btn:focus-within{outline:2px solid var(--focus);outline-offset:2px}
+
+/* ---------- reading: the copy under the tool, and the guides ----------
+   A heading on the left and its text on the right, on the same two columns as the tool. One column on a phone. */
+.doc{order:8;min-width:0;margin-top:12px;font-size:14px;line-height:1.65}
+.doc section{border-top:1px solid var(--line);padding:24px 0 12px}
+.doc .lead{padding:20px 0 16px}
+.doc h1{margin:0 0 12px;font-size:28px;line-height:1.15;font-weight:600;letter-spacing:-.025em;text-wrap:balance;color:var(--fg)}
+.doc h2{margin:0 0 10px;font-size:15px;line-height:1.45;font-weight:600;letter-spacing:-.01em;text-wrap:balance}
+.doc h3{margin:20px 0 4px;font-size:14px;font-weight:600;color:var(--fg)}
+.doc .body{max-width:680px;min-width:0;color:var(--soft)}
+.doc .body>:first-child{margin-top:0}
+.doc p,.doc ul,.doc ol,.doc pre,.doc .scroll,.doc figure{margin:0 0 12px}
+.doc .lead p{font-size:15px}
+.doc ul,.doc ol{padding-left:20px}
+.doc li{margin:4px 0}
+.doc b,.doc strong{font-weight:600;color:var(--fg)}
+.doc a{color:var(--fg);text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--fg) 32%,transparent);text-underline-offset:3px}
+.doc a:hover{text-decoration-color:currentColor}
+.doc code{font:12.5px var(--mono);color:var(--fg);background:var(--tint);padding:1px 5px;border-radius:4px}
+.doc pre{overflow-x:auto;padding:12px 14px;border:1px solid var(--line);border-radius:var(--r);background:var(--tint);font:12px/1.6 var(--mono);color:var(--fg)}
+.doc pre code{font:inherit;background:none;padding:0}
+.doc .crumb{margin:4px 0 10px;color:var(--dim);font-size:12.5px}
+.doc .crumb a{color:inherit}
+.doc .scroll{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r)}
+.doc table{border-collapse:collapse;width:100%;font-size:13px}
+.doc th,.doc td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+.doc th{font-weight:500;font-size:12px;color:var(--dim);white-space:nowrap}
+.doc tbody tr:last-child>*{border-bottom:0}
+.doc tbody th{font-size:13px;color:var(--fg)}
+.doc td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right;color:var(--fg);white-space:nowrap}
+.doc th.n{text-align:right}
+.doc dl{margin:0 0 12px}
+.doc dt{margin-top:12px;font-weight:600;color:var(--fg)}
+.doc dd{margin:2px 0 0}
+/* A piece of the tool's own output, set in the font it was sized for. */
+.doc figure>div{border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;overflow-x:auto;overflow-y:hidden;color:var(--fg)}
+.doc .zalgo{font:28px Helvetica,Arial,sans-serif;white-space:pre}
+.doc .ascii{font:12px/1.25 var(--mono);white-space:pre}
+.doc .ascii.prop{font-family:var(--sans)}
+.doc figcaption{margin-top:6px;color:var(--dim);font-size:12.5px}
+.doc .links{list-style:none;margin:0 0 12px;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:0 28px;max-width:none}
+.doc .links li{margin:0;padding:10px 0;border-bottom:1px solid var(--line)}
+.doc .links a{display:block;font-weight:500;text-decoration:none}
+.doc .links a:hover{text-decoration:underline}
+.doc .links span{display:block;color:var(--dim);font-size:13px;line-height:1.5}
+@media (min-width:980px){
+  .doc section,.doc .lead{display:grid;grid-template-columns:300px minmax(0,1fr);column-gap:28px}
+  .doc h2{margin:0}
+  .doc .crumb{margin:9px 0 0}
+  .doc .wide{max-width:none}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important}.btn:active{transform:none}}
+
+/* ---------- the tool: layout (the frame, buttons and reading styles are in src/site.css) ---------- */
+.target{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.target>span{color:var(--dim)}
+/* One column reads top to bottom: the tabs, what the mode starts from, the result, then everything optional.
+   The two wrappers only become boxes when there is room for two columns. */
+.main,.side{display:contents}
+.app>.top{order:-4}.modes{order:-3}#padCard{order:-2}#start{order:-1}.preview{order:1}.more{order:2}.delivery{order:3}.marks{order:4}
+@media (min-width:980px){
+  .main{display:flex;flex-direction:column;gap:16px;min-width:0}
+  .side{display:flex;flex-direction:column;gap:14px;min-width:0}
+}
+.vh{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+
+/* ---------- pieces ---------- */
+.card{border:1px solid var(--line);border-radius:calc(var(--r) + 2px);min-width:0}
+.head{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 8px 8px 12px;border-bottom:1px solid var(--line);min-height:48px}
+.head .sp{flex:1}
+.group{display:flex;flex-direction:column;gap:12px;min-width:0}
+.group h2,.head h2{margin:0;font-size:12px;font-weight:500;color:var(--dim)}
+.head h2{color:var(--fg);font-size:13px}
+.stack{display:flex;flex-direction:column;gap:12px}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.field>span{display:flex;justify-content:space-between;gap:8px}
+.field output,.field b{font:500 12px var(--mono);font-variant-numeric:tabular-nums;color:var(--dim)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:28px}
+.row>span{min-width:0}
+.hint{color:var(--dim);font-size:12px;margin:0}
+
+/* Copy swaps its label in place. The blur hides the moment both labels are on screen. */
+.swap>span{display:inline-flex;align-items:center;gap:6px;transition:opacity .18s ease,filter .18s ease,transform .18s var(--out)}
+.swap>.b{position:absolute;inset:0;justify-content:center;opacity:0;filter:blur(3px);transform:translateY(3px)}
+.swap.done>.a{opacity:0;filter:blur(3px);transform:translateY(-3px)}
+.swap.done>.b{opacity:1;filter:none;transform:none}
+
+/* select */
+.nw{white-space:nowrap}
+.sel{position:relative;display:inline-flex;min-width:0;max-width:100%}
+.sel select{appearance:none;-webkit-appearance:none;height:30px;width:100%;padding:0 28px 0 10px;border-radius:calc(var(--r) - 2px);border:1px solid var(--line);background:transparent;
+  color:inherit;font:13px var(--sans);cursor:pointer;text-overflow:ellipsis;transition:background-color .15s ease}
+.sel::after{content:"";position:absolute;right:11px;top:50%;width:6px;height:6px;border:solid var(--dim);border-width:0 1.5px 1.5px 0;transform:translateY(-70%) rotate(45deg);pointer-events:none}
+.sel option{color:CanvasText;background:Canvas}
+@media (hover:hover) and (pointer:fine){.sel select:hover{background:var(--tint)}}
+input[type=number],input[type=text]{height:30px;padding:0 10px;border-radius:calc(var(--r) - 2px);border:1px solid var(--line);background:transparent;color:inherit;font:13px var(--sans);min-width:0;width:100%}
+input[type=number]{font-family:var(--mono);width:86px}
+
+/* segmented control: the pill slides to the chosen option */
+.seg{position:relative;display:inline-flex;padding:2px;border-radius:calc(var(--r) - 1px);background:var(--tint);isolation:isolate}
+.seg.full{display:flex}.seg.full button{flex:1}.seg.tight button{padding:0 4px}
+.seg button{appearance:none;border:0;background:none;height:26px;padding:0 11px;border-radius:calc(var(--r) - 3px);font:500 12.5px var(--sans);color:var(--dim);cursor:pointer;white-space:nowrap;transition:color .15s ease}
+.seg button.on{color:var(--fg)}
+.seg .ind{position:absolute;z-index:-1;left:0;top:2px;bottom:2px;width:0;border-radius:calc(var(--r) - 3px);background:var(--raised);box-shadow:0 1px 2px #0000001f,0 0 0 .5px #0000000f}
+.ready .seg .ind{transition:transform .2s var(--out),width .2s var(--out)}
+@media (hover:hover) and (pointer:fine){.seg button:hover{color:var(--fg)}}
+
+/* switch */
+.switch{appearance:none;-webkit-appearance:none;flex:none;width:30px;height:18px;margin:0;border-radius:9px;background:var(--tint2);cursor:pointer;position:relative;transition:background-color .15s ease}
+.switch::before{content:"";position:absolute;left:2px;top:2px;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 1px 2px #0000004d;transition:transform .16s var(--out)}
+.switch:checked{background:var(--fg)}
+.switch:checked::before{transform:translateX(12px);background:var(--bg)}
+
+/* slider */
+input[type=range]{appearance:none;-webkit-appearance:none;width:100%;height:18px;margin:0;background:none;cursor:pointer;--p:50%}
+input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:2px;background:linear-gradient(to right,var(--fg) var(--p),var(--tint2) var(--p))}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;margin-top:-5px;border-radius:50%;background:#fff;box-shadow:0 0 0 1px #00000026,0 1px 3px #00000040;transition:transform .16s var(--out)}
+input[type=range]:active::-webkit-slider-thumb{transform:scale(1.15)}
+input[type=range]::-moz-range-track{height:4px;border-radius:2px;background:var(--tint2)}
+input[type=range]::-moz-range-progress{height:4px;border-radius:2px;background:var(--fg)}
+input[type=range]::-moz-range-thumb{width:14px;height:14px;border:0;border-radius:50%;background:#fff;box-shadow:0 0 0 1px #00000026,0 1px 3px #00000040}
+
+/* source: the picture in use, one button to change it, and pictures to try */
+.zone{display:flex;flex-direction:column;gap:12px;padding:12px;border:1px dashed color-mix(in srgb,var(--fg) 26%,transparent);border-radius:calc(var(--r) + 2px)}
+.zone .pic{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
+.zone .thumb{align-self:center}
+.zone .cap{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.zone .cap.err{white-space:normal;color:var(--fg)}   /* a problem is read in full; a file name may be cut */
+.zone .go{display:flex;flex-direction:column;gap:8px;min-width:0;text-align:center}
+.btn.big{height:40px;padding:0 16px;font-size:14px}
+.samples{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.samples>span{flex:1 1 100%}
+.sample{appearance:none;flex:none;width:40px;height:40px;padding:0;border:1px solid var(--line);border-radius:calc(var(--r) - 1px);background:#fff;overflow:hidden;cursor:pointer;
+  transition:transform .16s var(--out),border-color .15s ease}
+.sample img{display:block;width:100%;height:100%}
+.sample:active{transform:scale(.95)}
+@media (hover:hover) and (pointer:fine){.sample:hover{border-color:var(--fg)}}
+@media not ((hover:hover) and (pointer:fine)){.fine{display:none}}
+/* Shown while a file is being dragged over the page: it can be let go anywhere. */
+.veil{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:16px;background:color-mix(in srgb,var(--bg) 84%,transparent);pointer-events:none;
+  opacity:0;visibility:hidden;transition:opacity .15s ease,visibility 0s .15s}
+.dragging .veil{opacity:1;visibility:visible;transition:opacity .15s ease}
+.veil b{padding:22px 28px;border:1.5px dashed var(--focus);border-radius:14px;background:var(--bg);font-size:15px;font-weight:500;text-align:center}
+/* optional controls, closed until asked for */
+.more,.counts{min-width:0}
+.more{border:1px solid var(--line);border-radius:calc(var(--r) + 2px)}
+.more>summary,.counts>summary{display:flex;align-items:center;gap:8px;min-height:40px;padding:0 12px;cursor:pointer;list-style:none;font-weight:500;user-select:none;border-radius:inherit}
+.more>summary::-webkit-details-marker,.counts>summary::-webkit-details-marker{display:none}
+.more>summary .hint,.counts>summary .hint{flex:1;font-weight:400}
+.more>summary::after,.counts>summary::after{content:"";flex:none;width:6px;height:6px;margin-right:3px;border:solid var(--dim);border-width:0 1.5px 1.5px 0;transform:translateY(-2px) rotate(45deg);transition:transform .2s var(--out)}
+.more[open]>summary::after,.counts[open]>summary::after{transform:translateY(1px) rotate(225deg)}
+.more>.in{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr));gap:18px 28px;padding:6px 12px 14px}
+.counts>summary{border-top:1px solid var(--line);border-radius:0;font-weight:400;color:var(--dim)}
+@media (min-width:560.02px){.counts>summary{display:none}}
+.thumb{position:relative;align-self:flex-start;line-height:0;border-radius:calc(var(--r) - 2px);overflow:hidden;border:1px solid var(--line);max-width:100%}
+.thumb canvas{display:block;max-width:100%}
+.baseline{position:absolute;left:0;right:0;height:0;border-top:1px dashed var(--bad);pointer-events:none}
+.baseline::after{content:"baseline";position:absolute;right:4px;top:3px;padding:2px 4px;border-radius:3px;font:500 9.5px/1 var(--sans);color:#fff;background:var(--bad)}
+.pad{position:relative;line-height:0;margin:10px;border-radius:calc(var(--r) - 2px);background:var(--tint);touch-action:none;cursor:crosshair;overflow:hidden}
+#sketch{width:100%;aspect-ratio:232/66;image-rendering:pixelated;touch-action:none}
+#padGrid{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;color:var(--fg)}
+.ring{position:absolute;left:0;top:0;border-radius:50%;border:1px solid var(--fg);box-shadow:0 0 0 1px var(--bg);pointer-events:none;opacity:0}
+.btns{display:flex;gap:6px}
+
+/* preview */
+.pill{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px 0 9px;border-radius:13px;font-weight:500;font-size:12.5px;background:var(--tint);white-space:nowrap}
+.pill svg{flex:none;width:12px;height:12px;margin-left:-1px;fill:none;stroke:var(--good);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.pill.warn svg{stroke:var(--warn)}.pill.fail svg{stroke:currentColor}
+.pill.fail{color:var(--bad);background:color-mix(in srgb,var(--bad) 10%,transparent)}
+.tally{font:500 12px var(--mono);color:var(--dim);font-variant-numeric:tabular-nums}
+.stage{position:relative;height:420px;overflow:hidden;background:var(--tint);transition:background-color .15s ease}
+.stage.light{background:#fff;color:#0f1419}
+.stage.dark{background:#000;color:#e7e9ea}
+#art{position:absolute;left:0;top:0;transform-origin:0 0;font-size:40px;white-space:pre}
+#box{position:absolute;border-radius:2px;box-shadow:0 0 0 1px color-mix(in srgb,currentColor 22%,transparent);pointer-events:none}
+.ghost{position:absolute;display:flex;align-items:center;gap:8px;pointer-events:none}
+.ghost i{display:block;height:8px;border-radius:4px;background:color-mix(in srgb,currentColor 11%,transparent)}
+.ghost i.av{width:24px;height:24px;border-radius:50%}
+#edge{position:absolute;top:0;bottom:0;width:0;border-left:1px dashed var(--bad);pointer-events:none}
+#edge::after{content:"phone edge";position:absolute;left:6px;bottom:8px;font:500 10px/1 var(--sans);color:var(--bad);white-space:nowrap}
+#warn{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:24px;color:var(--dim)}
+#warn:empty{display:none}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));overflow:hidden;border-top:1px solid var(--line);border-radius:0 0 calc(var(--r) + 1px) calc(var(--r) + 1px)}
+.stat{padding:10px 12px 11px;box-shadow:1px 0 0 var(--line),0 1px 0 var(--line);min-width:0}
+.stat span{display:block;color:var(--dim);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat b{display:block;margin-top:1px;font:500 15px/1.35 var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em;white-space:nowrap}
+.stat b small{font-size:12px;font-weight:400;color:var(--dim)}
+.stat.over b{color:var(--bad)}
+.meter{height:3px;margin-top:7px;border-radius:2px;background:var(--tint2);overflow:hidden}
+.meter i{display:block;height:100%;width:100%;border-radius:2px;background:var(--fg);transform-origin:0 50%}
+.stat.over .meter i{background:var(--bad)}
+
+/* delivery check */
+.badge{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:11px;border:1px solid var(--line);font-size:11.5px;color:var(--dim);white-space:nowrap}
+.checks{list-style:none;margin:0;padding:6px 12px 8px}
+.checks li{display:flex;gap:10px;align-items:flex-start;padding:5px 0}
+.checks svg{flex:none;width:14px;height:14px;margin-top:2.5px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.checks .ok svg{color:var(--good)}
+.checks .warn svg{color:var(--warn)}
+.checks .fail svg{color:var(--bad)}
+.checks .note svg{color:var(--dim)}
+.checks .note{color:var(--dim)}
+.checks .fail span{color:var(--bad);font-weight:500}
+
+/* marks in use */
+.marks{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;color:var(--dim);font-size:12px}
+.chip{display:inline-flex;align-items:center;gap:7px;height:30px;border:1px solid var(--line);border-radius:calc(var(--r) - 2px);padding:0 9px 0 6px;overflow:hidden}
+.chip .g{font-size:16px;line-height:1;color:var(--fg);width:14px;text-align:center}
+.chip code{font:11.5px var(--mono);color:var(--fg)}
+.link{appearance:none;border:0;background:none;padding:0;font:inherit;color:var(--dim);text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--line);cursor:pointer;margin-left:auto}
+@media (hover:hover) and (pointer:fine){.link:hover{color:var(--fg)}}
+/* The verdict, the count and Copy. Part of the preview's head when there are two columns. On one column they
+   stay at the bottom of the screen, so Copy is in reach wherever the page is scrolled to. */
+.bar,.state{display:contents}
+.head .seg{order:1}#saveBtn{order:2}#copyBtn{order:3}
+@media (max-width:979.98px){
+  .app{padding-bottom:calc(72px + env(safe-area-inset-bottom))}
+  /* Nothing that is scrolled to, by the page or by the Tab key, stops behind the bar. */
+  html{scroll-padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+  .stage{scroll-margin-top:64px}
+  .bar{position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;align-items:center;gap:10px;background:var(--bg);border-top:1px solid var(--line);
+    padding:10px max(24px,env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) max(24px,env(safe-area-inset-left))}
+  .state{display:flex;flex-direction:column;align-items:flex-start;gap:3px;min-width:0;margin-right:auto}
+  .state .tally{padding-left:10px}
+  .bar .sp{display:none}
+  #copyBtn{height:46px;padding:0 20px;font-size:15px}
+  .head{padding-left:8px}.head .seg{display:flex;flex:1}.head .seg button{flex:1}
+  /* Sizes for a finger: targets about 44 px, and 16 px type in anything that takes typing, which is what keeps
+     an iPhone from zooming the page when the field is tapped. */
+  .side,.main,.target{font-size:15px}
+  .target{flex:1 1 100%}.target .sel{flex:1 1 130px}.target .sel select{width:100%}
+  .group h2,.hint{font-size:13px}
+  .seg button{height:40px;font-size:14px}
+  .modes .seg{padding:3px}.modes .seg button{height:40px;font-size:15px}.modes .seg .ind{top:3px;bottom:3px}
+  .sel select,input[type=number],input[type=text]{height:44px;font-size:16px}
+  .btn{height:40px;font-size:14px}.btn.sm{height:38px;padding:0 13px;font-size:14px}.btn.big{height:48px;font-size:16px}
+  .row{min-height:44px}
+  .switch{width:44px;height:26px;border-radius:13px}.switch::before{width:22px;height:22px}.switch:checked::before{transform:translateX(18px)}
+  input[type=range]{height:40px}
+  .link{display:inline-flex;align-items:center;min-height:40px}
+  input[type=range]::-webkit-slider-thumb{width:24px;height:24px;margin-top:-10px}
+  input[type=range]::-moz-range-thumb{width:24px;height:24px}
+  .more>summary,.counts>summary{min-height:48px}
+  .sample{width:48px;height:48px}.samples{gap:8px}
+  .zone{flex-direction:row;align-items:center}.zone .pic{flex:none;max-width:44%}.zone .go{flex:1}
+  .pill{height:28px;font-size:13.5px}
+}
+@media (max-width:560px){.stage{height:330px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+
+<div class="app" id="app">
+  <header class="top">
+    <div class="brand">
+      <a class="mark" href="../" aria-label="Zalgo Art home"><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 6.6h13L5.5 17.4h13" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/><g fill="currentColor"><rect x="13.3" y="2.15" width="4.6" height="1.5" rx=".75"/><rect x="14.5" y="0" width="2.2" height="1.5" rx=".75"/><rect x="6.1" y="20.35" width="4.6" height="1.5" rx=".75"/><rect x="7.3" y="22.5" width="2.2" height="1.5" rx=".75"/></g></svg></a>
+      <div><h1>Zalgo Text Generator</h1><p>Glitch text with piles of marks on every letter, thinned so the post still fits.</p></div>
+    </div>
+    <div class="target">
+      <span>Post to</span>
+      <span class="sel"><select id="platform" aria-label="Platform"></select></span>
+      <input id="limit" type="number" value="2000" min="20" step="10" aria-label="Character limit" hidden>
+      <label class="row" title="Use the largest size this platform's limits allow"><span>Auto-fit</span><input id="fit" type="checkbox" class="switch" checked></label>
+    </div>
+  </header>
+
+  <aside class="side">
+    <div class="modes">
+      <input type="hidden" id="mode" value="glitch">
+      <div class="seg full" data-for="mode" aria-label="Source"><button data-v="image">Image</button><button data-v="text">Text</button><button data-v="draw">Draw</button><button data-v="glitch">Glitch</button></div>
+    </div>
+
+    <section class="group" id="start">
+      <h2 class="vh">Source</h2>
+      <div class="stack" id="src-image">
+        <div class="zone">
+          <div class="pic"><div class="thumb"><canvas id="thumb" width="1" height="1"></canvas><i class="baseline" id="thumbLine"></i></div><span class="hint cap" id="fileName" role="status">Sample: burger</span></div>
+          <div class="go">
+            <label class="btn primary big"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 10.5V2.5M4.8 5.5 8 2.3l3.2 3.2M2.5 10.5v2a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-2"/></svg>Choose image<input id="file" type="file" accept="image/*" class="vh"></label>
+            <span class="hint">or drop one anywhere on the page<span class="fine">, or paste it</span></span>
+          </div>
+        </div>
+        <div class="samples" id="samples"><span class="hint">No picture to hand? Try one of ours.</span><button type="button" class="sample" data-name="burger" aria-label="Try the burger" title="Burger"><img alt="" width="40" height="40" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0ODAgNDgwIiB3aWR0aD0iNDgwIiBoZWlnaHQ9IjQ4MCI+CiAgPHRpdGxlPkJ1cmdlcjwvdGl0bGU+CiAgPGRlc2M+RHJhd24gZnJvbSBzY3JhdGNoIGZvciBaYWxnb0FydCBvdXQgb2YgcGxhaW4gc2hhcGVzLiBNSVQgbGljZW5jZSwgbGlrZSB0aGUgcmVzdCBvZiB0aGUgcHJvamVjdC4gZXhhbXBsZXMvYnVyZ2VyLmpwZyBpcyB0aGlzIGZpbGUgcmVuZGVyZWQgYXQgNDgwIGJ5IDQ4MC48L2Rlc2M+CiAgPHJlY3Qgd2lkdGg9IjQ4MCIgaGVpZ2h0PSI0ODAiIGZpbGw9IiNmZmZmZmYiLz4KCiAgPCEtLSBib3R0b20gYnVuIC0tPgogIDxwYXRoIGQ9Ik03MCAzNDRoMzQwdjIwYzAgMjYtMjAgNDQtNDggNDRIMTE4Yy0yOCAwLTQ4LTE4LTQ4LTQ0eiIgZmlsbD0iI2QzOGEzYiIvPgogIDxwYXRoIGQ9Ik03MCAzNDRoMzQwdjE2SDcweiIgZmlsbD0iI2UyYTQ1YSIvPgoKICA8IS0tIHBhdHR5IC0tPgogIDxyZWN0IHg9IjU2IiB5PSIyOTIiIHdpZHRoPSIzNjgiIGhlaWdodD0iNjAiIHJ4PSIyOCIgZmlsbD0iIzVhMzQyMSIvPgogIDxyZWN0IHg9Ijc4IiB5PSIzMDQiIHdpZHRoPSIzMjQiIGhlaWdodD0iOCIgcng9IjQiIGZpbGw9IiM2ZjQyMjkiLz4KCiAgPCEtLSBjaGVlc2UsIHdpdGggY29ybmVycyBoYW5naW5nIG92ZXIgdGhlIHBhdHR5IC0tPgogIDxwYXRoIGQ9Ik02MCAyNzJoMzYwbC00NiAzMC0zNi0xMi00MCA0MC00NC0zNi01MiAyMC00Ni0yNC01MCAxMnoiIGZpbGw9IiNmNWM0MzEiLz4KCiAgPCEtLSB0b21hdG8gLS0+CiAgPHJlY3QgeD0iNjgiIHk9IjI0NiIgd2lkdGg9IjM0NCIgaGVpZ2h0PSIzMiIgcng9IjE1IiBmaWxsPSIjZDg0MDJlIi8+CiAgPHJlY3QgeD0iODgiIHk9IjI1NCIgd2lkdGg9IjMwNCIgaGVpZ2h0PSI2IiByeD0iMyIgZmlsbD0iI2U5NjM0ZiIvPgoKICA8IS0tIGxldHR1Y2U6IGEgYmFuZCB3aXRoIGEgc2NhbGxvcGVkIGxvd2VyIGVkZ2UgLS0+CiAgPHJlY3QgeD0iNTAiIHk9IjIyMiIgd2lkdGg9IjM4MCIgaGVpZ2h0PSIyMiIgcng9IjExIiBmaWxsPSIjNWNhYTQ1Ii8+CiAgPGcgZmlsbD0iIzVjYWE0NSI+CiAgICA8Y2lyY2xlIGN4PSI3MiIgY3k9IjI0NCIgcj0iMTUiLz4KICAgIDxjaXJjbGUgY3g9IjExNCIgY3k9IjI0NiIgcj0iMTUiLz4KICAgIDxjaXJjbGUgY3g9IjE1NiIgY3k9IjI0NCIgcj0iMTUiLz4KICAgIDxjaXJjbGUgY3g9IjE5OCIgY3k9IjI0NiIgcj0iMTUiLz4KICAgIDxjaXJjbGUgY3g9IjI0MCIgY3k9IjI0NCIgcj0iMTUiLz4KICAgIDxjaXJjbGUgY3g9IjI4MiIgY3k9IjI0NiIgcj0iMTUiLz4KICAgIDxjaXJjbGUgY3g9IjMyNCIgY3k9IjI0NCIgcj0iMTUiLz4KICAgIDxjaXJjbGUgY3g9IjM2NiIgY3k9IjI0NiIgcj0iMTUiLz4KICAgIDxjaXJjbGUgY3g9IjQwOCIgY3k9IjI0NCIgcj0iMTUiLz4KICA8L2c+CgogIDwhLS0gdG9wIGJ1biAtLT4KICA8cGF0aCBkPSJNNjIgMjE0YzAtODAgODAtMTM2IDE3OC0xMzZzMTc4IDU2IDE3OCAxMzZjMCA5LTcgMTQtMTYgMTRINzhjLTkgMC0xNi01LTE2LTE0eiIgZmlsbD0iI2QzOGEzYiIvPgogIDxwYXRoIGQ9Ik05NiAxNzZjMTQtNDYgNzAtNzggMTQ0LTc4IDQwIDAgNzYgMTAgMTAyIDI2LTI4LTEwLTYyLTE2LTEwMi0xNi02NiAwLTExOCAyNi0xNDQgNjh6IiBmaWxsPSIjZTJhNDVhIi8+CgogIDwhLS0gc2VzYW1lIHNlZWRzIC0tPgogIDxnIGZpbGw9IiNmYmVjY2IiPgogICAgPGVsbGlwc2UgY3g9IjE1MCIgY3k9IjE1MCIgcng9IjkiIHJ5PSI1IiB0cmFuc2Zvcm09InJvdGF0ZSgtMjggMTUwIDE1MCkiLz4KICAgIDxlbGxpcHNlIGN4PSIyMDQiIGN5PSIxMjIiIHJ4PSI5IiByeT0iNSIgdHJhbnNmb3JtPSJyb3RhdGUoLTEyIDIwNCAxMjIpIi8+CiAgICA8ZWxsaXBzZSBjeD0iMjYyIiBjeT0iMTE4IiByeD0iOSIgcnk9IjUiIHRyYW5zZm9ybT0icm90YXRlKDEwIDI2MiAxMTgpIi8+CiAgICA8ZWxsaXBzZSBjeD0iMzE4IiBjeT0iMTQwIiByeD0iOSIgcnk9IjUiIHRyYW5zZm9ybT0icm90YXRlKDI2IDMxOCAxNDApIi8+CiAgICA8ZWxsaXBzZSBjeD0iMjMyIiBjeT0iMTYwIiByeD0iOSIgcnk9IjUiIHRyYW5zZm9ybT0icm90YXRlKC00IDIzMiAxNjApIi8+CiAgICA8ZWxsaXBzZSBjeD0iMTc4IiBjeT0iMTg2IiByeD0iOSIgcnk9IjUiIHRyYW5zZm9ybT0icm90YXRlKC0xOCAxNzggMTg2KSIvPgogICAgPGVsbGlwc2UgY3g9IjI5MiIgY3k9IjE4MiIgcng9IjkiIHJ5PSI1IiB0cmFuc2Zvcm09InJvdGF0ZSgxNiAyOTIgMTgyKSIvPgogICAgPGVsbGlwc2UgY3g9IjM1MCIgY3k9IjE5MCIgcng9IjkiIHJ5PSI1IiB0cmFuc2Zvcm09InJvdGF0ZSgzMCAzNTAgMTkwKSIvPgogICAgPGVsbGlwc2UgY3g9IjExOCIgY3k9IjE5NiIgcng9IjkiIHJ5PSI1IiB0cmFuc2Zvcm09InJvdGF0ZSgtMzQgMTE4IDE5NikiLz4KICA8L2c+Cjwvc3ZnPgo="></button><button type="button" class="sample" data-name="cat" aria-label="Try the cat" title="Cat"><img alt="" width="40" height="40" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNmZmYiLz48cGF0aCBkPSJNMTQgMTAgMzYgMzBjOS00IDE5LTQgMjggMEw4NiAxMGwtMiA0NGMwIDIyLTE0IDM2LTM0IDM2UzE2IDc2IDE2IDU0eiIgZmlsbD0iIzFmMjkzNyIvPjwvc3ZnPgo="></button><button type="button" class="sample" data-name="ghost" aria-label="Try the ghost" title="Ghost"><img alt="" width="40" height="40" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNmZmYiLz48cGF0aCBkPSJNMTggOTJWNDRhMzIgMzIgMCAwIDEgNjQgMHY0OGwtMTAuNy0xMEw2MC43IDkyIDUwIDgyIDM5LjMgOTIgMjguNyA4MnoiIGZpbGw9IiMzNzQxNTEiLz48Y2lyY2xlIGN4PSIzOSIgY3k9IjQ0IiByPSI2IiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iNjEiIGN5PSI0NCIgcj0iNiIgZmlsbD0iI2ZmZiIvPjwvc3ZnPgo="></button><button type="button" class="sample" data-name="heart" aria-label="Try the heart" title="Heart"><img alt="" width="40" height="40" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNmZmYiLz48cGF0aCBkPSJNNTAgOTBDMjIgNjYgOCA0OCA4IDMxIDggMTcgMTkgOCAzMSA4YzggMCAxNSA0IDE5IDExIDQtNyAxMS0xMSAxOS0xMSAxMiAwIDIzIDkgMjMgMjMgMCAxNy0xNCAzNS00MiA1OXoiIGZpbGw9IiNlMTFkNDgiLz48L3N2Zz4K"></button><button type="button" class="sample" data-name="mushroom" aria-label="Try the mushroom" title="Mushroom"><img alt="" width="40" height="40" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNmZmYiLz48cGF0aCBkPSJNNiA1NEM2IDI4IDI2IDEwIDUwIDEwczQ0IDE4IDQ0IDQ0eiIgZmlsbD0iI2RjMjYyNiIvPjxwYXRoIGQ9Ik0zOCA1NGgyNGw1IDM0YTYgNiAwIDAgMS02IDZIMzlhNiA2IDAgMCAxLTYtNnoiIGZpbGw9IiNkNmI5OGMiLz48L3N2Zz4K"></button><button type="button" class="sample" data-name="tree" aria-label="Try the tree" title="Tree"><img alt="" width="40" height="40" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNmZmYiLz48cGF0aCBkPSJNNTAgNiAzMCAzNGg5TDIyIDU4aDExTDE0IDgyaDcyTDY3IDU4aDExTDYxIDM0aDl6IiBmaWxsPSIjMTU4MDNkIi8+PHBhdGggZD0iTTQzIDgyaDE0djEySDQzeiIgZmlsbD0iIzc4MzUwZiIvPjwvc3ZnPgo="></button></div>
+      </div>
+
+      <div class="stack" id="src-text" hidden>
+        <label class="field"><span>Words</span><input id="ttext" type="text" value="zalgo art" spellcheck="false" autocomplete="off"></label>
+        <label class="field"><span>Caption</span><input id="tcap" type="text" value="" placeholder="A plain line above, optional" spellcheck="false" autocomplete="off"></label>
+        <label class="field"><span>Letter size <output id="tsizeV"></output></span><input id="tsize" type="range" min="1" max="6" value="4"></label>
+        <div class="row"><span>Rows</span><input type="hidden" id="trows" value="0"><div class="seg" data-for="trows"><button data-v="0" title="Whichever gives the bigger letters">Auto</button><button data-v="1">One</button><button data-v="2" title="The second row hangs below the line">Two</button></div></div>
+        <span class="hint" id="tnote">Letters are built from piles of marks, one pile per column.</span>
+      </div>
+
+      <div class="stack" id="src-draw" hidden>
+        <input type="hidden" id="tool" value="brush">
+        <div class="seg full tight" data-for="tool" aria-label="Tool"><button data-v="brush" title="Freehand">Brush</button><button data-v="line" title="Straight line, as thick as the brush">Line</button><button data-v="rect" title="Filled box">Box</button><button data-v="oval" title="Filled oval">Oval</button><button data-v="fill" title="Fill an area with the ink">Fill</button></div>
+        <input type="hidden" id="ink" value="1">
+        <div class="seg full" data-for="ink" aria-label="Ink"><button data-v="1">Dark</button><button data-v="0.5">Mid</button><button data-v="0.08">Light</button><button data-v="-1">Erase</button></div>
+        <label class="field"><span>Brush size <output id="brushV"></output></span><input id="brush" type="range" min="1" max="10" value="3"></label>
+        <div class="row"><span class="btns"><button class="btn sm" id="undoBtn" disabled>Undo</button><button class="btn sm" id="redoBtn" disabled>Redo</button></span><button class="btn sm" id="clearBtn">Clear</button></div>
+        <p class="hint">Above the line grows up, below grows down. For words, use Text.</p>
+      </div>
+
+      <div class="stack" id="src-glitch" hidden>
+        <label class="field"><span>Text</span><input id="gtext" type="text" value="he comes" spellcheck="false" autocomplete="off"></label>
+        <label class="field"><span>Above <output id="gupV"></output></span><input id="gup" type="range" min="0" max="40" value="12"></label>
+        <label class="field"><span>Below <output id="gdnV"></output></span><input id="gdn" type="range" min="0" max="40" value="12"></label>
+        <label class="field"><span>Through <output id="gmidV"></output></span><input id="gmid" type="range" min="0" max="4" value="1"></label>
+        <div class="row"><span class="hint">Same text, new piles.</span><button class="btn sm" id="reroll">Reroll</button></div>
+      </div>
+    </section>
+
+    <details class="more" id="more">
+      <summary><span>More options</span><span class="hint">How it looks and posts</span></summary>
+      <div class="in">
+    <section class="group" id="picture">
+      <h2>Picture</h2>
+      <div class="stack" id="tune">
+        <label class="field"><span>Background cutoff <output id="thrV"></output></span><input id="thr" type="range" min="2" max="60" value="10"></label>
+        <label class="row"><span>Invert tones</span><input id="invert" type="checkbox" class="switch"></label>
+      </div>
+      <label class="field"><span>Columns <output id="colsV"></output></span><input id="cols" type="range" min="6" max="160" value="40"></label>
+      <label class="field"><span>Baseline <output id="baselineV"></output></span><input id="baseline" type="range" min="0" max="100" value="50"></label>
+      <label class="field"><span>Tones <output id="tonesV"></output></span><input id="tones" type="range" min="0" max="6" value="0"></label>
+      <div class="row"><span>Marks</span><input type="hidden" id="marks" value="tall"><div class="seg" data-for="marks"><button data-v="tall" title="Fewer characters">Tall</button><button data-v="short" title="Finer rows">Short</button></div></div>
+      <div class="row"><span class="nw">Stands on</span><span class="sel"><select id="base" aria-label="What each column stands on"></select></span></div>
+      <label class="row"><span>Dither between tones</span><input id="dither" type="checkbox" class="switch"></label>
+    </section>
+
+    <section class="group">
+      <h2>Posting</h2>
+      <label class="row"><span>Reserve lines for the stacks</span><input id="room" type="checkbox" class="switch" checked></label>
+      <div class="row"><span>Reserved lines hold</span><input type="hidden" id="pad" value="blank"><div class="seg" data-for="pad"><button data-v="blank" title="An invisible character">Invisible</button><button data-v="dot" title="A full stop">Full stop</button></div></div>
+      <label class="row"><span>Keep within a phone's width</span><input id="phone" type="checkbox" class="switch" checked></label>
+      <label class="row" title="Safari and the iPhone, iPad and Mac apps stack only the first 30 marks of a column. Turn off for a bigger picture that only Chrome, Firefox and Android draw whole."><span>At most 30 marks a column (Safari, iPhone)</span><input id="cap" type="checkbox" class="switch" checked></label>
+      <div class="row"><span>Font</span><span class="sel"><select id="font" aria-label="Preview font">
+        <option value="&quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif">System, as posts fall back to</option>
+        <option value="Helvetica, Arial, sans-serif">Helvetica (Apple)</option>
+        <option value="Arial, sans-serif">Arial</option>
+      </select></span></div>
+    </section>
+      </div>
+    </details>
+  </aside>
+
+  <div class="main">
+    <section class="card" id="padCard" hidden>
+      <div class="head"><h2>Canvas</h2><span class="sp"></span><span class="hint" id="padHint"></span></div>
+      <div class="pad"><canvas id="sketch" width="232" height="66"></canvas><canvas id="padGrid" aria-hidden="true"></canvas><i class="baseline" id="padLine"></i><i class="ring" id="padRing"></i></div>
+    </section>
+
+    <section class="card preview">
+      <div class="head">
+        <input type="hidden" id="paper" value="page">
+        <div class="seg" data-for="paper" title="The theme of whoever reads the post"><button data-v="page">Auto</button><button data-v="light">Light</button><button data-v="dark">Dark</button></div>
+        <button class="btn" id="saveBtn" title="Download as a .txt file" aria-label="Download as a text file"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.5v8M4.8 7.5 8 10.7l3.2-3.2M2.5 10.5v2a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-2"/></svg></button>
+        <div class="bar">
+          <div class="state"><span class="pill" id="verdict">Preview</span><span class="tally" id="tally"></span></div>
+          <span class="sp"></span>
+          <button class="btn primary swap" id="copyBtn"><span class="a"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5"/><path d="M10.5 5.5v-2a1 1 0 0 0-1-1h-6a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2"/></svg>Copy text</span><span class="b" id="copyDone"></span></button>
+        </div>
+      </div>
+      <div class="stage" id="stage">
+        <div class="ghost" id="ghostTop"><i class="av"></i><i style="width:72px"></i><i style="width:44px"></i></div>
+        <div class="ghost" id="ghostBot"><i style="width:26px"></i><i style="width:26px"></i><i style="width:26px"></i><i style="width:26px"></i></div>
+        <div id="box"></div><div id="edge" hidden></div><div id="art"></div><div id="warn"></div>
+      </div>
+      <details class="counts" id="counts"><summary><span class="hint">Counts and size</span></summary><div class="stats" id="stats"></div></details>
+    </section>
+
+    <section class="card delivery" id="delivery">
+      <div class="head"><h2>Delivery check</h2><span class="sp"></span><span class="badge" id="srcBadge"></span></div>
+      <ul class="checks" id="checks"></ul>
+    </section>
+
+    <div class="marks" id="legend"></div>
+  </div>
+
+<article class="doc">
+<section>
+<h2>How to make zalgo text</h2>
+<div class="body">
+<ol>
+<li>Type your words in the Text box.</li>
+<li>Choose where you will post it, in the menu at the top.</li>
+<li>Set Above, Below and Through, or leave Auto-fit on and let the generator choose.</li>
+<li>Press Reroll for the same text with new piles.</li>
+<li>Press Copy text and paste it into your post. The button beside it downloads the text as a file.</li>
+</ol>
+<figure>
+<div class="zalgo" style="line-height:1.333">⠀
+⠀
+z̴̰̫̮̣̱͇̤̞͈̰̟̪̍͆̍ͮ̋ͪ̈̆̇̍a̷̱̹̻͙̹̿ͧ́̈̐̓̀̄ͥ̑̔l̸̦̩̝̝͕̦̟̹̩̗̿ͬ͆ͧ͑ͬ̅͂͑ͪg͙͙̱͍̖̰̦͇̱͈͚̿ͧ̔͑ͣ͆̎̋̀o̸̖̹̳̼͚̤͚̺͍̹͎̍ͯ̿͊̇̒̉ͧͩ t̳͇͙̯̠̲͍͓̟̿̾͂̈̋̔̾̈̀̈́̅e̞̫̯͇̪̪͉̼͍̰͍̬̿̍͂ͥ̃x̸̬̩͕̣̪̮͎̫͚̱̭̍͆̍ͪ͊ͯͨ̿̔͗t̞̼̫̳͓̪̥̙̿ͣͮ̎̌̃͛ͬͥ
+⠀
+⠀
+⠀</div>
+<figcaption>Made by this generator for X. How it looks here depends on the fonts on your device.</figcaption>
+</figure>
+</div>
+</section>
+<section>
+<h2>What the sliders do</h2>
+<div class="body">
+<dl>
+<dt>Above and Below</dt>
+<dd>The tallest pile a letter can get above and below it, from <span data-ui="gup.min">0</span> to <span data-ui="gup.max">40</span> marks. Each letter gets a random share of the setting, which is what makes the text look uneven.</dd>
+<dt>Through</dt>
+<dd>Up to <span data-ui="gmid.max">4</span> marks struck through the middle of each letter.</dd>
+<dt>Reroll</dt>
+<dd>Keeps the text and the settings and draws the marks again.</dd>
+</dl>
+</div>
+</section>
+<section>
+<h2>Thinned to fit</h2>
+<div class="body">
+<p>Zalgo text is costly. Every mark is a character of its own and platforms count them, so a few words can use up a whole post. With Auto-fit on, the generator thins the marks until the text fits the platform you picked. Move a slider and Auto-fit turns off: you get exactly what you set, and the delivery check says so if it is over the limit.</p>
+<p>The check also covers what happens after you post. Piles taller than their line are cut off on many sites, so blank lines are reserved above and below. Safari and the iPhone, iPad and Mac apps stack only the first <span data-n="stack">30</span> marks on a letter, so piles are kept to <span data-n="stack">30</span> unless you turn that off. On X, glitch text comes out flat in Firefox, and the check warns about it.</p>
+<p>Limits differ a lot from place to place. See <a href="../character-limits/">how each platform counts</a>.</p>
+</div>
+</section>
+<section>
+<h2 data-faq>Questions</h2>
+<div class="body">
+<h3>Is zalgo text the same as glitch text or cursed text?</h3>
+<p>They are names for the same effect: ordinary letters followed by many combining marks. Nothing in the text is broken. It is plain Unicode, which is why it can be copied and pasted like any other text.</p>
+<h3>Why is my zalgo text cut off after I post it?</h3>
+<p>The piles reach above and below their line, and many sites cut off whatever leaves the post. Leave Reserve lines for the stacks switched on and the generator adds blank lines to hold them.</p>
+<h3>Why does it look different on another phone or computer?</h3>
+<p>The piles are drawn by the font on the device that shows them. Some fonts stack marks high, some keep them flat, and Safari stacks only the first <span data-n="stack">30</span> on a letter.</p>
+</div>
+</section>
+<section>
+<h2>More than noise</h2>
+<div class="body">
+<p>The same marks can draw. Switch the source to <a href="../image-to-zalgo/">Image</a> to turn a picture into text, to <a href="../zalgo-text-art/">Text</a> for big letters built from marks, or to <a href="../draw/">Draw</a> to sketch your own. To see why any of it works, read <a href="../what-is-zalgo-text/">what zalgo text is</a>.</p>
+</div>
+</section>
+</article>
+  <footer class="foot"><nav aria-label="Site"><a href="../">Zalgo Art</a><a href="../zalgo-text-generator/" aria-current="page">Zalgo text generator</a><a href="../image-to-zalgo/">Image to zalgo text</a><a href="../zalgo-text-art/">Zalgo text art</a><a href="../draw/">Draw zalgo art</a><a href="../what-is-zalgo-text/">What is zalgo text?</a><a href="../zalgo-art-vs-ascii-art/">Zalgo art and ASCII art</a><a href="../character-limits/">Character limits by platform</a><a href="../cli/">Command line tool</a><a href="../privacy/">Privacy</a></nav><span>Open source under the MIT licence. <a href="https://github.com/jackulau/ZalgoArt">Source and CLI on GitHub</a></span></footer>
+  <script>if(location.protocol==='file:')for(const a of document.querySelectorAll('a[href]')){const h=a.getAttribute('href');if(!/^[a-z][a-z0-9+.-]*:/i.test(h)&&/\/(#.*)?$/.test(h))a.setAttribute('href',h.replace(/\/(#.*)?$/,'/index.html$1'))}</script>
+</div>
+
+<div class="veil" aria-hidden="true"><b>Let go to turn the picture into zalgo</b></div>
+<img id="seed" alt="" hidden src="data:image/jpeg;base64,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">
+
+<script>/* Zalgo core: pure functions shared by the page and the CLI. No DOM, no dependencies.
+   All lengths are in em, so results do not depend on the font size a platform uses. */
+(function(root,factory){
+  if(typeof module==='object'&&module.exports)module.exports=factory();else root.Zalgo=factory();
+})(typeof self!=='undefined'?self:this,function(){
+'use strict';
+const S=String.fromCodePoint,NL=S(10),NBSP=S(0xa0),PAD=S(0x2800);
+const seg=new Intl.Segmenter();
+// Dots, bars, rings and strokes read as tone. The rest of the block is kept for glitch only.
+const CLEAN=new Set([0x304,0x305,0x307,0x308,0x30a,0x30d,0x30e,0x33f,0x346,0x323,0x324,0x325,0x329,0x331,0x332,0x333,0x347,0x348]);
+// Shading a picture uses only the marks that tile into an even texture when columns stand side by side: bars,
+// dots and ticks. A ring or a bracket is clean too, but a field of them reads as bubbles, not as a grey.
+const SHADE=new Set([0x304,0x305,0x33f,0x307,0x308,0x30d,0x30e,0x331,0x332,0x333,0x323,0x324,0x329,0x348]);
+// Marks that brand fonts (Chirp on X, Inter on Bluesky) do not contain. One of these in a column makes the
+// browser draw the whole column with the system font, which stacks every mark. Without one, the brand font
+// draws common accents itself and piles them on the same spot.
+const ANCHOR=new Set([0x33f,0x30d,0x333]);
+const MID=[0x334,0x335,0x336,0x337,0x338].map(c=>S(c));
+// Apple's text engine (Safari, and the iPhone, iPad and Mac apps built on it) stacks the first 30 marks of a
+// column and draws every later one on a single line. Measured in WebKit on macOS with Helvetica alone, so it
+// belongs to the engine and not to a platform. Chrome and Firefox stacked 90.
+const STACK=30;
+
+/* ---------- counting, the way each platform does it ---------- */
+const count={
+  utf16:t=>t.length,
+  codepoints:t=>{let n=0;for(const c of t)n++;return n;},
+  bytes:t=>{let n=0;for(const c of t){const p=c.codePointAt(0);n+=p<0x80?1:p<0x800?2:p<0x10000?3:4;}return n;},
+  graphemes:t=>{let n=0;for(const g of seg.segment(t))n++;return n;},
+  // Mastodon's web composer (stringz): a letter with n marks counts about 1 + ceil((n-2)/3).
+  mastodon:t=>{let n=0;for(const g of seg.segment(t)){let k=-1;for(const c of g.segment)k++;n+=1+Math.max(0,Math.ceil((k-2)/3));}return n;},
+  // twitter-text v3: NFC first, then 1 for U+0000-10FF and a few punctuation ranges, 2 for everything else.
+  weighted:t=>{let w=0;for(const c of t.normalize('NFC')){const p=c.codePointAt(0);w+=(p<=4351||(p>=8192&&p<=8205)||(p>=8208&&p<=8223)||(p>=8242&&p<=8247))?1:2;}return w;}
+};
+const UNIT={utf16:'UTF-16 units',codepoints:'code points',bytes:'UTF-8 bytes',graphemes:'graphemes',weighted:'weighted characters',mastodon:'characters, as the web composer counts'};
+
+/* ---------- platforms ----------
+   limit/unit: how long a post may be and what is counted.   second: an extra limit that also applies.
+   width: text column of a phone, in em.   lh: line height in em.
+   clip: 'post' = stacks are cut at the post's box, 'none' = they spill over neighbours, 'unknown'.
+   marks: 'kept' | 'stripped' | 'unknown'.   blank: advance of a lone NBSP in the brand font, when measured.
+   base: what a column stands on by default.   carrier: the only characters a column may stand on and still
+   stack everywhere. A column stacks when one font draws all of it. Chrome hands a whole column to the first
+   font that has every character in it. Firefox chooses a font character by character: it draws a blank or a
+   letter in the platform's own font and leaves the marks, in the next font, with nothing to stack on. So the
+   letter itself has to be missing from the platform's font (and on Slack, whose font has the marks but piles
+   them on one spot, that is the only way in any browser).
+   flat: what to say about a column on any other letter.   flatLevel: 'fail' unless given.
+   src: 'measured' on the live site in Chrome on macOS, 'font' = only the stacking was measured, in the
+   platform's font stack, 'documented', or 'unverified'. */
+const X_FLAT='A pile on a blank or an ordinary letter comes out flat on X in Firefox: X\'s own font draws the letter and the marks are left with nothing to stack on. Chrome and Safari stack it. Only a column standing on '+S(0x2cd)+' stacks in all three.';
+const X_NOTE='X counts every mark as 1 and an invisible spacer as 2. Picture columns stand on '+S(0x2cd)+', which X\'s own font lacks, so the system font draws the whole column and stacks it. Checked with X\'s fonts in Chrome, Firefox and Safari\'s engine on macOS. The compose box, Windows and the phone apps were not.';
+const DISCORD_NOTE='Blank width taken from Discord\'s own font in Chrome, which the desktop app is built on. Firefox, Safari and the phone apps were not checked.';
+const PLATFORMS=[
+  {id:'x',name:'X (280)',limit:280,unit:'weighted',second:null,width:20.5,lh:1.333,clip:'none',marks:'kept',blank:.226,base:'low',carrier:[0x2cd],flatLevel:'warn',flat:X_FLAT,src:'measured',note:X_NOTE},
+  {id:'xpremium',name:'X Premium (25,000)',limit:25000,unit:'weighted',second:null,width:20.5,lh:1.333,clip:'none',marks:'kept',blank:.226,base:'low',carrier:[0x2cd],flatLevel:'warn',flat:X_FLAT,src:'measured',
+   fold:{lines:1e9,chars:280,level:'warn',msg:'Over 280 the timeline shows only the start of the post until someone opens it, so the picture is cut there.'},note:X_NOTE},
+  {id:'bluesky',name:'Bluesky',limit:300,unit:'graphemes',second:{limit:3000,unit:'bytes'},width:20,lh:1.333,clip:'post',marks:'kept',blank:.25,src:'measured',
+   fold:{lines:24,msg:'The feed folds posts of 25 lines or more.'},note:'A column is one grapheme, so the 3,000 byte cap is the real limit: each mark is 2 bytes.'},
+  {id:'mastodon',name:'Mastodon',limit:500,unit:'mastodon',second:null,width:20,lh:1.467,clip:'post',marks:'kept',src:'documented',
+   note:'The server counts one per letter, but the web composer counts about one per three marks and blocks sending over the limit. Servers can raise the limit.'},
+  {id:'discord',name:'Discord',limit:2000,unit:'utf16',second:null,width:18.5,lh:1.375,clip:'post',marks:'kept',blank:.22,src:'documented',note:'Nitro allows 4,000. '+DISCORD_NOTE},
+  {id:'discordnitro',name:'Discord Nitro',limit:4000,unit:'utf16',second:null,width:18.5,lh:1.375,clip:'post',marks:'kept',blank:.22,src:'documented',note:DISCORD_NOTE},
+  {id:'reddit',name:'Reddit comment',limit:10000,unit:'codepoints',second:null,width:20,lh:1.43,clip:'unknown',marks:'unknown',src:'documented',note:'Post bodies allow 40,000.'},
+  {id:'telegram',name:'Telegram',limit:4096,unit:'utf16',second:null,width:18,lh:1.3,clip:'unknown',marks:'capped',cap:2,src:'documented',
+   note:'Telegram Desktop draws at most 2 marks per letter, so pictures only have a chance in the phone apps.'},
+  {id:'threads',name:'Threads',limit:500,unit:'utf16',second:null,width:20,lh:1.35,clip:'unknown',marks:'unknown',src:'unverified',note:'Threads does not say what it counts. If it counts bytes, each mark costs 2.'},
+  {id:'instagram',name:'Instagram caption',limit:2200,unit:'utf16',second:null,width:20,lh:1.3,clip:'unknown',marks:'unknown',src:'unverified',
+   fold:{lines:2,msg:'Captions fold after a couple of lines until tapped.'},note:''},
+  {id:'tiktok',name:'TikTok comment',limit:150,unit:'utf16',second:null,width:18,lh:1.3,clip:'unknown',marks:'unknown',src:'unverified',note:''},
+  {id:'youtube',name:'YouTube comment',limit:10000,unit:'utf16',second:null,width:20,lh:1.43,clip:'unknown',marks:'unknown',src:'unverified',
+   fold:{lines:4,msg:'Comments fold after four lines until Read more is tapped.'},note:'Live chat is 200 characters and rejects special characters.'},
+  {id:'twitch',name:'Twitch chat',limit:500,unit:'utf16',second:null,width:16,lh:1.5,clip:'unknown',marks:'unknown',src:'documented',note:'Twitch can drop a message for "too many characters that cannot be processed".'},
+  {id:'whatsapp',name:'WhatsApp',limit:65536,unit:'utf16',second:null,width:17,lh:1.3,clip:'unknown',marks:'unknown',src:'unverified',note:''},
+  {id:'slack',name:'Slack',limit:4000,unit:'utf16',second:null,width:20,lh:1.467,clip:'unknown',marks:'kept',blank:.256,base:'point',carrier:[0x2027,0x2206],src:'font',
+   flat:"Slack's own font (Lato) has every mark but draws them all at one height, so a pile on any ordinary letter comes out as a flat line. A pile only stacks on "+S(0x2027)+' or '+S(0x2206)+', which Lato lacks.',
+   note:'Slack asks for 4,000 and cuts text off at 40,000. Columns stand on '+S(0x2027)+', checked on macOS only. If it comes out flat for someone on Windows, switch to '+S(0x2206)+': coarser, but in the fallback font of both systems.'},
+  {id:'facebook',name:'Facebook post',limit:63206,unit:'utf16',second:null,width:20,lh:1.34,clip:'unknown',marks:'unknown',src:'unverified',note:'Comments allow 8,000.'},
+  {id:'sms',name:'SMS (one segment)',limit:70,unit:'utf16',second:null,width:17,lh:1.3,clip:'unknown',marks:'unknown',src:'documented',note:'Marks force the 16-bit encoding: 70 units per text, 67 each when it is split.'},
+  {id:'custom',name:'Custom limit',limit:2000,unit:'utf16',second:null,width:20,lh:1.35,clip:'unknown',marks:'unknown',src:'unverified',note:''}
+];
+const platform=id=>PLATFORMS.find(p=>p.id===id)||PLATFORMS[0];
+const measure=(t,P)=>count[P.unit](t);
+
+/* ---------- font metrics ---------- */
+function metrics(profile){
+  const mk=a=>({cp:a[0],ch:S(a[0]),pitch:a[1],ink:a[2]});
+  const up=profile.up.map(mk),dn=profile.dn.map(mk),bases={};
+  for(const k in profile.bases){const b=profile.bases[k],ch=S(parseInt(k,16));bases[ch]={ch,adv:b[0],up0:b[1],dn0:b[2]};}
+  const clean=l=>{const c=l.filter(m=>CLEAN.has(m.cp));return c.length>=2?c:l;};
+  const shade=l=>{const c=l.filter(m=>SHADE.has(m.cp));return c.length>=2?c:clean(l);};
+  const any=bases.l||bases.o||{adv:.25,up0:.7,dn0:.05};
+  // Helvetica has no stacking rules of its own, so each engine spaces its marks its own way. Apple's adds this
+  // much to every mark above and below (measured against Chrome, the same for all 86 marks). Fonts that carry
+  // the rules, like Arial, come out the same everywhere. A profile measured in Safari says [0,0].
+  const apple=profile.apple||(/helvetica/i.test(profile.font||'')?[.0275,.0425]:[0,0]);
+  return {font:profile.font,up,dn,artUp:clean(up),artDn:clean(dn),shadeUp:shade(up),shadeDn:shade(dn),bases,apple,ok:up.length>0&&dn.length>0,
+    base:ch=>bases[ch]||{ch,adv:(bases.o||any).adv,up0:any.up0,dn0:any.dn0}};
+}
+
+function palette(list,tones,tall){
+  const inks=list.map(m=>m.ink),lo=Math.min(...inks),hi=Math.max(...inks),sign=tall?-1:1,pick=new Set();
+  for(let k=0;k<tones;k++){
+    const t=tones===1?hi:lo+(hi-lo)*k/(tones-1);let best=null,bs=1e9;
+    for(const m of list){const s=Math.abs(m.ink-t)+sign*.35*m.pitch;if(s<bs){bs=s;best=m;}}
+    pick.add(best);
+  }
+  const p=[...pick].sort((a,b)=>a.ink-b.ink);
+  p.mean=p.reduce((s,m)=>s+m.pitch,0)/p.length;
+  return p;
+}
+
+/* ---------- making a column safe to post ---------- */
+const composes=(base,mark)=>(base+mark).normalize('NFC')!==base+mark;
+function nearest(list,m,ok){
+  let best=null,bs=1e9;
+  for(const q of list){if(!ok(q))continue;const s=Math.abs(q.ink-m.ink)+.5*Math.abs(q.pitch-m.pitch);if(s<bs){bs=s;best=q;}}
+  return best;
+}
+// The first mark on each side is the only one normalisation can fuse with the letter (i + macron = one
+// character). Swap it for the closest mark that does not fuse, then make sure the column has an anchor.
+function fixColumn(base,dn,up,M){
+  base=base[base.length-1];
+  const safe=q=>!composes(base,q.ch);
+  if(dn.length&&!safe(dn[0]))dn[0]=nearest(M.artDn,dn[0],safe)||nearest(M.dn,dn[0],safe)||dn[0];
+  if(up.length&&!safe(up[0]))up[0]=nearest(M.artUp,up[0],safe)||nearest(M.up,up[0],safe)||up[0];
+  const anch=q=>ANCHOR.has(q.cp);
+  if(dn.some(anch)||up.some(anch))return;
+  if(up.length){const a=nearest(M.up,up[0],anch);if(a){up[0]=a;return;}}
+  if(dn.length){const a=nearest(M.dn,dn[0],anch);if(a)dn[0]=a;}
+}
+
+/* ---------- base letters ----------
+   What each column stands on. 'blank' is a no-break space: it has width and no ink, so the picture has no
+   row of letters through it. 'wide' puts an empty no-break space in front of the platform's usual letter,
+   which widens the column for one extra character, so a small limit holds a bigger picture. */
+const BASES=[
+  {id:'blank',name:'Blank (no letter row)'},
+  {id:'wide',name:'Wide (a blank in front of each column)'},
+  {id:'auto',name:'i / l by tone'},
+  {id:'l',name:'l'},{id:'i',name:'i'},{id:'dot',name:'. (dot)'},{id:'o',name:'o (wide)'},
+  {id:'low',name:S(0x2cd)+' (X, every browser)'},
+  {id:'point',name:S(0x2027)+' (Slack, finest)'},
+  {id:'delta',name:S(0x2206)+' (Slack, Windows fonts too)'}
+];
+function baseSet(id,tones,M,P){
+  const blank=(P&&P.blank)||M.base(NBSP).adv,mk=(ch,m,lead)=>({ch,adv:m.adv+(lead||0),up0:m.up0,dn0:m.dn0});
+  switch(id){
+    case 'auto':return tones>1?[mk('i',M.base('i')),mk('l',M.base('l'))]:[mk('l',M.base('l'))];
+    case 'dot':return [mk('.',M.base('.'))];
+    case 'blank':return [mk(NBSP,M.base(NBSP))];
+    case 'wide':{const ch=P&&P.carrier?S(P.carrier[0]):NBSP;return [mk(NBSP+ch,M.base(ch),blank)];}
+    case 'low':return [mk(S(0x2cd),M.base(S(0x2cd)))];
+    case 'delta':return [mk(S(0x2206),M.base(S(0x2206)))];
+    case 'point':return [mk(S(0x2027),M.base(S(0x2027)))];
+    default:return [mk(id,M.base(id))];
+  }
+}
+
+/* ---------- encoder: source {w,h,ink,mask} -> one line of text ----------
+   Marks below are written before marks above. That is Unicode's canonical order, so a platform that
+   normalises the text finds nothing to move. */
+function encode(src,o,M,P){
+  const pal={up:palette(M.shadeUp||M.artUp,o.tones,o.tall),dn:palette(M.shadeDn||M.artDn,o.tones,o.tall)};
+  // One tone means a silhouette, so 'auto' keeps a single base letter and the rows stay level.
+  const bases=baseSet(o.base||(P&&P.base)||'blank',o.tones,M,P);
+  const blankAdv=(P&&P.blank)||M.base(NBSP).adv;
+  const {w,h,ink,mask}=src,s=o.cols*bases[0].adv/w,rb=o.baseline*h,W=w*s;
+  const avg=(x0,x1,ya,yb)=>{
+    let r0=Math.max(0,Math.floor(ya)),r1=Math.min(h,Math.max(Math.floor(ya)+1,Math.ceil(yb))),t=0,n=0;
+    for(let y=r0;y<r1;y++)for(let x=x0;x<x1;x++){t+=ink[y*w+x];n++;}
+    return n?t/n:0;
+  };
+  // Which of n tones most of the drawn pixels in a cell have. The empty part of a cell on the edge of a shape
+  // does not count, and a cell across two inks takes one of them: averaging gave both a stray in-between mark.
+  const major=(x0,x1,ya,yb,n)=>{
+    const r0=Math.max(0,Math.floor(ya)),r1=Math.min(h,Math.max(Math.floor(ya)+1,Math.ceil(yb))),c=new Array(n).fill(0);let b=0;
+    for(let y=r0;y<r1;y++)for(let x=x0;x<x1;x++){const q=y*w+x;if(mask[q])c[Math.min(n-1,ink[q]*n|0)]++;}
+    for(let k=1;k<n;k++)if(c[k]&&c[k]>=c[b])b=k;
+    return b;
+  };
+  // cell(a,c,n): the tone of the cell from a to c em off the line, as an index into n tones, or its mean ink if n is 0.
+  const walk=(p,y0,end,cell)=>{
+    let y=y0,err=0;const out=[],lo=p[0].ink,hi=p[p.length-1].ink;
+    for(;;){
+      let m,want;
+      if(o.dither){
+        const t=cell(y,y+p.mean,0);want=lo+t*(hi-lo)+err;m=p[Math.min(p.length-1,t*p.length|0)];
+        for(const q of p)if(Math.abs(q.ink-want)<Math.abs(m.ink-want))m=q;
+      }else m=p[cell(y,y+p.mean,p.length)];
+      if(y+m.pitch*.5>end)break;
+      if(o.dither)err=Math.max(lo-hi,Math.min(hi-lo,want-m.ink));out.push(m);y+=m.pitch;
+    }
+    return out;
+  };
+  const cols=[],xs=[];let x=0;
+  while(x<W-bases[0].adv*.5){
+    xs.push(x/s);
+    const x0=Math.min(w-1,Math.floor(x/s)),x1=Math.min(w,Math.max(x0+1,Math.floor((x+bases[0].adv)/s)));
+    let yt=-1,yb=-1;
+    for(let y=0;y<h;y++)for(let xx=x0;xx<x1;xx++)if(mask[y*w+xx]){if(yt<0)yt=y;yb=y;break;}
+    if(yt<0){cols.push(null);x+=blankAdv;continue;}
+    const b=bases.length>1&&avg(x0,x1,rb-bases[1].up0/s,rb)>.45?bases[1]:bases[0];
+    const up=walk(pal.up,b.up0,(rb-yt)*s,(a,c,n)=>n?major(x0,x1,rb-c/s,rb-a/s,n):avg(x0,x1,rb-c/s,rb-a/s));
+    const dn=walk(pal.dn,b.dn0,(yb+1-rb)*s,(a,c,n)=>n?major(x0,x1,rb+a/s,rb+c/s,n):avg(x0,x1,rb+a/s,rb+c/s));
+    fixColumn(b.ch,dn,up,M);
+    cols.push({b,up,dn});x+=b.adv;
+  }
+  xs.push(x/s);
+  // The cells the text is made of, in source pixels, so a page can rule them over the picture: the edges of
+  // every column, how far the first mark starts from the line, and the height of one dark mark.
+  const row=p=>p[p.length-1].pitch/s;
+  return Object.assign(assemble(cols,blankAdv,pal,M),{grid:{xs,baseline:rb,up0:bases[0].up0/s,dn0:bases[0].dn0/s,rowUp:row(pal.up),rowDn:row(pal.dn)}});
+}
+// Columns ({b,up,dn}, or null for a gap) -> the line of text and its size.
+function assemble(cols,blankAdv,pal,M){
+  // A blank column with no marks is plain whitespace, the same as a gap. Platforms trim it from either end
+  // of a post, so it is dropped here and the text starts and ends on a column that carries marks.
+  const bare=c=>!c||(!c.up.length&&!c.dn.length&&c.b.ch[c.b.ch.length-1]===NBSP);
+  while(cols.length&&bare(cols[0]))cols.shift();
+  while(cols.length&&bare(cols[cols.length-1]))cols.pop();
+  let line='',up=0,dn=0,width=0,tallest=0;
+  const sum=l=>l.reduce((t,m)=>t+m.pitch,0),str=l=>l.map(m=>m.ch).join('');
+  for(const c of cols){
+    if(!c){line+=NBSP;width+=blankAdv;continue;}
+    // Platforms trim whitespace from the start of a post or a line, which would leave the first column's
+    // marks with nothing to stand on. A full stop is the same width and survives.
+    const stop=line===''&&c.b.ch[0]===NBSP,b=stop?M.base('.'):c.b;
+    line+=(stop?'.'+c.b.ch.slice(1):c.b.ch)+str(c.dn)+str(c.up);width+=c.b.adv;
+    up=Math.max(up,b.up0+sum(c.up));dn=Math.max(dn,b.dn0+sum(c.dn));tallest=Math.max(tallest,c.up.length+c.dn.length);
+  }
+  return {line,up,dn,width,cols:cols.length,tallest,pal};
+}
+
+/* ---------- words: pixel letters, a fixed number of marks per letter pixel ----------
+   A picture of text goes through `encode` as a blur: a letter is only a few columns wide and the sampling
+   lands between its strokes. Here the letters come from a built-in pixel font, so every column of the font
+   is a whole number of text columns and every row a whole number of marks.
+   A stack cannot have holes, so the space under a stroke is filled with the lightest mark. That mark is not
+   as tall as the dark one, and a column of it would end lower than the stroke beside it. So the filler mixes
+   in a second light mark that is taller, in the proportion that keeps every column level with its
+   neighbours. Each column then holds the same number of marks per row, which also keeps the rows level in
+   Safari, where every mark gets the same extra spacing (measured: 13 ticks + 2 bars against 14 bars was
+   .05 em off in Chrome and .08 in Safari; ticks and rings 2:1 are within .03 in both).
+   One row of words stands on the baseline. A second row hangs below it, so neither sits on the other's
+   filler. The tables are made by tools/font.js: two hex digits per column, bit 0 is the top row. */
+const unpack=(h,gap,s)=>{const g={};for(const t of s.split(' '))g[t[0]]=t.slice(1).match(/../g).map(v=>parseInt(v,16));return {h,gap,g};};
+const FONTS={
+  big:unpack(7,3,"03e5149453e 1427f40 24261514946 32141454b31 41814127f10 52745454539 63c4a494930 70171090503 83649494936 9064949291e A7e0909097e B7f49494936 C3e41414122 D7f4141413e E7f49494941 F7f09090901 G3e4149493a H7f0808087f I7f J2040413f01 K7f08142241 L7f40404040 M7f020c027f N7f0408107f O3e4141413e P7f09090906 Q3e4151215e R7f09192946 S4649494931 T01017f0101 U3f4040403f V1f2040201f W3f4038403f X6314081463 Y0304780403 Z6151494543 .40 ,4020 !5f ?0201510906 -080808 +08083e0808 :14 '03 /6010080403 #147f147f14 @3e415d551e &3649552250 _4040404040"),
+  small:unpack(5,2,"01f111f 1021f 2191512 311150a 407041f 5171509 61e151d 7011d03 81f151f 917150f A1e051e B1f150a C0e1111 D1f110e E1f1511 F1f0501 G0e111d H1f041f I1f J08100f K1f041b L1f1010 M1f0204021f N1f02041f O0e110e P1f0502 Q0e191e R1f051a S121509 T011f01 U1f101f V0f100f W1f0804081f X1b041b Y031c03 Z191513 .10 ,1008 !17 ?011502 -0404 +040e04 :0a '03 /180403 #1f0a1f @0e111516 &0a150a10 _101010")
+};
+// Largest first: the font, text columns per letter pixel, dark marks per letter pixel.
+const SIZES=[
+  {id:6,font:'big',sx:2,sy:3},{id:5,font:'big',sx:2,sy:2},{id:4,font:'big',sx:1,sy:2},
+  {id:3,font:'big',sx:1,sy:1},{id:2,font:'small',sx:1,sy:2},{id:1,font:'small',sx:1,sy:1}
+];
+// Words -> one bit mask per text column (0 is a gap).
+function strip(words,f,sx){
+  const c=[],put=(v,n)=>{for(let k=0;k<n*sx;k++)c.push(v);};
+  words.forEach((w,i)=>{if(i)put(0,f.gap);[...w].forEach((ch,j)=>{if(j)put(0,1);for(const v of f.g[ch])put(v,1);});});
+  return c;
+}
+// The light mark on the other side of the dark mark's height, to even the filler out. Null if none is needed.
+function spacer(list,light,dark){
+  let best=null;
+  for(const m of list)if(m!==light&&m!==dark&&(m.pitch-dark.pitch)*(light.pitch-dark.pitch)<0&&m.ink<(light.ink+dark.ink)/2&&(!best||m.ink<best.ink))best=m;
+  return best;
+}
+function letters(words,z,two,o,M,P,hang){
+  const f=FONTS[z.font],pal={up:palette(M.artUp,2,true),dn:palette(M.artDn,2,true)};
+  const b=baseSet(o.base||(P&&P.base)||'blank',1,M,P)[0],blankAdv=(P&&P.blank)||M.base(NBSP).adv;
+  let top=strip(words,f,z.sx),bot=[];
+  if(two){
+    // The split that leaves the two rows closest in width; the shorter row is centred on the longer.
+    let best=1e9;
+    for(let k=1;k<words.length;k++){
+      const a=strip(words.slice(0,k),f,z.sx),c=strip(words.slice(k),f,z.sx),m=Math.max(a.length,c.length);
+      if(m<best){best=m;top=a;bot=c;}
+    }
+    const d=top.length-bot.length,pad=Array(Math.abs(d)>>1).fill(0);
+    if(d>0)bot=pad.concat(bot);else top=pad.concat(top);
+  }else if(hang){bot=top;top=[];}
+  // n rows counted away from the baseline, z.sy marks each. `off` is how far the column has drifted from
+  // a column of dark marks alone; the filler is whichever light mark brings it back.
+  const used=new Set();
+  const side=(p,list,n,ink)=>{
+    const light=p[0],dark=p[p.length-1],alt=spacer(list,light,dark),out=[];let off=0;
+    for(let r=0;r<n;r++)for(let k=0;k<z.sy;k++){
+      const m=ink(r)?dark:alt&&Math.abs(off+alt.pitch-dark.pitch)<Math.abs(off+light.pitch-dark.pitch)?alt:light;
+      off+=m.pitch-dark.pitch;out.push(m);used.add(m);
+    }
+    return out;
+  };
+  const cols=[];
+  for(let x=0;x<Math.max(top.length,bot.length);x++){
+    const tv=top[x]||0,bv=bot[x]||0;
+    if(!tv&&!bv){cols.push(null);continue;}
+    // The top row of words is read upward from the baseline, the bottom row downward.
+    const up=side(pal.up,M.artUp,tv?f.h-(31-Math.clz32(tv&-tv)):0,r=>tv>>(f.h-1-r)&1);
+    const dn=side(pal.dn,M.artDn,bv?32-Math.clz32(bv):0,r=>bv>>r&1);
+    fixColumn(b.ch,dn,up,M);cols.push({b,up,dn});
+  }
+  // The marks the letters are really made of, lightest first, for whoever shows a legend.
+  const seen=list=>list.filter(m=>used.has(m)).sort((a,c)=>a.ink-c.ink);
+  return assemble(cols,blankAdv,{up:seen(M.artUp),dn:seen(M.artDn)},M);
+}
+/* Text -> the same bundle `picture` returns. o.size picks a size (see SIZES); without it the largest that
+   passes the platform's limits is used, on one row if the words fit and on two if not. o.hang true or false
+   puts a single row below or above the line; without it the side with fewer marks is used. Letters the font
+   does not have are left out and listed in `skipped`. */
+function banner(text,o,M,P){
+  o=Object.assign({room:true,pad:'blank',phone:true},o);
+  o.base=o.base||(P&&P.base)||'blank';
+  // Accents are dropped first, so an accented letter is drawn as its plain letter instead of being left out.
+  const all=String(text==null?'':text).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().split(/\s+/).filter(Boolean);
+  const make=(z,two)=>{
+    const f=FONTS[z.font],words=all.map(w=>[...w].filter(ch=>f.g[ch]).join('')).filter(Boolean);
+    if(!words.length||(two&&words.length<2))return null;
+    /* A hole needs a filler mark only when there is ink beyond it. Letters open at the foot (A, R, T) are cleaner
+       hanging from the line, letters open at the top (L, U, V) standing on it. One row takes whichever needs
+       fewer marks, which is also the one with less filler to look at. */
+    let r=letters(words,z,two,o,M,P),hang=false;
+    if(!two&&o.hang!==false){const h=letters(words,z,false,o,M,P,true);if(o.hang===true||h.line.length<r.line.length){r=h;hang=true;}}
+    r.hang=hang;r.size=z.id;r.rows=two?2:1;r.skipped=[...new Set([...all.join('')].filter(ch=>!f.g[ch]))];
+    return r;
+  };
+  const rows=o.rows===1?[false]:o.rows===2?[true]:[false,true];
+  let r=null,done=false;
+  for(const z of o.size?SIZES.filter(z=>z.id===+o.size):SIZES){
+    for(const two of rows){
+      const t=make(z,two);if(!t)continue;
+      r=t;if(within(layout(t.line,M,P,o).text,t,o,P)){done=true;break;}
+    }
+    if(done)break;
+  }
+  if(!r)return {text:'',line:'',layout:layout('',M,P,{}),check:check('',P,M),opts:null,result:null,fits:false};
+  const L=layout(r.line,M,P,o);
+  return {text:L.text,line:r.line,layout:L,check:check(L.text,P,M),opts:Object.assign({},o,{size:r.size,rows:r.rows}),result:r,fits:done};
+}
+
+/* ---------- glitch: the classic random pile ---------- */
+function rng(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function glitch(text,o,M){
+  const r=rng(o.seed||1),au=M.up.filter(m=>ANCHOR.has(m.cp)),ad=M.dn.filter(m=>ANCHOR.has(m.cp));
+  let line='';
+  for(const {segment} of seg.segment(text)){
+    line+=segment;if(!segment.trim())continue;
+    for(let i=0;i<o.mid;i++)if(r()<.7)line+=MID[r()*MID.length|0];
+    const nd=Math.round(o.dn*(.35+.65*r())),nu=Math.round(o.up*(.35+.65*r()));
+    // Each letter gets one anchor so the pile stacks on platforms with a brand font.
+    for(let n=0;n<nd;n++)line+=(n===0&&!nu&&ad.length?ad[r()*ad.length|0]:M.dn[r()*M.dn.length|0]).ch;
+    for(let n=0;n<nu;n++)line+=(n===0&&au.length?au[r()*au.length|0]:M.up[r()*M.up.length|0]).ch;
+  }
+  return {line:line.normalize('NFC'),pal:null};
+}
+
+/* ---------- layout: give the stacks their own lines ----------
+   A stack taller than its line is either cut off (the post box clips) or painted over the name above and
+   the buttons below. Lines that hold one invisible character reserve the room instead. */
+const ascent=P=>.5*P.lh+(P.asc==null?.35:P.asc);   // baseline, measured from the top of its line
+const SLACK=.12;                                     // a stack may poke this far out before it earns a line
+function inspect(text,M,P){
+  const lh=P.lh,blank=P.blank||(M?M.base(NBSP).adv:.28);
+  const pu=new Map(),pd=new Map();
+  if(M){for(const m of M.up)pu.set(m.cp,m.pitch);for(const m of M.dn)pd.set(m.cp,m.pitch);}
+  const lines=text.split(NL),asc=ascent(P),n=lines.length,ap=M?M.apple:[0,0];
+  let cols=0,tallest=0,width=0,top=0,bottom=0,up=0,dn=0,flat=0;
+  lines.forEach((ln,i)=>{
+    let w=0;
+    for(const {segment} of seg.segment(ln)){
+      const cps=[...segment.normalize('NFD')],b=M?M.base(cps[0]):{adv:.5,up0:.7,dn0:0};let u=0,d=0,k=0,ua=0,da=0;
+      for(let j=1;j<cps.length;j++){const cp=cps[j].codePointAt(0);if(cp>=0x300&&cp<=0x36f){k++;u+=pu.get(cp)||0;d+=pd.get(cp)||0;if(pu.has(cp))ua+=ap[0];if(pd.has(cp))da+=ap[1];}}
+      w+=!k&&cps[0]===NBSP?blank:b.adv;cols++;tallest=Math.max(tallest,k);
+      if(k>1&&P.carrier&&!P.carrier.includes(cps[0].codePointAt(0)))flat++;
+      if(k){up=Math.max(up,b.up0+u);dn=Math.max(dn,b.dn0+d);
+        // How far a stack leaves the post box, by the taller of the two engines, so the lines reserved hold both.
+        top=Math.max(top,b.up0+u+ua-(i*lh+asc));bottom=Math.max(bottom,b.dn0+d+da-((n-1-i)*lh+lh-asc));}
+    }
+    width=Math.max(width,w);
+  });
+  return {lines:n,cols,tallest,width,up,dn,top,bottom,flat};
+}
+// o.caption is ordinary text for the line above the art. The stacks need their lines between it and the
+// art whether or not `room` is on, or they would be drawn over the words.
+function layout(line,M,P,o){
+  if(!line)return {text:'',above:0,below:0};
+  const lh=P.lh,i=inspect(line,M,P),p=o.pad==='dot'?'.':PAD,cap=String(o.caption||'').trim();
+  const need=(v,must)=>o.room||must?Math.ceil(Math.max(0,v-SLACK)/lh):0;
+  const above=need(i.top,!!cap),below=need(i.bottom);
+  return {text:(cap?cap+NL:'')+(p+NL).repeat(above)+line+(NL+p).repeat(below),above,below};
+}
+
+/* ---------- fit: the most columns that still pass every limit ---------- */
+function within(text,r,o,P){
+  if(measure(text,P)>P.limit)return false;
+  if(P.second&&count[P.second.unit](text)>P.second.limit)return false;
+  // Safari's engine sets a column that carries marks up to 2% wider than Chrome does (.339 against .333 em).
+  // With a blank in front of each column ('wide') it is up to 20% wider there.
+  if(o.phone&&r.width*(o.base==='wide'?1.2:1.02)>P.width)return false;
+  if(P.maxMarks&&r.tallest>P.maxMarks)return false;
+  if(!o.dense&&r.tallest>STACK)return false;
+  return true;
+}
+function fit(src,o,M,P,lo,hi){
+  lo=lo||4;hi=hi||160;
+  const ok=c=>{const r=encode(src,Object.assign({},o,{cols:c}),M,P);return within(layout(r.line,M,P,o).text,r,o,P);};
+  if(!ok(lo))return lo;
+  while(lo<hi){const mid=Math.ceil((lo+hi)/2);if(ok(mid))lo=mid;else hi=mid-1;}
+  return lo;
+}
+
+// Few columns cannot carry shading: the marks read as noise. Below these sizes a plain shape reads better.
+const autoTones=cols=>cols<26?1:cols<36?2:3;
+/* Resolves tones 0 (automatic) and, when asked, the column count.
+   The two depend on each other: more tones can mean fewer columns that fit. Automatic tones are the most
+   whose own fit still has the columns to carry them, so a picture never has more shading than its size reads. */
+function plan(src,o,M,P,doFit,lo,hi){
+  let tones=o.tones,cols=o.cols;const w=t=>Object.assign({},o,{tones:t});
+  if(!doFit){if(!tones)tones=autoTones(cols);}
+  else if(tones)cols=fit(src,w(tones),M,P,lo,hi);
+  else for(tones=3;;tones--){cols=fit(src,w(tones),M,P,lo,hi);if(tones===1||autoTones(cols)>=tones)break;}
+  return Object.assign({},o,{tones,cols});
+}
+// Glitch: thin the piles until the text passes the platform's limits.
+function fitGlitch(text,o,M,P){
+  for(let k=20;k>=0;k--){
+    const g=Object.assign({},o,{up:Math.round(o.up*k/20),dn:Math.round(o.dn*k/20),mid:k?o.mid:0}),t=layout(glitch(text,g,M).line,M,P,o).text;
+    if(measure(t,P)<=P.limit&&(!P.second||count[P.second.unit](t)<=P.second.limit)&&(o.dense||inspect(t,M,P).tallest<=STACK))return g;
+  }
+  return Object.assign({},o,{up:0,dn:0,mid:0});
+}
+
+/* ---------- check: will this text arrive intact ---------- */
+function check(text,P,M){
+  const out=[],add=(level,msg)=>out.push({level,msg}),i=inspect(text,M,P),n=measure(text,P),f=v=>(Math.round(v*10)/10).toString();
+  add(n>P.limit?'fail':'ok',n.toLocaleString('en')+' of '+P.limit.toLocaleString('en')+' '+UNIT[P.unit]+(n>P.limit?'. Too long by '+(n-P.limit).toLocaleString('en')+'.':'.'));
+  if(P.second){const m=count[P.second.unit](text);add(m>P.second.limit?'fail':'ok',m.toLocaleString('en')+' of '+P.second.limit.toLocaleString('en')+' '+UNIT[P.second.unit]+(m>P.second.limit?'. Too long.':'.'));}
+  if(P.marks==='stripped')add('fail','This platform removes combining marks, so the picture will not survive.');
+  if(P.marks==='capped'&&i.tallest>P.cap)add('warn','Tallest pile is '+i.tallest+' marks. '+P.note);
+  if(i.flat)add(P.flatLevel||'fail',P.flat);
+  if(i.tallest>STACK)add('warn','Tallest pile is '+i.tallest+' marks. Safari and the iPhone, iPad and Mac apps stack only the first '+STACK+' of a column and draw the rest on one line.');
+  if(P.maxMarks&&i.tallest>P.maxMarks)add('fail','Tallest pile is '+i.tallest+' marks. This platform keeps at most '+P.maxMarks+' per letter.');
+  if(text.normalize('NFC')!==text)add('warn','Not in normalised (NFC) order, so a platform may rewrite it and the count can change.');
+  else add('ok','Already normalised (NFC), so the platform has nothing to rewrite.');
+  if(text&&(text.trim()!==text||/^\s*$/m.test(text)))add('warn','Starts, ends or has a line with only whitespace, which platforms trim.');
+  if(M){
+    if(i.width>P.width)add('warn','About '+f(i.width)+' em wide. A phone shows about '+f(P.width)+' em, so the line will wrap there.');
+    else add('ok','About '+f(i.width)+' em wide, inside a phone column ('+f(P.width)+' em).');
+    const o=Math.max(i.top,i.bottom);
+    if(o>SLACK){
+      const where=(i.top>SLACK?f(i.top)+' em above':'')+(i.top>SLACK&&i.bottom>SLACK?' and ':'')+(i.bottom>SLACK?f(i.bottom)+' em below':'');
+      if(P.clip==='post')add('fail','Stacks reach '+where+' the post box, and this platform cuts them off there. Reserve lines to fix it.');
+      else if(P.clip==='none')add('warn','Stacks reach '+where+' the post box and will paint over whatever is next to it.');
+      else add('warn','Stacks reach '+where+' the post box. They may be cut off or overlap what is next to it.');
+    }else add('ok','Stacks stay inside the post box ('+i.lines+(i.lines===1?' line':' lines')+').');
+  }
+  if(P.fold&&(i.lines>P.fold.lines||(P.fold.chars&&n>P.fold.chars)))add(P.fold.level||'note',P.fold.msg);
+  if(P.note&&P.marks!=='capped')add('note',P.note);
+  add('note',P.src==='measured'?'Layout measured on the live site (Chrome, macOS). Other devices use other fonts.':P.src==='font'?'Stacking measured in this platform\'s own font stack (Chrome, macOS). Line height and clipping are from documentation, and the phone apps were not measured.':P.src==='documented'?'Limits from documentation. Rendering not measured.':'Not verified. Send yourself a test first.');
+  return {ok:!out.some(c=>c.level==='fail'),items:out,info:i,count:n};
+}
+
+/* ---------- image: RGBA -> subject mask and tone ---------- */
+function downscale(img,max){
+  const k=Math.min(1,max/Math.max(img.w,img.h)),w=Math.max(1,Math.round(img.w*k)),h=Math.max(1,Math.round(img.h*k));
+  if(w===img.w&&h===img.h)return img;
+  const out=new Uint8ClampedArray(w*h*4),d=img.data;
+  for(let y=0;y<h;y++){
+    const y0=Math.floor(y*img.h/h),y1=Math.max(y0+1,Math.floor((y+1)*img.h/h));
+    for(let x=0;x<w;x++){
+      const x0=Math.floor(x*img.w/w),x1=Math.max(x0+1,Math.floor((x+1)*img.w/w));let r=0,g=0,b=0,a=0;
+      for(let yy=y0;yy<y1;yy++)for(let xx=x0,i=(yy*img.w+x0)*4;xx<x1;xx++,i+=4){r+=d[i];g+=d[i+1];b+=d[i+2];a+=d[i+3];}
+      const n=(y1-y0)*(x1-x0),o=(y*w+x)*4;out[o]=Math.round(r/n);out[o+1]=Math.round(g/n);out[o+2]=Math.round(b/n);out[o+3]=Math.round(a/n);
+    }
+  }
+  return {w,h,data:out};
+}
+// Background is the median colour of the border, or transparency when most of the border is clear.
+function analyse(img){
+  const {w,h,data:d}=img,ch=[[],[],[]];let clear=0,n=0;
+  const edge=(x,y)=>{const i=(y*w+x)*4;n++;if(d[i+3]<128)clear++;else for(let k=0;k<3;k++)ch[k].push(d[i+k]);};
+  for(let x=0;x<w;x++){edge(x,0);edge(x,h-1);}for(let y=0;y<h;y++){edge(0,y);edge(w-1,y);}
+  const bg=ch.map(a=>{a.sort((p,q)=>p-q);return a.length?a[a.length>>1]:255;}),alphaBg=clear>n/2;
+  const lum=new Float32Array(w*h),dist=new Float32Array(w*h);
+  for(let i=0,p=0;p<w*h;i+=4,p++){
+    lum[p]=(.2126*d[i]+.7152*d[i+1]+.0722*d[i+2])/255;
+    dist[p]=d[i+3]<128?0:alphaBg?1:Math.hypot(d[i]-bg[0],d[i+1]-bg[1],d[i+2]-bg[2])/441.7;
+  }
+  return {w,h,d,lum,dist};
+}
+// thr: 0..1 distance from the background. light: true when ink is brighter than the page (dark theme).
+const FLAT=9;   // brightness levels out of 256 that still count as one flat colour
+function subject(raw,thr,light){
+  const {w,h}=raw,m0=new Uint8Array(w*h),m=new Uint8Array(w*h);
+  for(let p=0;p<w*h;p++)m0[p]=raw.dist[p]>thr?1:0;
+  let x0=w,x1=-1,y0=h,y1=-1;
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+    const p=y*w+x;if(!m0[p])continue;let c=0;
+    for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const xx=x+dx,yy=y+dy;if((dx||dy)&&xx>=0&&yy>=0&&xx<w&&yy<h&&m0[yy*w+xx])c++;}
+    if(c>=4){m[p]=1;if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;}
+  }
+  if(x1<0)return null;
+  const cw=x1-x0+1,ch=y1-y0+1,ink=new Float32Array(cw*ch),mask=new Uint8Array(cw*ch),cdf=new Float32Array(256);
+  let n=0;
+  for(let y=0;y<ch;y++)for(let x=0;x<cw;x++){const p=(y+y0)*w+x+x0;if(m[p]){mask[y*cw+x]=1;cdf[raw.lum[p]*255|0]++;n++;}}
+  // Rank brightness within the subject, so every tone level covers a similar share of it.
+  for(let i=0,c=0;i<256;i++){c+=cdf[i];cdf[i]=c/n;}
+  const upTo=i=>i<0?0:cdf[Math.min(i,255)];
+  /* A flat colour has no tones to rank. When one narrow band of brightness holds most of the subject, the
+     picture is a flat graphic: the band counts as a single level, and the inkiest colour is drawn solid.
+     Without this a one-colour logo ranks as the lightest tone, and noise inside it lands on every tone. */
+  let f0=-1,share=.5;
+  for(let i=0;i+FLAT<=256;i++){const s=upTo(i+FLAT-1)-upTo(i-1);if(s>share){share=s;f0=i;}}
+  const rank=b=>light?upTo(b):1-upTo(f0<0?b:b-1),level=f0<0?0:rank(light?f0+FLAT-1:f0);
+  for(let y=0;y<ch;y++)for(let x=0;x<cw;x++){
+    const b=raw.lum[(y+y0)*w+x+x0]*255|0;
+    ink[y*cw+x]=f0>=0&&b>=f0&&b<f0+FLAT?level:rank(b);
+  }
+  return {w:cw,h:ch,ink,mask,x0,y0};
+}
+function autoBaseline(src){
+  let best=0,by=0;
+  for(let y=0;y<src.h;y++){let n=0;for(let x=0;x<src.w;x++)n+=src.mask[y*src.w+x];if(n>best){best=n;by=y;}}
+  return Math.round((by+.5)/src.h*100);
+}
+
+/* ---------- picture: the whole pipeline, RGBA pixels in, post text out ----------
+   The page and the CLI both call this, so they cannot drift apart.
+   img: {w,h,data}. o.light: true when the reader's theme is dark. o.cols omitted = fit to the platform. */
+function picture(img,o,M,P){
+  o=o||{};
+  const or=(v,d)=>v==null?d:v;
+  const raw=analyse(downscale(img,220)),src=subject(raw,or(o.cutoff,.10),!!o.light!==!!o.invert);
+  // A flat or empty image has no subject. Same keys as a normal result, so callers need no special case.
+  if(!src)return {text:'',line:'',layout:layout('',M,P,{}),check:check('',P,M),opts:null,src:null,result:null};
+  const baseline=o.baseline==null?autoBaseline(src)/100:o.baseline;
+  const opts=plan(src,{cols:o.cols,baseline,tones:o.tones||0,tall:or(o.tall,true),base:o.base||P.base||'blank',dither:!!o.dither,
+    room:or(o.room,true),pad:o.pad||'blank',phone:or(o.phone,true),dense:!!o.dense},M,P,o.cols==null,6,160);
+  const r=encode(src,opts,M,P),L=layout(r.line,M,P,opts),ck=check(L.text,P,M);
+  return {text:L.text,line:r.line,layout:L,check:ck,opts,src,result:r};
+}
+
+return {NBSP,PAD,CLEAN,ANCHOR,STACK,UNIT,PLATFORMS,BASES,platform,count,measure,metrics,palette,encode,glitch,inspect,layout,fit,fitGlitch,plan,autoTones,within,check,downscale,analyse,subject,autoBaseline,ascent,picture,banner,SIZES,FONTS};
+});
+</script>
+<script>/* Zalgo calibration: asks the browser how a font stacks each combining mark. Browser only.
+   The result is a plain profile object that Zalgo.metrics() accepts, so it can be saved and used by the CLI.
+   All lengths are in em. */
+(function(root){
+'use strict';
+const S=String.fromCodePoint,F=50,CW=180,CH=1600,BL=800,X0=70;
+const A_UP=0x33f,A_DN=0x333;                       // anchors, see ANCHOR in zalgo-core.js
+const BASES=['i','l','o','.',S(0x2013),S(0xa0),S(0x2206),S(0x2027),S(0x2cd)];   // the last three are for Slack and X, see PLATFORMS
+const r4=v=>Math.round(v*1e4)/1e4,r3=v=>Math.round(v*1e3)/1e3;
+let g=null;
+function ctx(){
+  if(!g){const c=document.createElement('canvas');c.width=CW;c.height=CH;g=c.getContext('2d',{willReadFrequently:true});}
+  return g;
+}
+function ext(font,str){
+  const g=ctx();g.clearRect(0,0,CW,CH);g.font=font;g.fillStyle='#000';g.fillText(str,X0,BL);
+  const d=g.getImageData(0,0,CW,CH).data,rows=new Float32Array(CH);let top=-1,bot=-1;
+  for(let y=0;y<CH;y++){let s=0;for(let x=0,i=y*CW*4+3;x<CW;x++,i+=4)s+=d[i];rows[y]=s/255;if(s){if(top<0)top=y;bot=y;}}
+  return {up:top<0?0:BL-top,dn:bot<0?0:bot-BL+1,rows};
+}
+// Combining class from normalisation alone: 230 (above), 220 (below), 0 for everything else.
+// Marks are sorted by class, so a mark that swaps places with a known one has a different class.
+function ccc(cp){
+  const m=S(cp),U=S(0x301),D=S(0x316),same=s=>s.normalize('NFD')===s;
+  if(!same(m)||m.normalize('NFKD')!==m)return 0;
+  if(same('a'+m+U)&&same('a'+U+m)&&!same('a'+m+D))return 230;
+  if(same('a'+m+D)&&same('a'+D+m)&&!same('a'+U+m))return 220;
+  return 0;
+}
+/* Every measurement is made on a letter that already carries both anchors, in the order the encoder writes
+   (below marks, then above marks). That is the state a real column is in, and it is the only state in which
+   brand fonts and system fonts agree. */
+function calibrate(family){
+  const font=F+'px '+family,g=ctx(),up=[],dn=[],au=S(A_UP),ad=S(A_DN);
+  g.font=font;
+  const oAdv=g.measureText('o').width,wide=g.measureText('o'+ad+au).width;
+  for(let cp=0x300;cp<=0x36f;cp++){
+    const c=ccc(cp);if(!c)continue;
+    const ch=S(cp),str=n=>c===230?'o'+ad+au+ch.repeat(n):'o'+ad+ch.repeat(n)+au;
+    // A mark the font lacks sends the whole column to another font, which would change every other pitch.
+    g.font=font;if(Math.abs(g.measureText(str(1)).width-wide)>.01)continue;
+    const a=ext(font,str(10)),b=ext(font,str(40));let ink=0;
+    if(c===230){
+      const p=(b.up-a.up)/30;if(p<1||Math.abs(b.dn-a.dn)>1)continue;
+      for(let y=BL-b.up;y<BL-a.up;y++)ink+=b.rows[y];
+      up.push([cp,r4(p/F),r3(ink/((b.up-a.up)*oAdv))]);
+    }else{
+      const p=(b.dn-a.dn)/30;if(p<1||Math.abs(b.up-a.up)>1)continue;
+      for(let y=BL+a.dn;y<BL+b.dn;y++)ink+=b.rows[y];
+      dn.push([cp,r4(p/F),r3(ink/((b.dn-a.dn)*oAdv))]);
+    }
+  }
+  const pitch=(l,cp)=>{const m=l.find(x=>x[0]===cp);return m?m[1]*F:0;},pu=pitch(up,A_UP),pd=pitch(dn,A_DN),bases={};
+  if(pu&&pd)for(const ch of BASES){
+    g.font=font;
+    const adv=g.measureText(ch+ad+au).width,e=ext(font,ch+ad.repeat(10)+au.repeat(10));
+    bases[ch.codePointAt(0).toString(16)]=[r4(adv/F),r4((e.up-10*pu)/F),r4((e.dn-10*pd)/F)];
+  }
+  // Safari spaces Helvetica's marks itself, so a profile made there already has its spacing. See metrics().
+  const ua=navigator.userAgent,apple=/AppleWebKit/.test(ua)&&!/Chrome\/|Chromium\/|Edg\//.test(ua);
+  return apple?{font:family,up,dn,bases,apple:[0,0]}:{font:family,up,dn,bases};
+}
+// How far a finished line really reaches, to compare with what the metrics predicted.
+function extent(family,line,up,dn){
+  const f=24,c=document.createElement('canvas'),g0=c.getContext('2d');
+  g0.font=f+'px '+family;const w=g0.measureText(line).width;
+  c.width=Math.ceil(w+4*f);c.height=Math.ceil((up+dn+4)*f);
+  const g1=c.getContext('2d',{willReadFrequently:true}),bl=Math.round((up+2)*f);
+  g1.font=f+'px '+family;g1.fillStyle='#000';g1.fillText(line,2*f,bl);
+  const d=g1.getImageData(0,0,c.width,c.height).data;let top=-1,bot=-1;
+  for(let y=0;y<c.height;y++){let s=0;for(let x=0,i=y*c.width*4+3;x<c.width;x++,i+=4)s+=d[i];if(s){if(top<0)top=y;bot=y;}}
+  return {up:top<0?0:(bl-top)/f,dn:bot<0?0:(bot-bl+1)/f,width:w/f};
+}
+root.ZalgoCal={calibrate,extent,ccc};
+})(typeof self!=='undefined'?self:this);
+</script>
+<script>
+const $=id=>document.getElementById(id),Z=Zalgo,F=40,seg=new Intl.Segmenter();
+const ONE=matchMedia('(max-width:979.98px)');   // one column: a phone, or a narrow window
+const q=new URLSearchParams(location.search),root=document.documentElement;
+const art=$('art'),stage=$('stage'),probe=document.createElement('span');probe.style.cssText='display:inline-block;width:0;height:0';
+// Inside a host page the host supplies colours and margins. Opened as a file, the page brings its own.
+if(!getComputedStyle(root).getPropertyValue('--background').trim())root.classList.add('standalone');
+
+/* ---------- platform, font, theme ---------- */
+for(const p of Z.PLATFORMS)$('platform').add(new Option(p.name,p.id));
+for(const b of Z.BASES)$('base').add(new Option(b.name,b.id));
+const fonts={};
+let M=null,P=null,inkIsLight=false;
+function setFont(){
+  const fam=$('font').value;
+  M=fonts[fam]||(fonts[fam]=Z.metrics(ZalgoCal.calibrate(fam)));
+  art.style.fontFamily=fam;
+}
+function setPlatform(){
+  P=Object.assign({},Z.platform($('platform').value));
+  $('limit').hidden=P.id!=='custom';
+  if(P.id==='custom')P.limit=Math.max(1,+$('limit').value||2000);
+}
+// Some platforms only stack a column that stands on certain characters (X in Firefox, Slack everywhere).
+// Switch to one when such a platform is picked, and back to blank when leaving it. 'wide' follows the
+// platform by itself, and any other choice of the user's is left alone.
+function platformBase(){
+  const p=Z.platform($('platform').value),sel=$('base'),special=Z.PLATFORMS.some(x=>x.base===sel.value);
+  if(sel.value==='wide')return;
+  if(p.base){const ch=Z.BASES.find(b=>b.id===sel.value).name.codePointAt(0);if(!p.carrier.includes(ch))sel.value=p.base;}
+  else if(special)sel.value='blank';
+}
+function rgbOf(css){const c=document.createElement('canvas');c.width=c.height=1;const g=c.getContext('2d');g.fillStyle=css;g.fillRect(0,0,1,1);return g.getImageData(0,0,1,1).data;}
+function setPaper(){
+  const v=$('paper').value;stage.classList.toggle('light',v==='light');stage.classList.toggle('dark',v==='dark');
+  const c=rgbOf(getComputedStyle(art).color);inkIsLight=(.2126*c[0]+.7152*c[1]+.0722*c[2])/255>.5;
+}
+
+/* ---------- segmented controls: each one drives a hidden input ---------- */
+const segs=[...document.querySelectorAll('.seg')];
+function segSync(s){
+  const v=$(s.dataset.for).value,ind=s.querySelector('.ind');let on=null;
+  for(const b of s.querySelectorAll('button')){const is=b.dataset.v===v;b.classList.toggle('on',is);b.setAttribute('aria-checked',is);b.tabIndex=is?0:-1;if(is)on=b;}
+  if(!on)s.querySelector('button').tabIndex=0;
+  if(on&&on.offsetWidth){ind.style.width=on.offsetWidth+'px';ind.style.transform='translateX('+on.offsetLeft+'px)';}
+}
+for(const s of segs){
+  s.insertAdjacentHTML('afterbegin','<i class="ind"></i>');
+  // One Tab stop for the group; the arrow keys, Home and End move and choose, as in a native radio group.
+  const row=s.closest('.row'),name=s.getAttribute('aria-label')||(row&&row.querySelector('span')?row.querySelector('span').textContent:s.title||s.dataset.for);
+  s.setAttribute('role','radiogroup');s.setAttribute('aria-label',name);
+  for(const b of s.querySelectorAll('button'))b.setAttribute('role','radio');
+  s.addEventListener('keydown',e=>{
+    const bs=[...s.querySelectorAll('button')],d={ArrowRight:1,ArrowDown:1,ArrowLeft:-1,ArrowUp:-1}[e.key];let i=bs.indexOf(document.activeElement);
+    if(i<0||e.metaKey||e.ctrlKey||e.altKey)return;
+    if(d)i=(i+d+bs.length)%bs.length;else if(e.key==='Home')i=0;else if(e.key==='End')i=bs.length-1;else return;
+    e.preventDefault();bs[i].focus();bs[i].click();
+  });
+  s.addEventListener('click',e=>{
+    const b=e.target.closest('button'),inp=$(s.dataset.for);if(!b||inp.value===b.dataset.v)return;
+    inp.value=b.dataset.v;segSync(s);inp.dispatchEvent(new Event('input',{bubbles:true}));
+  });
+}
+
+/* ---------- image source ---------- */
+let raw=null;
+function imageSource(){return raw?Z.subject(raw,+$('thr').value/100,inkIsLight!==$('invert').checked):null;}
+function drawThumb(src){
+  const c=$('thumb'),g=c.getContext('2d');c.width=src.w;c.height=src.h;
+  const im=g.createImageData(src.w,src.h);
+  for(let y=0;y<src.h;y++)for(let x=0;x<src.w;x++){
+    const i=(y*src.w+x)*4,j=((y+src.y0)*raw.w+x+src.x0)*4;
+    im.data[i]=raw.d[j];im.data[i+1]=raw.d[j+1];im.data[i+2]=raw.d[j+2];im.data[i+3]=src.mask[y*src.w+x]?255:45;
+  }
+  g.putImageData(im,0,0);
+  // Beside the button on one column, above it on two.
+  const one=ONE.matches;
+  c.style.width=Math.round(src.w*Math.min((one?104:150)/src.h,(one?140:268)/src.w))+'px';
+}
+// The line under the thumbnail: the name of the picture in use, or what went wrong with the one just tried.
+function note(text,bad){const n=$('fileName');n.textContent=text;n.classList.toggle('err',!!bad);}
+// asked: someone chose this picture just now, as opposed to the one the page opens with.
+// A big photo takes a moment to decode, so only the picture asked for last is used.
+let loads=0;
+function loadImage(url,name,asked){
+  const img=new Image(),n=++loads;
+  img.onerror=()=>{if(n===loads)note('This browser cannot read that picture.',true);};
+  img.onload=()=>{
+    if(n!==loads)return;
+    // Drawn at its own size and reduced by the shared code, so the command line tool sees the same pixels.
+    const k=Math.min(1,4096/Math.max(img.naturalWidth,img.naturalHeight)),w=Math.max(1,Math.round(img.naturalWidth*k)),h=Math.max(1,Math.round(img.naturalHeight*k));
+    const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d',{willReadFrequently:true});
+    g.drawImage(img,0,0,w,h);
+    raw=Z.analyse(Z.downscale({w,h,data:g.getImageData(0,0,w,h).data},220));
+    const s=imageSource();if(s&&(name||!q.has('baseline')))baselines.image=Z.autoBaseline(s);
+    if(mode==='image')$('baseline').value=baselines.image;
+    if(name)note(name);
+    render();window.zalgo.ready=true;
+    // On one column the result is below the picture that was just chosen. Bring it into view, moving the page
+    // no further than that takes, so the pictures to try stay on screen when there is room for both.
+    if(asked&&ONE.matches)stage.scrollIntoView({block:'nearest',behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'});
+  };
+  img.src=url;
+}
+// A picture someone chose, dropped or pasted. Whatever mode the page is in, it becomes the source.
+function take(f){
+  if(!f)return;
+  if(mode!=='image'){setMode('image');schedule();}
+  if(!f.type.startsWith('image/')){loads++;note('That file is not a picture.',true);return;}
+  // Reading the file takes a moment too, so the same rule holds here: a picture asked for since then wins.
+  const fr=new FileReader(),n=++loads;
+  fr.onload=()=>{if(n===loads)loadImage(fr.result,f.name||'Pasted picture',true);};
+  fr.onerror=()=>{if(n===loads)note('This browser cannot read that picture.',true);};
+  fr.readAsDataURL(f);
+}
+
+/* ---------- draw source ---------- */
+const PW=232,PH=66,padInk=new Float32Array(PW*PH),padMask=new Uint8Array(PW*PH);
+function paintPad(){
+  const g=$('sketch').getContext('2d'),im=g.createImageData(PW,PH),fg=rgbOf(getComputedStyle($('sketch')).color);
+  for(let p=0;p<PW*PH;p++){im.data[p*4]=fg[0];im.data[p*4+1]=fg[1];im.data[p*4+2]=fg[2];im.data[p*4+3]=padMask[p]?255*(.22+.78*padInk[p]):0;}
+  g.putImageData(im,0,0);
+}
+// Every change goes through dot(), so a stroke knows whether it changed anything.
+let stroke=null,dirty=false;
+function dot(x,y,ink){
+  if(x<0||y<0||x>=PW||y>=PH)return;
+  const p=y*PW+x,m=ink<0?0:1,v=Math.fround(ink<0?0:ink);
+  if(padMask[p]!==m||padInk[p]!==v){padMask[p]=m;padInk[p]=v;dirty=true;}
+}
+// A line as thick as the brush.
+function thick(a,b,r,ink){
+  const n=Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1]))+1;
+  for(let k=0;k<=n;k++){
+    const cx=a[0]+(b[0]-a[0])*k/n,cy=a[1]+(b[1]-a[1])*k/n;
+    for(let y=Math.floor(cy-r);y<=Math.ceil(cy+r);y++)
+      for(let x=Math.floor(cx-r);x<=Math.ceil(cx+r);x++)
+        if((x+.5-cx)**2+(y+.5-cy)**2<=r*r)dot(x,y,ink);
+  }
+}
+// Boxes and ovals are filled: a column of marks has no holes, so an outline would be filled in anyway.
+function shape(tool,a,b,r,ink){
+  if(tool==='line')return thick(a,b,r,ink);
+  const x0=Math.floor(Math.min(a[0],b[0])),x1=Math.floor(Math.max(a[0],b[0])),y0=Math.floor(Math.min(a[1],b[1])),y1=Math.floor(Math.max(a[1],b[1]));
+  const cx=(x0+x1+1)/2,cy=(y0+y1+1)/2,rx=(x1-x0+1)/2,ry=(y1-y0+1)/2;
+  for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++)
+    if(tool==='rect'||((x+.5-cx)/rx)**2+((y+.5-cy)/ry)**2<=1)dot(x,y,ink);
+}
+// Fill the area that shares the clicked pixel's ink (or its emptiness) with the current ink.
+function flood(at,ink){
+  const x=Math.floor(at[0]),y=Math.floor(at[1]);if(x<0||y<0||x>=PW||y>=PH)return;
+  const p0=y*PW+x,m0=padMask[p0],v0=padInk[p0],todo=[p0],seen=new Uint8Array(PW*PH);seen[p0]=1;
+  while(todo.length){
+    const p=todo.pop(),px=p%PW,py=(p-px)/PW;dot(px,py,ink);
+    for(const q of [px>0?p-1:-1,px<PW-1?p+1:-1,py>0?p-PW:-1,py<PH-1?p+PW:-1])
+      if(q>=0&&!seen[q]&&padMask[q]===m0&&padInk[q]===v0){seen[q]=1;todo.push(q);}
+  }
+}
+/* History: a copy of the canvas from before each stroke. */
+const hist=[],redo=[],snap=()=>({ink:padInk.slice(),mask:padMask.slice()}),restore=s=>{padInk.set(s.ink);padMask.set(s.mask);};
+function histSync(){$('undoBtn').disabled=!hist.length;$('redoBtn').disabled=!redo.length;}
+function commit(before){hist.push(before);if(hist.length>60)hist.shift();redo.length=0;histSync();savePad();}
+function step(from,to){
+  if(!from.length||stroke)return;
+  to.push(snap());restore(from.pop());histSync();savePad();paintPad();schedule();
+}
+// The drawing is kept in this browser, as runs of [value, count]: 0 is empty, otherwise 1 + ink in hundredths.
+const PADKEY='zalgoart.pad.1';
+function savePad(){
+  try{
+    const runs=[];let v=-1;
+    for(let p=0;p<PW*PH;p++){const c=padMask[p]?1+Math.round(padInk[p]*100):0;if(c===v)runs[runs.length-1]++;else{runs.push(c,1);v=c;}}
+    localStorage.setItem(PADKEY,JSON.stringify(runs));
+  }catch(_){}
+}
+function loadPad(){
+  try{
+    const runs=JSON.parse(localStorage.getItem(PADKEY));let n=0,p=0;
+    if(!Array.isArray(runs)||runs.length%2)return false;
+    for(let k=0;k<runs.length;k+=2){if(!(runs[k]>=0&&runs[k]<=101&&runs[k+1]>0))return false;n+=runs[k+1];}
+    if(n!==PW*PH)return false;
+    for(let k=0;k<runs.length;k+=2)for(let j=0;j<runs[k+1];j++,p++){padMask[p]=runs[k]?1:0;padInk[p]=runs[k]?(runs[k]-1)/100:0;}
+    return true;
+  }catch(_){return false;}
+}
+// Rules the cells of the text over the drawing: one column of the post wide, one dark mark tall.
+function drawGrid(gr){
+  const c=$('padGrid'),box=c.getBoundingClientRect(),d=devicePixelRatio||1,W=Math.round(box.width*d),H=Math.round(box.height*d);
+  if(!W||!H)return;
+  if(c.width!==W||c.height!==H){c.width=W;c.height=H;}
+  const g=c.getContext('2d');g.clearRect(0,0,W,H);
+  $('padHint').textContent=gr?'Each cell of the grid holds one mark.':'Draw here. The dashed line is the baseline.';
+  if(!gr)return;
+  const kx=W/PW,ky=H/PH;g.fillStyle=getComputedStyle(c).color;g.globalAlpha=.1;
+  for(const x of gr.xs)g.fillRect(Math.round(x*kx),0,1,H);
+  for(let y=gr.baseline-gr.up0;y>0;y-=gr.rowUp)g.fillRect(0,Math.round(y*ky),W,1);
+  for(let y=gr.baseline+gr.dn0;y<PH;y+=gr.rowDn)g.fillRect(0,Math.round(y*ky),W,1);
+}
+function seedPad(){
+  const rb=Math.round(baselines.draw/100*PH),peaks=[[70,8,46],[146,20,40]];
+  for(let y=0;y<PH;y++)for(let x=0;x<PW;x++){
+    const p=y*PW+x;
+    for(const [px,py,hw] of peaks){
+      const top=py+(rb-py)*Math.abs(x-px)/hw;
+      if(Math.abs(x-px)<hw&&y<rb&&y>=top){padMask[p]=1;padInk[p]=y<py+9+((x*7)%5)?.08:1;}
+      const depth=(rb-py)*.45*(1-Math.abs(x-px)/hw);
+      if(Math.abs(x-px)<hw&&y>=rb&&y<rb+depth&&!padMask[p]){padMask[p]=1;padInk[p]=.5;}
+    }
+  }
+}
+function padSource(){return padMask.some(v=>v)?{w:PW,h:PH,ink:padInk,mask:padMask}:null;}
+
+/* ---------- view ---------- */
+let mode='image',raf=0,seed=7,last={text:'',line:'',check:null,opts:null};
+const baselines={image:50,draw:68},colsBy={image:40,draw:100};
+function schedule(){if(!raf)raf=requestAnimationFrame(()=>{raf=0;render();});}
+function opts(){return {cols:+$('cols').value,baseline:+$('baseline').value/100,tones:+$('tones').value,tall:$('marks').value==='tall',base:$('base').value,dither:$('dither').checked,
+  room:$('room').checked,pad:$('pad').value,phone:$('phone').checked,dense:!$('cap').checked};}
+function source(){return mode==='image'?imageSource():padSource();}
+// Blank columns are drawn by the platform's own font, which is narrower than the system font's.
+function paint(text){
+  art.textContent='';
+  const d=P.blank?P.blank-M.base(Z.NBSP).adv:0;
+  if(Math.abs(d)<.004)art.textContent=text;
+  else{
+    let run='';
+    for(const {segment} of seg.segment(text)){
+      if(segment!==Z.NBSP){run+=segment;continue;}
+      if(run){art.append(run);run='';}
+      const s=document.createElement('span');s.style.letterSpacing=d+'em';s.textContent=segment;art.append(s);
+    }
+    if(run)art.append(run);
+  }
+  art.append(probe);
+}
+// Scales the post to fit the stage and draws the post's own box around it, with a hint of the post above and below.
+const GT=38,GB=30;
+function place(info){
+  const bw=stage.clientWidth-40,bh=stage.clientHeight-36-GT-GB,w=Math.max(1,art.offsetWidth),n=info.lines;
+  const base0=probe.offsetTop-(n-1)*P.lh*F,boxTop=base0-Z.ascent(P)*F,boxH=n*P.lh*F;
+  const top=boxTop-Math.max(0,info.top)*F,bot=boxTop+boxH+Math.max(0,info.bottom)*F;
+  const k=Math.max(.01,Math.min(bw/w,bh/(bot-top),2.5)),tx=20+(bw-w*k)/2,ty=18+GT+(bh-(bot-top)*k)/2-top*k;
+  art.style.transform='translate('+tx+'px,'+ty+'px) scale('+k+')';
+  const by=ty+boxTop*k,bh2=boxH*k;
+  $('box').style.cssText='left:'+tx+'px;top:'+by+'px;width:'+w*k+'px;height:'+bh2+'px';
+  $('ghostTop').style.cssText='left:'+tx+'px;top:'+(by-GT+4)+'px';
+  $('ghostBot').style.cssText='left:'+tx+'px;top:'+(by+bh2+13)+'px;gap:'+Math.max(10,Math.min(44,(w*k-104)/3))+'px';
+  const over=info.width>P.width+.05;$('edge').hidden=!over;if(over)$('edge').style.left=tx+P.width*F*k+'px';
+}
+function fill(el){el.style.setProperty('--p',(el.value-el.min)/(el.max-el.min)*100+'%');}
+function render(){
+  for(const el of document.querySelectorAll('input[type=range]')){
+    const o=$(el.id+'V');if(o)o.textContent=el.value+(el.id==='baseline'||el.id==='thr'?'%':'');
+    fill(el);
+  }
+  setPlatform();art.style.lineHeight=P.lh;
+  const autofit=$('fit').checked;
+  let r=null,why='',o=opts();
+  if(!M.ok)why='This font does not stack combining marks, so there is nothing to draw with. Try another font.';
+  else if(mode==='glitch'){
+    let g={up:+$('gup').value,dn:+$('gdn').value,mid:+$('gmid').value,seed,room:o.room,pad:o.pad,dense:o.dense};
+    if(autofit)g=Z.fitGlitch($('gtext').value,g,M,P);
+    if($('gtext').value.trim())r=Z.glitch($('gtext').value,g,M);else why='Type something to glitch.';
+    o=g;
+  }else if(mode==='text'){
+    const t=$('ttext').value,b=t.trim()?Z.banner(t,{size:autofit?undefined:+$('tsize').value,rows:+$('trows').value||undefined,caption:$('tcap').value,
+      base:o.base,room:o.room,pad:o.pad,phone:o.phone,dense:o.dense},M,P):null;
+    let note='Letters are built from piles of marks, one pile per column.';
+    if(!b)why='Type the words to write.';
+    else if(!b.result)why=+$('trows').value===2?'Two rows need at least two words.':'None of these characters has a letter shape. Use letters, digits or common punctuation.';
+    else{
+      r=b.result;o=b.opts;
+      if(autofit){$('tsize').value=r.size;fill($('tsize'));$('tsizeV').textContent=r.size;}
+      if(!b.fits)note=autofit?'Too long for this platform even at the smallest size. Use fewer letters, or move words to the caption.':'Does not fit at this size. Turn Auto-fit on for the largest that does.';
+      else if(r.skipped.length)note='Left out, no letter shape for: '+r.skipped.join(' ');
+    }
+    $('tnote').textContent=note;
+  }else{
+    const src=source();
+    if(!src&&mode==='draw')drawGrid(null);
+    if(!src)why=mode==='draw'?'Draw on the canvas above.':raw?'Nothing stands out from the background. Lower the cutoff or choose another image.':'';
+    else{
+      o=Z.plan(src,o,M,P,autofit,+$('cols').min,+$('cols').max);
+      if(autofit){$('cols').value=colsBy[mode]=o.cols;fill($('cols'));}
+      r=Z.encode(src,o,M,P);
+      if(mode==='image'){drawThumb(src);$('thumbLine').style.top=o.baseline*100+'%';}
+      else{$('padLine').style.top=o.baseline*100+'%';drawGrid(r.grid);}
+    }
+  }
+  $('colsV').textContent=$('cols').value;
+  $('tonesV').textContent=pic()&&!+$('tones').value?'Auto'+(o.tones?' ('+o.tones+')':''):$('tones').value;
+  $('warn').textContent=why;
+  const L=Z.layout(r?r.line:'',M,P,o),ck=Z.check(L.text,P,M.ok?M:null);
+  last={text:L.text,line:r?r.line:'',check:ck,opts:o,layout:L,pal:r&&r.pal,cols:r&&mode==='text'?r.cols:null};
+  paint(L.text);place(ck.info);
+  for(const id of ['box','ghostTop','ghostBot'])$(id).hidden=!L.text;
+  verdict(L.text,ck);stats(L.text,ck);checks(ck,L);legend(last.pal);
+}
+function verdict(t,ck){
+  const v=$('verdict'),lv=!t?'':!ck.ok?'fail':ck.items.some(i=>i.level==='warn')?'warn':'ok';
+  v.className='pill '+lv;
+  v.textContent=!t?'Nothing to post':lv==='fail'?(ck.info.flat?'Will come out flat':'Will be cut off'):lv==='warn'?'Check before posting':P.src==='measured'?'Ready to post':'Fits the limit';
+  // A check mark when it can be posted, a cross when it cannot. Nothing while there is nothing to post.
+  if(lv)v.insertAdjacentHTML('afterbegin','<svg viewBox="0 0 16 16" aria-hidden="true"><path d="'+(lv==='fail'?'M4 4l8 8M12 4l-8 8':'M3 8.5l3.2 3L13 4.5')+'"/></svg>');
+  $('tally').textContent=t?ck.count.toLocaleString('en')+' / '+P.limit.toLocaleString('en'):'';
+  $('copyBtn').disabled=$('saveBtn').disabled=!t;
+  $('srcBadge').textContent=P.src==='measured'?'Measured on the live site':P.src==='font'?'Measured in its font':P.src==='documented'?'From documentation':'Not verified';
+}
+function stats(t,ck){
+  const n=v=>v.toLocaleString('en'),i=ck.info,cap=s=>s==='characters, as the web composer counts'?'Composer characters':s[0].toUpperCase()+s.slice(1);
+  const cell=(l,v,cls,frac)=>'<div class="stat '+(cls||'')+'"><span>'+l+'</span><b>'+v+'</b>'+(frac==null?'':'<div class="meter"><i style="transform:scaleX('+Math.min(1,frac).toFixed(4)+')"></i></div>')+'</div>';
+  const units=[[P.unit,P.limit]];if(P.second)units.push([P.second.unit,P.second.limit]);
+  for(const u of ['utf16','codepoints','bytes','graphemes'])if(units.length<4&&!units.some(x=>x[0]===u))units.push([u]);
+  let h='';
+  for(const [u,lim] of units){const m=u===P.unit?ck.count:Z.count[u](t);h+=lim?cell(cap(Z.UNIT[u]),n(m)+' <small>/ '+n(lim)+'</small>',m>lim?'over':'',m/lim):cell(cap(Z.UNIT[u]),n(m));}
+  h+=cell('Columns',n(last.cols==null?Math.max(0,i.cols-(i.lines-1)):last.cols))+cell('Tallest stack',n(i.tallest)+' <small>marks</small>')+
+     cell('Size',i.width.toFixed(1)+' <small>by</small> '+(i.up+i.dn).toFixed(1)+' <small>em</small>')+cell('Lines',n(t?i.lines:0));
+  $('stats').innerHTML=h;
+}
+const ICON={ok:'<path d="M3 8.5l3.2 3L13 4.5"/>',warn:'<path d="M8 3.5v5.5M8 12.4v.1"/>',fail:'<path d="M4 4l8 8M12 4l-8 8"/>',note:'<path d="M8 7.2v5M8 3.9v.1"/>'};
+function checks(ck,L){
+  const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+  let items=ck.items;
+  if(L.above+L.below)items=items.concat({level:'note',msg:'Reserved '+L.above+(L.above===1?' line':' lines')+' above and '+L.below+' below so the stacks sit inside the post.'});
+  $('delivery').hidden=!L.text;
+  $('checks').innerHTML=items.map(i=>'<li class="'+i.level+'"><svg viewBox="0 0 16 16">'+ICON[i.level]+'</svg><span>'+esc(i.msg)+'</span></li>').join('');
+}
+function legend(pal){
+  const fam=$('font').value.replace(/"/g,'&quot;');
+  const chip=m=>'<span class="chip" title="'+m.pitch.toFixed(2)+' em tall, '+Math.round(m.ink*100)+'% ink"><span class="g" style="font-family:'+fam+'">o'+m.ch+'</span><code>U+'+m.cp.toString(16).toUpperCase().padStart(4,'0')+'</code></span>';
+  const save='<button class="link" id="metricsBtn" title="For the command line tool: zalgo image photo.png --metrics metrics.json">Save font measurements</button>';
+  $('legend').innerHTML=(pal?(pal.up.length?'<span>Marks above</span>'+pal.up.map(chip).join(''):'')+(pal.dn.length?'<span>'+(pal.up.length?'below':'Marks below')+'</span>'+pal.dn.map(chip).join(''):''):'')+save;
+}
+const MODES=['image','text','draw','glitch'],pic=()=>mode==='image'||mode==='draw';   // pic: the source is a picture
+function setMode(m){
+  mode=MODES.includes(m)?m:'image';$('mode').value=mode;
+  for(const k of MODES)$('src-'+k).hidden=k!==mode;
+  $('padCard').hidden=mode!=='draw';$('picture').hidden=!pic();$('tune').hidden=mode!=='image';
+  if(pic()){$('baseline').value=baselines[mode];$('cols').value=colsBy[mode];}
+  if(mode==='draw')paintPad();
+  segs.forEach(segSync);
+}
+
+/* ---------- wiring ---------- */
+document.addEventListener('input',e=>{
+  const id=e.target.id;
+  if(id==='mode')setMode(e.target.value);
+  if(id==='baseline'&&pic())baselines[mode]=+e.target.value;
+  if(id==='cols'&&pic()){colsBy[mode]=+e.target.value;$('fit').checked=false;}
+  if((id==='gup'||id==='gdn'||id==='gmid'||id==='tsize')&&e.isTrusted)$('fit').checked=false;
+  if(id==='platform'){$('fit').checked=true;platformBase();}
+  if(id==='font')setFont();
+  if(id==='paper'){setPaper();paintPad();}
+  // Emptied afterwards, so choosing the same file again (after a sample, say) is still a change.
+  if(id==='file'){take(e.target.files[0]);e.target.value='';return;}
+  schedule();
+});
+$('reroll').addEventListener('click',()=>{seed++;schedule();});
+$('clearBtn').addEventListener('click',()=>{if(stroke||!padMask.some(v=>v))return;const b=snap();padMask.fill(0);padInk.fill(0);commit(b);paintPad();schedule();});
+$('undoBtn').addEventListener('click',()=>step(hist,redo));
+$('redoBtn').addEventListener('click',()=>step(redo,hist));
+// Cmd or Ctrl+Z undoes a stroke, with Shift (or Ctrl+Y) it redoes. A text field keeps its own undo.
+addEventListener('keydown',e=>{
+  const k=(e.key||'').toLowerCase(),t=e.target;
+  if(mode!=='draw'||!(e.metaKey||e.ctrlKey)||e.altKey||(k!=='z'&&k!=='y'))return;
+  if(t&&t.matches&&t.matches('input:not([type=range],[type=checkbox],[type=hidden]),textarea,select'))return;
+  e.preventDefault();if(k==='y'||e.shiftKey)step(redo,hist);else step(hist,redo);
+});
+let copyTimer=0;
+$('copyBtn').addEventListener('click',async()=>{
+  if(!last.text)return;
+  let ok=false;
+  try{await navigator.clipboard.writeText(last.text);ok=true;}catch(_){
+    const ta=document.createElement('textarea');ta.value=last.text;ta.style.cssText='position:fixed;left:-9999px;opacity:0';
+    document.body.append(ta);ta.select();try{ok=document.execCommand('copy');}catch(_){}ta.remove();
+  }
+  $('copyDone').innerHTML='<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+(ok?'M3 8.5l3.2 3L13 4.5':'M4 4l8 8M12 4l-8 8')+'"/></svg>'+(ok?'Copied':'Blocked here');
+  $('copyBtn').classList.add('done');clearTimeout(copyTimer);copyTimer=setTimeout(()=>$('copyBtn').classList.remove('done'),1400);
+});
+function save(name,text,type){
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;
+  document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+}
+$('saveBtn').addEventListener('click',()=>{if(last.text)save('zalgo-'+P.id+'.txt',last.text,'text/plain;charset=utf-8');});
+$('legend').addEventListener('click',e=>{if(e.target.id==='metricsBtn')save('metrics.json',JSON.stringify(ZalgoCal.calibrate($('font').value)),'application/json');});
+const pad=$('sketch'),ringEl=$('padRing'),pt=e=>{const r=pad.getBoundingClientRect();return [(e.clientX-r.left)/r.width*PW,(e.clientY-r.top)/r.height*PH];};
+// A circle the size of the brush under a mouse. A finger covers it, and the other tools have no width.
+function ring(e){
+  const t=$('tool').value;
+  if(e.pointerType!=='mouse'||(t!=='brush'&&t!=='line')){ringEl.style.opacity=0;return;}
+  const r=pad.getBoundingClientRect(),d=2*$('brush').value*r.width/PW;
+  ringEl.style.width=ringEl.style.height=d+'px';
+  ringEl.style.transform='translate('+(e.clientX-r.left-d/2)+'px,'+(e.clientY-r.top-d/2)+'px)';ringEl.style.opacity=1;
+}
+pad.addEventListener('pointerdown',e=>{
+  if(stroke||e.button>0)return;                      // one pointer at a time, and not the right or middle button
+  try{pad.setPointerCapture(e.pointerId);}catch(_){}
+  const p=pt(e),s=stroke={id:e.pointerId,tool:$('tool').value,start:p,last:p,before:snap(),r:+$('brush').value,ink:+$('ink').value};
+  dirty=false;
+  if(s.tool==='fill')flood(p,s.ink);else if(s.tool==='brush')thick(p,p,s.r,s.ink);else shape(s.tool,p,p,s.r,s.ink);
+  paintPad();schedule();
+});
+pad.addEventListener('pointermove',e=>{
+  ring(e);
+  const s=stroke;if(!s||e.pointerId!==s.id||s.tool==='fill')return;
+  const p=pt(e);
+  if(s.tool==='brush'){thick(s.last,p,s.r,s.ink);s.last=p;}
+  else{restore(s.before);dirty=false;shape(s.tool,s.start,p,s.r,s.ink);}   // a shape is redrawn from the start point on every move
+  paintPad();schedule();
+});
+// A capture lost without a release (the tab went away mid-stroke) ends the stroke too, or the canvas would stay locked.
+for(const ev of ['pointerup','pointercancel','lostpointercapture'])pad.addEventListener(ev,e=>{
+  const s=stroke;if(!s||e.pointerId!==s.id)return;
+  stroke=null;if(dirty)commit(s.before);
+});
+pad.addEventListener('pointerleave',()=>{ringEl.style.opacity=0;});
+pad.addEventListener('contextmenu',e=>e.preventDefault());
+// A file can be let go anywhere on the page. Both events are cancelled, or the browser would open the file instead.
+// The browser sends dragover several times a second for as long as the file is over the page, so those keep the
+// cover up and it comes down by itself when they stop: on Escape, or when the file is let go somewhere else.
+let dragT=0;
+const carries=e=>!!e.dataTransfer&&[...e.dataTransfer.types].includes('Files'),dragEnd=()=>{clearTimeout(dragT);root.classList.remove('dragging');};
+const dragOn=e=>{if(!carries(e))return;e.preventDefault();root.classList.add('dragging');clearTimeout(dragT);dragT=setTimeout(dragEnd,700);};
+addEventListener('dragenter',dragOn);addEventListener('dragover',dragOn);
+// Leaving the window is known at once from where the pointer is, so that case does not wait for the timer.
+addEventListener('dragleave',e=>{if(carries(e)&&(e.clientX<=0||e.clientY<=0||e.clientX>=innerWidth||e.clientY>=innerHeight))dragEnd();});
+addEventListener('drop',e=>{
+  if(!carries(e))return;
+  e.preventDefault();dragEnd();
+  const fs=[...e.dataTransfer.files];take(fs.find(f=>f.type.startsWith('image/'))||fs[0]);
+});
+// A picture dragged from another web page can arrive as an address with no file. Left alone, the browser would
+// open that address in place of this page. Fetching it would be a request this page says it never makes. So the
+// drop is refused, with a line saying what to do. Words dragged into a field are not touched.
+const inField=e=>!!(e.target&&e.target.closest&&e.target.closest('input,textarea'));
+const addressOnly=e=>!!e.dataTransfer&&!carries(e)&&[...e.dataTransfer.types].includes('text/uri-list')&&!inField(e);
+addEventListener('dragover',e=>{if(addressOnly(e))e.preventDefault();});
+addEventListener('drop',e=>{
+  if(!addressOnly(e))return;
+  e.preventDefault();
+  if(!/<img/i.test(e.dataTransfer.getData('text/html')))return;
+  if(mode!=='image'){setMode('image');schedule();}
+  loads++;note('Save that picture first, then choose it here.',true);
+});
+// Pasting a picture uses it. Pasted words are left alone, so they still go into the field they were pasted in.
+// A spreadsheet or a word processor copies both the words and a picture of them: in a field, the words win.
+addEventListener('paste',e=>{
+  if(!e.clipboardData)return;
+  if(inField(e)&&[...e.clipboardData.types].includes('text/plain'))return;
+  const f=[...e.clipboardData.files].find(f=>f.type.startsWith('image/'));
+  if(f){e.preventDefault();take(f);}
+});
+$('samples').addEventListener('click',e=>{const b=e.target.closest('.sample');if(b)loadImage(b.querySelector('img').src,'Sample: '+b.dataset.name,true);});
+// The sliding pills are measured from the buttons, which have no size while their panel is closed.
+$('more').addEventListener('toggle',()=>segs.forEach(segSync));
+// The counts are always open where there is room for them, and behind their heading on a phone.
+const WIDE=matchMedia('(min-width:560.02px)'),countsSync=()=>{if(WIDE.matches)$('counts').open=true;};
+WIDE.addEventListener('change',countsSync);countsSync();
+addEventListener('resize',()=>{segs.forEach(segSync);schedule();});
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{setPaper();paintPad();schedule();});
+
+// Any control can be preset from the URL, e.g. ?mode=draw&platform=bluesky&tones=2&base=l
+for(const [k,v] of q){const el=$(k);if(el&&'value' in el&&el.type!=='file'){if(el.type==='checkbox')el.checked=v==='1';else el.value=v;if(el.closest('#more'))$('more').open=true;}}
+if((q.has('cols')||q.has('tsize'))&&!q.has('fit'))$('fit').checked=false;
+if(!q.has('base'))platformBase();
+if(q.has('baseline'))baselines.image=baselines.draw=+q.get('baseline');
+if(q.has('cols'))colsBy.image=colsBy.draw=+q.get('cols');
+// For tests and for poking at from the console.
+window.zalgo={render,get last(){return last;},get metrics(){return M;},get platform(){return P;},profile:()=>ZalgoCal.calibrate($('font').value),ready:false};
+setFont();setPlatform();setPaper();if(!loadPad())seedPad();setMode($('mode').value);
+loadImage($('seed').src);
+render();
+setTimeout(()=>root.classList.add('ready'),0);
+</script>
+</html>

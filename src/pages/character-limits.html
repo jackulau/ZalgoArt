@@ -1,0 +1,54 @@
+<!--{
+"path":"/character-limits/","kind":"guide","order":7,"date":"2026-11-17",
+"label":"Character limits by platform",
+"blurb":"What each platform allows, what it counts, and how far each figure was checked.",
+"h1":"Character limits by platform",
+"title":"Character Limits by Platform: How Each One Counts",
+"description":"The post length limit for X, Bluesky, Mastodon, Discord, Slack and more, what each platform counts, and how far each figure has been checked."
+}-->
+<p>A character limit is only half of the answer. The other half is what the platform counts as a character, and platforms do not agree. For text made of combining marks the difference is large. These are the limits Zalgo Art uses to size a post.</p>
+
+<h2>The limits</h2>
+{{limits-table}}
+<p>The table is made from the same list the tool reads, so it shows what the tool will hold your post to. For anywhere that is not listed, choose Custom limit and type the number.</p>
+
+<h2>What the units mean</h2>
+<dl>
+<dt>UTF-16 units</dt>
+<dd>The count most of the platforms in the table use. Every combining mark is one unit.</dd>
+<dt>Code points</dt>
+<dd>One for each Unicode character. Every combining mark is one code point.</dd>
+<dt>UTF-8 bytes</dt>
+<dd>The size of the text when it is stored. Every combining mark takes two bytes.</dd>
+<dt>Graphemes</dt>
+<dd>What a reader sees as one character. A letter with all the marks stacked on it is one grapheme, which is why Bluesky's second limit, in bytes, is the one a stack of marks reaches first.</dd>
+<dt>Weighted characters</dt>
+<dd>X's own count, in which not every character weighs the same. The note on X below gives the weights.</dd>
+<dt>Characters, as the web composer counts</dt>
+<dd>Mastodon's web composer does not count the way its server does, and it is the composer that blocks sending over the limit. The note on Mastodon below gives both counts.</dd>
+</dl>
+
+<h2>One post, counted six ways</h2>
+<p>This is one piece of lettering, the file <code>examples/introducing-zalgoart.x.txt</code> in the project, counted by the command <code>zalgo count</code>:</p>
+<pre>{{cli:count examples/introducing-zalgoart.x.txt|6}}</pre>
+<p>The same text is a different length to each platform, so a post that fits one may be far over on another.</p>
+
+<h2>How far each figure was checked</h2>
+<dl>
+<dt>Measured on the live site</dt>
+<dd>The layout was measured on the live site in Chrome on macOS.</dd>
+<dt>Measured in its font</dt>
+<dd>Only the stacking was measured, in the platform's own font stack.</dd>
+<dt>From documentation</dt>
+<dd>The limit comes from the platform's documentation. Rendering was not measured.</dd>
+<dt>Not verified</dt>
+<dd>A best guess. Check before relying on it.</dd>
+</dl>
+<p>Platforms change their limits. If a figure here is out of date, <a href="{{repo}}/issues">open an issue</a>.</p>
+
+<h2>Notes on each platform</h2>
+<p>These are the notes the tool shows beside its delivery check.</p>
+{{limit-notes}}
+
+<h2>Check a post before you send it</h2>
+<p>Zalgo Art counts the way the platform you pick does and shows the count beside the limit. Make a post with the <a href="/zalgo-text-generator/">zalgo text generator</a>, or count any text with the <a href="/cli/">command line tool</a>.</p>

@@ -1,0 +1,50 @@
+<!--{
+"path":"/","kind":"tool","mode":"image","order":0,"date":"2026-11-17",
+"label":"Zalgo Art",
+"h1":"Zalgo Art",
+"tagline":"Pictures and lettering drawn with stacked combining marks, sized to arrive whole.",
+"title":"Zalgo Art: Turn Pictures and Words into Zalgo Text",
+"description":"Turn pictures, drawings and words into one line of zalgo text made of stacked combining marks, sized so the post arrives whole on X, Bluesky and Discord."
+}-->
+<h2>What zalgo art is</h2>
+<p>Zalgo text piles combining marks (accents, dots, bars, rings) above and below a letter. Most generators use the piles for noise. Zalgo Art uses them as pixels: each column of a picture becomes one letter carrying a stack of marks, with light and heavy marks standing for the shades.</p>
+<p>The result is not an image. It is one line of text that you copy and paste into a post or a message, and it is sized for the place you choose so that it arrives whole.</p>
+<p>New to it? Read <a href="/what-is-zalgo-text/">what zalgo text is and how the marks stack</a>.</p>
+
+<h2>Four ways to make it</h2>
+<dl>
+<dt><a href="/image-to-zalgo/">Image</a></dt>
+<dd>Choose a picture, drop one anywhere on the page, or paste one. Each column of the picture becomes one letter with a stack of marks.</dd>
+<dt><a href="/zalgo-text-art/">Text</a></dt>
+<dd>Type words and get them back as big letters built from marks, with an optional plain caption above.</dd>
+<dt><a href="/draw/">Draw</a></dt>
+<dd>Sketch with a brush, lines, boxes, ovals and fill on a canvas ruled with the same grid the text uses. The preview updates as you draw.</dd>
+<dt><a href="/zalgo-text-generator/">Glitch</a></dt>
+<dd>The classic zalgo text effect: random piles of marks on ordinary letters, thinned so the text still fits.</dd>
+</dl>
+<p>Pick where you will post, pick a source, and press Copy text.</p>
+
+<h2>How the delivery check works</h2>
+<p>A post can go wrong in three ways: it is too long, it is too wide, or its stacks are cut off. The delivery check under the preview tests each one for the platform you picked and lists it with a pass or a fail before you post.</p>
+<ul>
+<li><b>Length.</b> Every platform counts differently. X weighs characters, Bluesky counts graphemes and bytes, Discord counts UTF-16 units. The tool counts the way the platform does, and with Auto-fit on it picks the largest size that fits. See <a href="/character-limits/">the limit for each platform</a>.</li>
+<li><b>Height.</b> Tall stacks spill out of their line, and many sites cut off whatever leaves the post. The tool reserves blank lines above and below so the stacks land inside the post.</li>
+<li><b>Width.</b> The line is kept inside the width of a phone screen.</li>
+<li><b>Stack size.</b> Safari and the iPhone, iPad and Mac apps stack only the first {{stack}} marks of a column, so {{stack}} marks a column is the default cap.</li>
+</ul>
+<p>It also warns when a platform is known to draw the piles flat, and says how far each platform has been checked.</p>
+
+<h2 data-faq>Questions</h2>
+<h3>Is Zalgo Art free?</h3>
+<p>Yes. It is free to use, there is no account, and the source is open under the MIT licence.</p>
+<h3>Is my picture uploaded anywhere?</h3>
+<p>No. The picture is read and converted in your browser, and the site does not upload it. The <a href="/privacy/">privacy page</a> lists what the site keeps and what it loads.</p>
+<h3>Where can I post the result?</h3>
+<p>The tool knows the limits of {{platforms}} places to post, among them X, Bluesky, Mastodon, Discord, Reddit, Telegram and Slack, and takes a custom limit for anywhere else. The badge beside the delivery check says how well each one has been checked.</p>
+<h3>Why does it look scrambled or flat on my device?</h3>
+<p>The stacks are drawn by fonts, and fonts differ. Output for X was checked with X's fonts in Chrome, Firefox and Safari's engine on macOS. Windows, Android and the phone apps have not been checked, and a stack there may sit lower, come out flat or not stack at all.</p>
+<h3>Can I make it without the website?</h3>
+<p>Yes. The same code runs as a <a href="/cli/">command line tool</a> that prints the text, so it can be used in scripts.</p>
+
+<h2>Guides</h2>
+{{links:guide}}

@@ -10,14 +10,14 @@
 </p>
 
 <p align="center">
-  <a href="https://jackulau.github.io/ZalgoArt/"><img alt="Open the live site" src="https://img.shields.io/badge/live%20site-jackulau.github.io%2FZalgoArt-171717"></a>
+  <a href="https://zalgoart.com/"><img alt="Open the live site" src="https://img.shields.io/badge/live%20site-zalgoart.com-171717"></a>
   <a href="https://github.com/jackulau/ZalgoArt/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/jackulau/ZalgoArt?style=flat&label=stars&color=171717"></a>
   <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/github/license/jackulau/ZalgoArt?color=171717"></a>
   <img alt="No dependencies" src="https://img.shields.io/badge/dependencies-none-171717">
 </p>
 
 <p align="center">
-  <b><a href="https://jackulau.github.io/ZalgoArt/">Try it in your browser</a></b>
+  <b><a href="https://zalgoart.com/">Try it in your browser</a></b>
   &nbsp;·&nbsp;
   <a href="https://github.com/jackulau/ZalgoArt/stargazers">Star this project</a> if it made you smile
 </p>
@@ -43,34 +43,34 @@ Four short recordings, one for each kind of source. Each is the real site driven
 
 ### Image
 
-A picture becomes one line of text. Switching from X to Discord gives it room for more columns and tones. ([watch as video](https://jackulau.github.io/ZalgoArt/demo/image.mp4))
+A picture becomes one line of text. Switching from X to Discord gives it room for more columns and tones. ([watch as video](https://zalgoart.com/demo/image.mp4))
 
 <p align="center">
-  <a href="https://jackulau.github.io/ZalgoArt/"><img alt="The site turning a drawing of a burger into one line of text, then fitting it to Discord and showing it on a dark theme" src="assets/demo-image.gif" width="760"></a>
+  <a href="https://zalgoart.com/"><img alt="The site turning a drawing of a burger into one line of text, then fitting it to Discord and showing it on a dark theme" src="assets/demo-image.gif" width="760"></a>
 </p>
 
 ### Text
 
-Words in big letters built from marks: type, pick a platform, copy. ([watch as video](https://jackulau.github.io/ZalgoArt/demo/text.mp4))
+Words in big letters built from marks: type, pick a platform, copy. ([watch as video](https://zalgoart.com/demo/text.mp4))
 
 <p align="center">
-  <a href="https://jackulau.github.io/ZalgoArt/"><img alt="The word hello typed into the site and drawn in big letters made of stacked marks" src="assets/demo-text.gif" width="760"></a>
+  <a href="https://zalgoart.com/"><img alt="The word hello typed into the site and drawn in big letters made of stacked marks" src="assets/demo-text.gif" width="760"></a>
 </p>
 
 ### Draw
 
-Draw on the canvas and the text follows. Above the red line grows up, below it grows down. ([watch as video](https://jackulau.github.io/ZalgoArt/demo/draw.mp4))
+Draw on the canvas and the text follows. Above the red line grows up, below it grows down. ([watch as video](https://zalgoart.com/demo/draw.mp4))
 
 <p align="center">
-  <a href="https://jackulau.github.io/ZalgoArt/"><img alt="A house, a tree and the ground drawn on the canvas, with the text version updating underneath" src="assets/demo-draw.gif" width="760"></a>
+  <a href="https://zalgoart.com/"><img alt="A house, a tree and the ground drawn on the canvas, with the text version updating underneath" src="assets/demo-draw.gif" width="760"></a>
 </p>
 
 ### Glitch
 
-Classic glitch text, with the pile heights under your control and a reroll for new marks. ([watch as video](https://jackulau.github.io/ZalgoArt/demo/glitch.mp4))
+Classic glitch text, with the pile heights under your control and a reroll for new marks. ([watch as video](https://zalgoart.com/demo/glitch.mp4))
 
 <p align="center">
-  <a href="https://jackulau.github.io/ZalgoArt/"><img alt="The words zalgo art with piles of marks growing above and below the letters as sliders move" src="assets/demo-glitch.gif" width="760"></a>
+  <a href="https://zalgoart.com/"><img alt="The words zalgo art with piles of marks growing above and below the letters as sliders move" src="assets/demo-glitch.gif" width="760"></a>
 </p>
 
 The burger in the recordings is [examples/burger.svg](examples/burger.svg), drawn from plain shapes for this project and covered by the same MIT licence.
@@ -89,7 +89,9 @@ Zalgo text works by piling combining marks (accents, dots, bars, rings) above an
 
 ## Use the site
 
-Open **https://jackulau.github.io/ZalgoArt/**. Pick where you will post, pick a source (Image, Text, Draw or Glitch), and press **Copy text**. It is one HTML file with nothing to install, nothing uploaded and no tracking: your picture never leaves the browser. Light and dark themes follow your system.
+Open **https://zalgoart.com/**. Pick where you will post, pick a source (Image, Text, Draw or Glitch), and press **Copy text**. There is nothing to install, and the site does not upload your picture: it is read and converted in the browser. The hosted site carries advertising from Google AdSense, which the [privacy page](https://zalgoart.com/privacy/) describes. Light and dark themes follow your system.
+
+Each source also has its own page: [image](https://zalgoart.com/image-to-zalgo/), [text](https://zalgoart.com/zalgo-text-art/), [draw](https://zalgoart.com/draw/) and [glitch](https://zalgoart.com/zalgo-text-generator/). The site also explains [what zalgo text is](https://zalgoart.com/what-is-zalgo-text/) and lists the [character limits by platform](https://zalgoart.com/character-limits/).
 
 To run it from a clone, open `docs/index.html` in a browser.
 
@@ -194,7 +196,9 @@ Limits and how each was checked, as `zalgo platforms` prints them:
 - This README: the lettering on the published GitHub page stacks in Chrome (desktop and phone width, light and dark) and Firefox on macOS. Safari's engine was checked on a local copy with the same fonts, not on github.com.
 - Safari and the iPhone, iPad and Mac apps stack only the first 30 marks of a column, so 30 is the default cap. `--dense` lifts it.
 
-Not checked: the X compose box, Windows, Android, and every phone app. Fonts differ there, so a pile may stack lower, flatter or not at all. If you post from one of those and it looks wrong, an issue with a screenshot helps.
+- X's iPhone app: seen once, in a screenshot of one post. It drew only the first three marks above each column and dropped the rest, so tall pictures and lettering posted to X are for desktop browsers for now.
+
+Not checked: the X compose box, Windows, Android, and every other phone app. Fonts differ there, so a pile may stack lower, flatter or not at all. If you post from one of those and it looks wrong, an issue with a screenshot helps.
 
 ## Development
 
@@ -203,23 +207,33 @@ bin/zalgo            the command line tool
 src/zalgo-core.js    the encoder, shared by the site and the command line
 src/zalgo-cal.js     font calibration, browser only
 src/png.js           PNG decoder for the command line
-src/site.html        the site's source
-docs/index.html      the built site, served by GitHub Pages
+src/site.html        the tool's page, with places for each page's own words
+src/page.html        the page for guides and the privacy page
+src/site.css         the styles every page shares
+src/pages/           the words of each page, one file per page
+src/icons/           the icon files, made by tools/icons.js
+src/samples/         the pictures the site offers to try, drawn for this project
+site.config.json     the AdSense publisher id and the IndexNow key of zalgoart.com
+docs/                the built site, one folder per page, served at zalgoart.com
 profiles/            saved font measurements (Helvetica, Arial)
 examples/            a sample picture (burger.svg and its JPEG) and saved output
 test/                the tests
-tools/               font tables, profiles, the demo recordings, README pictures
+tools/               the site builder, font tables, profiles, the demo recordings, README pictures
 ```
 
 ```sh
 npm test         # every test, about five minutes. Needs Node; Chrome and macOS sips unlock the rest
-npm run build    # rebuild docs/index.html after changing src/ or examples/burger.jpg
+npm run build    # rebuild docs/ after changing src/ or examples/burger.jpg
 node tools/demo.js   # record the four demo clips again (needs Playwright and ffmpeg)
 ```
 
-Run a few tests by name with `ZALGO_ONLY='^text|^cli' npm test`. The tests check that `docs/index.html` is the current build, that the files in `examples/` are what the commands print, and that this README holds the same lettering as `examples/`. After changing the lettering, run `node tools/readme.js images`.
+Run a few tests by name with `ZALGO_ONLY='^text|^cli' npm test`. The tests check that every file in `docs/` is the current build, that each page has its own title, description and one heading, that every link and every sitemap address leads to a page, that the limits in the pages are the ones in `src/zalgo-core.js`, that the files in `examples/` are what the commands print, and that this README holds the same lettering as `examples/`. After changing the lettering, run `node tools/readme.js images`.
 
 Plain JavaScript, no framework, no bundler and no dependencies. Issues and pull requests are welcome.
+
+### Hosting your own copy
+
+`site.config.json` holds two values that belong to zalgoart.com: its Google AdSense publisher id and its IndexNow key. Neither is a secret, since both are served to every visitor, but they are not yours. Before you host a copy, set both to `""` (or to your own) and run `npm run build`. With `adsense` empty no page loads anything from another site and no `ads.txt` is written; rewrite the Advertising section of `src/pages/privacy.html` to match, and the tests will tell you if the page and the build disagree. There are no keys, tokens or passwords in this repository, and none are needed to build or run it.
 
 ## Star history
 

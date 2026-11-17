@@ -1,0 +1,53 @@
+<!--{
+"path":"/image-to-zalgo/","kind":"tool","mode":"image","order":2,"date":"2026-11-17",
+"label":"Image to zalgo text",
+"blurb":"Turn a picture into one line of text.",
+"h1":"Image to Zalgo Text",
+"tagline":"A picture as one line of text, with a stack of marks for every column.",
+"title":"Image to Zalgo Text: Turn a Picture into Text Art",
+"description":"Turn an image into text art made of stacked combining marks. Each column of the picture becomes one letter, sized to fit your post. It runs in your browser."
+}-->
+<h2>How to turn a picture into text</h2>
+<ol>
+<li>Press Choose image, drop a picture anywhere on the page, or paste one. There are sample pictures under the button to try first.</li>
+<li>Choose where you will post it, in the menu at the top. With Auto-fit on, the tool uses the largest size that platform's limits allow.</li>
+<li>Check the preview and the delivery check under it.</li>
+<li>Press Copy text and paste it into your post.</li>
+</ol>
+
+<h2>How a picture becomes marks</h2>
+<p>The tool first separates the subject from the background. It takes the colour around the edge of the picture as the background, or the transparent part when the picture has one, and keeps whatever differs from it by more than the Background cutoff.</p>
+<p>Each column of the subject is then written as one letter followed by a run of combining marks. Marks that sit below the letter are written first, then the marks above, so the column grows down and up from a row of letters called the baseline. The tool puts the baseline on the widest row of the subject unless you move it.</p>
+<p>The marks are the shades: double bars are dark, dots are mid, ticks are light. A cell takes the shade most of its pixels have, so the edge of a flat shape stays flat.</p>
+
+<h2>Pictures that work</h2>
+<p>The background is whatever runs around the edge, so a subject on a plain background separates cleanly and a busy background does not. If parts of the subject go missing, lower the Background cutoff. If the background leaks in, raise it.</p>
+<p>A short limit leaves room for few columns, so the size of the result depends on where you post. Bold shapes survive that better than fine detail.</p>
+
+<h2>The controls</h2>
+<dl>
+<dt>Background cutoff</dt>
+<dd>How far from the background a pixel has to be to count as the subject, from {{ui:thr.min}} to {{ui:thr.max}} percent.</dd>
+<dt>Invert tones</dt>
+<dd>Swaps ink and paper.</dd>
+<dt>Columns</dt>
+<dd>The width of the picture in letters, from {{ui:cols.min}} to {{ui:cols.max}}. Auto-fit sets it for you. Moving the slider turns Auto-fit off.</dd>
+<dt>Baseline</dt>
+<dd>Where the row of letters sits, as a percentage from the top of the picture.</dd>
+<dt>Tones</dt>
+<dd>How many shades to use, up to {{ui:tones.max}}, or automatic.</dd>
+<dt>Marks</dt>
+<dd>Tall marks cost fewer characters. Short marks give finer rows.</dd>
+<dt>Stands on</dt>
+<dd>The character each column stands on. On X and Slack a pile on an ordinary letter can come out flat, so there each column stands on a character the site's own font lacks. The browser then hands the whole column to a system font that does stack.</dd>
+<dt>Dither between tones</dt>
+<dd>Mixes tones for smoother shading.</dd>
+<dt>Auto, Light, Dark</dt>
+<dd>The theme of whoever reads the post: dark text on a light page, or light text on a dark one.</dd>
+</dl>
+
+<h2>Your picture stays on your device</h2>
+<p>The picture is read and converted by the page itself. The site does not upload it, and stores nothing about it. The <a href="/privacy/">privacy page</a> has the details.</p>
+
+<h2>Other ways in</h2>
+<p>No picture to hand? <a href="/draw/">Draw one</a> on the same grid, or write words as <a href="/zalgo-text-art/">big letters built from marks</a>. To convert pictures in a script, use the <a href="/cli/">command line tool</a>.</p>

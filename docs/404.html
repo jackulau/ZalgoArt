@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en" class="standalone">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Page not found | Zalgo Art</title>
+<meta name="description" content="This page does not exist.">
+<meta name="robots" content="noindex">
+<script>if(location.hostname==='jackulau.github.io')location.replace('https://zalgoart.com'+location.pathname.replace(/^\/ZalgoArt(?=\/|$)/i,'')+location.search+location.hash)</script>
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="https://zalgoart.com/favicon.ico" sizes="48x48">
+<link rel="icon" href="https://zalgoart.com/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="https://zalgoart.com/favicon-96x96.png" type="image/png" sizes="96x96">
+<link rel="apple-touch-icon" href="https://zalgoart.com/apple-touch-icon.png">
+<link rel="manifest" href="https://zalgoart.com/site.webmanifest">
+<style>
+/* Shared by every page: the tool (src/site.html) and the reading pages (src/page.html). The build puts it at the
+   top of each page's <style>. Colours come from the host page when it provides them, and from these fallbacks
+   when opened on its own. */
+:root{
+  color-scheme:light dark;
+  --fg:var(--foreground,light-dark(#171717,#ededed));
+  --bg:var(--background,Canvas);
+  --dim:var(--muted-foreground,light-dark(#6b6b6b,#a1a1a1));
+  --soft:color-mix(in srgb,var(--fg) 78%,transparent);
+  --line:var(--border,light-dark(#0000001a,#ffffff24));
+  --tint:color-mix(in srgb,var(--fg) 5%,transparent);
+  --tint2:color-mix(in srgb,var(--fg) 10%,transparent);
+  --raised:light-dark(#fff,#ffffff1f);
+  --btn-bg:var(--primary,light-dark(#171717,#ededed));
+  --btn-fg:var(--primary-foreground,light-dark(#fff,#0a0a0a));
+  --good:var(--success,light-dark(#15803d,#4ade80));
+  --warn:var(--warning,light-dark(#b45309,#fbbf24));
+  --bad:var(--destructive,light-dark(#dc2626,#f87171));
+  --focus:var(--ring,light-dark(#2563eb,#60a5fa));
+  --r:var(--radius,8px);
+  --sans:var(--font-sans,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",system-ui,sans-serif);
+  --mono:var(--font-mono,ui-monospace,"SF Mono","Geist Mono",Menlo,Consolas,monospace);
+  --out:cubic-bezier(.23,1,.32,1);
+}
+*{box-sizing:border-box}
+body{margin:0;font:13px/1.5 var(--sans);color:var(--fg);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+[hidden]{display:none!important}
+/* The side padding grows to clear a phone's notch when the phone is held sideways. */
+.standalone body{padding:28px max(24px,env(safe-area-inset-right)) 48px max(24px,env(safe-area-inset-left))}
+.standalone .app{max-width:1200px;margin:0 auto}
+
+/* ---------- frame: header, footer and the two columns every page shares ---------- */
+.app{display:flex;flex-direction:column;gap:16px;min-width:0}
+.top{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px}
+.brand{display:flex;align-items:center;gap:10px;margin-right:auto;min-width:0;color:inherit;text-decoration:none}
+.brand svg{flex:none;display:block}
+.brand .mark{flex:none;color:inherit;border-radius:6px}
+/* The mark is 26 px; the area that takes a tap around it is 44 px. */
+.brand a.mark{position:relative}.brand a.mark::after{content:"";position:absolute;inset:-9px}
+.brand h1,.brand b{margin:0;font-size:14px;font-weight:600;letter-spacing:-.01em}
+.brand p{margin:0;color:var(--dim);font-size:12.5px}
+.foot{order:9;display:flex;flex-wrap:wrap;gap:4px 14px;justify-content:space-between;border-top:1px solid var(--line);padding-top:14px;color:var(--dim);font-size:12.5px}
+.foot nav{display:flex;flex-wrap:wrap;gap:4px 14px}
+.foot a{color:var(--fg);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
+.foot a:hover{text-decoration-color:currentColor}
+@media (min-width:980px){
+  .app{display:grid;grid-template-columns:300px minmax(0,1fr);gap:20px 28px;align-items:start}
+  .top,.foot,.doc{grid-column:1/-1}
+}
+
+/* buttons */
+.btn{appearance:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:30px;padding:0 11px;border-radius:calc(var(--r) - 2px);border:1px solid var(--line);
+  background:transparent;color:inherit;font:500 13px var(--sans);cursor:pointer;position:relative;white-space:nowrap;user-select:none;text-decoration:none;
+  transition:background-color .15s ease,border-color .15s ease,transform .16s var(--out)}
+.btn svg{flex:none;opacity:.8}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.45;pointer-events:none}
+.btn.primary{background:var(--btn-bg);color:var(--btn-fg);border-color:transparent}
+.btn.sm{height:26px;padding:0 9px;font-size:12px}
+@media (hover:hover) and (pointer:fine){
+  .btn:hover{background:var(--tint)}
+  .btn.primary:hover{background:color-mix(in srgb,var(--btn-bg) 86%,var(--btn-fg))}
+}
+:is(a,button,select,input):focus-visible,label.btn:focus-within{outline:2px solid var(--focus);outline-offset:2px}
+
+/* ---------- reading: the copy under the tool, and the guides ----------
+   A heading on the left and its text on the right, on the same two columns as the tool. One column on a phone. */
+.doc{order:8;min-width:0;margin-top:12px;font-size:14px;line-height:1.65}
+.doc section{border-top:1px solid var(--line);padding:24px 0 12px}
+.doc .lead{padding:20px 0 16px}
+.doc h1{margin:0 0 12px;font-size:28px;line-height:1.15;font-weight:600;letter-spacing:-.025em;text-wrap:balance;color:var(--fg)}
+.doc h2{margin:0 0 10px;font-size:15px;line-height:1.45;font-weight:600;letter-spacing:-.01em;text-wrap:balance}
+.doc h3{margin:20px 0 4px;font-size:14px;font-weight:600;color:var(--fg)}
+.doc .body{max-width:680px;min-width:0;color:var(--soft)}
+.doc .body>:first-child{margin-top:0}
+.doc p,.doc ul,.doc ol,.doc pre,.doc .scroll,.doc figure{margin:0 0 12px}
+.doc .lead p{font-size:15px}
+.doc ul,.doc ol{padding-left:20px}
+.doc li{margin:4px 0}
+.doc b,.doc strong{font-weight:600;color:var(--fg)}
+.doc a{color:var(--fg);text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--fg) 32%,transparent);text-underline-offset:3px}
+.doc a:hover{text-decoration-color:currentColor}
+.doc code{font:12.5px var(--mono);color:var(--fg);background:var(--tint);padding:1px 5px;border-radius:4px}
+.doc pre{overflow-x:auto;padding:12px 14px;border:1px solid var(--line);border-radius:var(--r);background:var(--tint);font:12px/1.6 var(--mono);color:var(--fg)}
+.doc pre code{font:inherit;background:none;padding:0}
+.doc .crumb{margin:4px 0 10px;color:var(--dim);font-size:12.5px}
+.doc .crumb a{color:inherit}
+.doc .scroll{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r)}
+.doc table{border-collapse:collapse;width:100%;font-size:13px}
+.doc th,.doc td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+.doc th{font-weight:500;font-size:12px;color:var(--dim);white-space:nowrap}
+.doc tbody tr:last-child>*{border-bottom:0}
+.doc tbody th{font-size:13px;color:var(--fg)}
+.doc td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right;color:var(--fg);white-space:nowrap}
+.doc th.n{text-align:right}
+.doc dl{margin:0 0 12px}
+.doc dt{margin-top:12px;font-weight:600;color:var(--fg)}
+.doc dd{margin:2px 0 0}
+/* A piece of the tool's own output, set in the font it was sized for. */
+.doc figure>div{border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;overflow-x:auto;overflow-y:hidden;color:var(--fg)}
+.doc .zalgo{font:28px Helvetica,Arial,sans-serif;white-space:pre}
+.doc .ascii{font:12px/1.25 var(--mono);white-space:pre}
+.doc .ascii.prop{font-family:var(--sans)}
+.doc figcaption{margin-top:6px;color:var(--dim);font-size:12.5px}
+.doc .links{list-style:none;margin:0 0 12px;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:0 28px;max-width:none}
+.doc .links li{margin:0;padding:10px 0;border-bottom:1px solid var(--line)}
+.doc .links a{display:block;font-weight:500;text-decoration:none}
+.doc .links a:hover{text-decoration:underline}
+.doc .links span{display:block;color:var(--dim);font-size:13px;line-height:1.5}
+@media (min-width:980px){
+  .doc section,.doc .lead{display:grid;grid-template-columns:300px minmax(0,1fr);column-gap:28px}
+  .doc h2{margin:0}
+  .doc .crumb{margin:9px 0 0}
+  .doc .wide{max-width:none}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important}.btn:active{transform:none}}
+</style>
+
+<div class="app">
+  <header class="top">
+    <a class="brand" href="https://zalgoart.com/">
+      <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 6.6h13L5.5 17.4h13" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/><g fill="currentColor"><rect x="13.3" y="2.15" width="4.6" height="1.5" rx=".75"/><rect x="14.5" y="0" width="2.2" height="1.5" rx=".75"/><rect x="6.1" y="20.35" width="4.6" height="1.5" rx=".75"/><rect x="7.3" y="22.5" width="2.2" height="1.5" rx=".75"/></g></svg>
+      <b>Zalgo Art</b>
+    </a>
+    <a class="btn primary" href="https://zalgoart.com/">Open the tool</a>
+  </header>
+<article class="doc">
+<div class="lead">
+<div></div>
+<div class="body">
+<h1>Page not found</h1>
+<p>There is no page at this address. The tool is on the <a href="https://zalgoart.com/">home page</a>.</p>
+</div>
+</div>
+<section>
+<h2>The tool</h2>
+<div class="body wide">
+<ul class="links">
+<li><a href="https://zalgoart.com/zalgo-text-generator/">Zalgo text generator</a><span>Classic glitch text, thinned to fit where you post.</span></li>
+<li><a href="https://zalgoart.com/image-to-zalgo/">Image to zalgo text</a><span>Turn a picture into one line of text.</span></li>
+<li><a href="https://zalgoart.com/zalgo-text-art/">Zalgo text art</a><span>Words as big letters built from stacked marks.</span></li>
+<li><a href="https://zalgoart.com/draw/">Draw zalgo art</a><span>Sketch on a grid and get the drawing back as text.</span></li>
+</ul>
+</div>
+</section>
+<section>
+<h2>Guides</h2>
+<div class="body wide">
+<ul class="links">
+<li><a href="https://zalgoart.com/what-is-zalgo-text/">What is zalgo text?</a><span>How combining marks pile up, and why it looks different on every device.</span></li>
+<li><a href="https://zalgoart.com/zalgo-art-vs-ascii-art/">Zalgo art and ASCII art</a><span>Two ways to draw with text, and where each one holds together.</span></li>
+<li><a href="https://zalgoart.com/character-limits/">Character limits by platform</a><span>What each platform allows, what it counts, and how far each figure was checked.</span></li>
+<li><a href="https://zalgoart.com/cli/">Command line tool</a><span>Make zalgo art, count text and check a post from the terminal.</span></li>
+</ul>
+</div>
+</section>
+</article>
+  <footer class="foot"><nav aria-label="Site"><a href="https://zalgoart.com/">Zalgo Art</a><a href="https://zalgoart.com/zalgo-text-generator/">Zalgo text generator</a><a href="https://zalgoart.com/image-to-zalgo/">Image to zalgo text</a><a href="https://zalgoart.com/zalgo-text-art/">Zalgo text art</a><a href="https://zalgoart.com/draw/">Draw zalgo art</a><a href="https://zalgoart.com/what-is-zalgo-text/">What is zalgo text?</a><a href="https://zalgoart.com/zalgo-art-vs-ascii-art/">Zalgo art and ASCII art</a><a href="https://zalgoart.com/character-limits/">Character limits by platform</a><a href="https://zalgoart.com/cli/">Command line tool</a><a href="https://zalgoart.com/privacy/">Privacy</a></nav><span>Open source under the MIT licence. <a href="https://github.com/jackulau/ZalgoArt">Source and CLI on GitHub</a></span></footer>
+  <script>if(location.protocol==='file:')for(const a of document.querySelectorAll('a[href]')){const h=a.getAttribute('href');if(!/^[a-z][a-z0-9+.-]*:/i.test(h)&&/\/(#.*)?$/.test(h))a.setAttribute('href',h.replace(/\/(#.*)?$/,'/index.html$1'))}</script>
+</div>

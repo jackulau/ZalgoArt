@@ -9,6 +9,7 @@ const ROOT=path.join(__dirname,'..'),CLI=path.join(ROOT,'bin','zalgo');
 const Z=require(path.join(ROOT,'src','zalgo-core.js')),png=require(path.join(ROOT,'src','png.js')),chrome=require(path.join(ROOT,'tools','chrome.js')),enc=require('./png-encode.js');
 const S=String.fromCodePoint,NL=S(10),NBSP=S(0xa0),PAD=S(0x2800),ESC=S(27);
 const seg=new Intl.Segmenter();
+const BUILD=require(path.join(ROOT,'tools','build.js')),SITE=require('./site.js');
 
 /* ---------- a very small harness ---------- */
 let passed=0,failed=0,skipped=0;
@@ -1427,14 +1428,220 @@ test('repo: the README holds the lettering in examples/, and every file it point
   for(const m of readme.matchAll(/(?:src|srcset|href)="([^"#:]+)"|\]\(([^)#:]+)\)/g)){const f=m[1]||m[2];if(!fs.existsSync(path.join(ROOT,f)))missing.push(f);}
   none(missing,5);
 });
-if(!spawnSync('python3',['--version']).error)test('repo: docs/index.html is what build.sh makes',()=>{
-  const out=tmp('index.html'),r=spawnSync('bash',[path.join(ROOT,'build.sh'),out],{encoding:'utf8'});
+test('repo: docs/ is what build.sh makes, file for file',()=>{
+  const out=tmp('docs'),docs=path.join(ROOT,'docs'),r=spawnSync('bash',[path.join(ROOT,'build.sh'),out],{encoding:'utf8'});
   eq(r.status,0,'build.sh exit code '+r.stderr);
-  ok(fs.readFileSync(out).equals(fs.readFileSync(path.join(ROOT,'docs','index.html'))),'docs/index.html is stale: run ./build.sh');
-  const page=fs.readFileSync(out,'utf8');
-  for(const slot of ['__CORE__','__CAL__','__BURGER__'])ok(!page.includes('>'+slot+'<')&&!page.includes('"'+slot+'"'),slot+' was not filled');
-  ok(fs.existsSync(path.join(ROOT,'docs','.nojekyll')),'docs/.nojekyll is missing');
-});else skip('repo: docs/index.html is what build.sh makes','python3 is not on this system');
+  const walk=(dir,rel)=>fs.readdirSync(path.join(dir,rel),{withFileTypes:true}).flatMap(e=>e.name.startsWith('.')?[]:e.isDirectory()?walk(dir,path.join(rel,e.name)):[path.join(rel,e.name)]);
+  const made=walk(out,''),stale=[];
+  ok(made.length>=20,'the build made only '+made.length+' files');
+  for(const f of made){
+    const have=path.join(docs,f);
+    if(!fs.existsSync(have))stale.push('docs/'+f+' is missing: run ./build.sh');
+    else if(!fs.readFileSync(have).equals(fs.readFileSync(path.join(out,f))))stale.push('docs/'+f+' is stale: run ./build.sh');
+  }
+  // Nothing is served that the build did not make, apart from the picture for link previews and the demo clips.
+  const kept=new Set(SITE.KEPT.concat('vercel.json'));
+  for(const f of walk(docs,''))if(!made.includes(f)&&!kept.has(f))stale.push('docs/'+f+' is not made by the build');
+  none(stale,made.length);
+  for(const f of SITE.KEPT)ok(fs.existsSync(path.join(docs,f)),'docs/'+f+' is missing');
+  ok(fs.existsSync(path.join(docs,'.nojekyll')),'docs/.nojekyll is missing');
+  const og=fs.readFileSync(path.join(docs,'og.png'));
+  eq(og.readUInt32BE(16)+'x'+og.readUInt32BE(20),'1200x630','the size of docs/og.png, which every page gives as its preview');
+  // The checks on addresses assume the host adds the slash and hides .html. This is where it is told to.
+  const host=JSON.parse(fs.readFileSync(path.join(docs,'vercel.json'),'utf8'));
+  ok(host.cleanUrls===true&&host.trailingSlash===true,'docs/vercel.json no longer sets cleanUrls and trailingSlash');
+  // The same build twice gives the same bytes.
+  const a=BUILD.build(),b=BUILD.build();
+  ok([...a.keys()].join()===[...b.keys()].join()&&[...a].every(([f,v])=>v.equals(b.get(f))),'two builds differ');
+  return made.length+' files';
+});
+test('repo: the new address is the one given everywhere',()=>{
+  const pkg=JSON.parse(fs.readFileSync(path.join(ROOT,'package.json'),'utf8'));
+  eq(pkg.homepage,SITE.ORIGIN+'/','package.json homepage');
+  const old=[];
+  for(const f of ['README.md','package.json','src/site.html','src/page.html','src/site.css'].concat(fs.readdirSync(path.join(ROOT,'src','pages')).map(n=>'src/pages/'+n)))
+    if(/jackulau\.github\.io/i.test(fs.readFileSync(path.join(ROOT,f),'utf8')))old.push(f+' still names the old address');
+  none(old,old.length);
+});
+
+/* ---- the site: every page the build makes ---- */
+const edit=(files,f,fn)=>{
+  const was=files.get(f).toString('utf8'),now=fn(was);
+  if(now===was)throw new Error('the edit to '+f+' changed nothing, so it tests nothing');
+  return new Map(files).set(f,Buffer.from(now));
+};
+test('site: every page has its own title, description, one h1, a canonical in the sitemap, and links that lead somewhere',()=>{
+  const files=BUILD.build(),pages=[...files.keys()].filter(f=>f.endsWith('.html'));
+  none(SITE.problems(files),pages.length);
+  eq(pages.length,11,'pages');
+  eq((files.get('sitemap.xml').toString().match(/<loc>/g)||[]).length,10,'addresses in the sitemap');
+  return pages.length+' pages';
+});
+test('site: the figures in the copy are the ones in the core, and none is typed by hand',()=>{
+  const files=BUILD.build(),guide=files.get('character-limits/index.html').toString('utf8');
+  const rows=[...guide.matchAll(/<tr data-platform="([^"]*)">/g)].map(m=>m[1]);
+  eq(rows.join(),Z.PLATFORMS.filter(P=>P.id!=='custom').map(P=>P.id).join(),'rows of the limits table');
+  // One row read by hand, so the checker is not the only thing vouching for the table.
+  const x=/<tr data-platform="x">([\s\S]*?)<\/tr>/.exec(guide)[1].replace(/<[^>]*>/g,'|');
+  ok(x.includes('|'+Z.platform('x').name+'|')&&x.includes('|'+Z.platform('x').limit+'|'),'the row for X does not show '+Z.platform('x').limit);
+  // The guide says in words that a combining mark is one unit, one code point and two bytes.
+  for(let c=0x300;c<=0x36f;c++){const m=S(c);ok(m.length===1&&Array.from(m).length===1&&Buffer.byteLength(m)===2,'U+'+c.toString(16)+' is not one unit, one code point and two bytes');}
+  let tagged=0;for(const [f,v] of files)if(f.endsWith('.html'))tagged+=(v.toString('utf8').match(/<span data-(?:limit|n|ui)="/g)||[]).length;
+  ok(tagged>=15,'only '+tagged+' tagged figures: the copy has stopped taking its numbers from the sources');
+  return rows.length+' platforms, '+tagged+' tagged figures';
+});
+test('site: each kind of mistake is caught',()=>{
+  const files=BUILD.build(),P='privacy/index.html',C='cli/index.html',L='character-limits/index.html',H='index.html';
+  const titleOf=f=>/<title>[^<]*<\/title>/.exec(files.get(f).toString('utf8'))[0],descOf=f=>/<meta name="description" content="[^"]*">/.exec(files.get(f).toString('utf8'))[0];
+  const without=f=>{const m=new Map(files);m.delete(f);return m;};
+  const cases=[
+    ['a canonical that is not the sitemap address',edit(files,C,s=>s.replace('<link rel="canonical" href="https://zalgoart.com/cli/">','<link rel="canonical" href="https://zalgoart.com/cli">')),/^cli\/index\.html: the canonical is https:\/\/zalgoart\.com\/cli,/],
+    ['a canonical on another page',edit(files,C,s=>s.replace('<link rel="canonical" href="https://zalgoart.com/cli/">','<link rel="canonical" href="https://zalgoart.com/draw/">')),/^cli\/index\.html: the canonical is/],
+    ['a sitemap address with no file',edit(files,'sitemap.xml',s=>s.replace('</urlset>','<url><loc>https://zalgoart.com/nope/</loc></url></urlset>')),/^sitemap\.xml: https:\/\/zalgoart\.com\/nope\/ has no file/],
+    ['a sitemap address that would redirect',edit(files,'sitemap.xml',s=>s.replace('<loc>https://zalgoart.com/cli/</loc>','<loc>https://zalgoart.com/cli/index.html</loc>')),/^sitemap\.xml: .*would redirect/],
+    ['a page left out of the sitemap',edit(files,'sitemap.xml',s=>s.replace(/<url><loc>https:\/\/zalgoart\.com\/draw\/<\/loc>[\s\S]*?<\/url>\s*/,'')),/^draw\/index\.html: not in the sitemap/],
+    ['a page that is gone',without('draw/index.html'),/^sitemap\.xml: https:\/\/zalgoart\.com\/draw\/ has no file/],
+    ['no h1',edit(files,P,s=>s.replace(/<h1([^>]*)>([\s\S]*?)<\/h1>/,'<h2$1>$2</h2>')),/^privacy\/index\.html: 0 h1 headings/],
+    ['two h1s',edit(files,P,s=>s.replace('</article>','<h1>Again</h1></article>')),/^privacy\/index\.html: 2 h1 headings/],
+    ['a title used twice',edit(files,C,s=>s.replace(titleOf(C),titleOf(P))),/the same title as/],
+    ['a title that is too long',edit(files,C,s=>s.replace(titleOf(C),'<title>'+'Zalgo '.repeat(11)+'</title>')),/^cli\/index\.html: the title is 66 characters/],
+    ['a description used twice',edit(files,C,s=>s.replace(descOf(C),descOf(P))),/the same description as/],
+    ['a link to a page that does not exist',edit(files,P,s=>s.replace('href="../cli/"','href="../command-line/"')),/^privacy\/index\.html: the link \.\.\/command-line\/ leads to no file/],
+    ['a link that only works at the root of a domain',edit(files,P,s=>s.replace('href="../cli/"','href="/cli/"')),/^privacy\/index\.html: the link \/cli\/ starts at the root/],
+    ['a link with no trailing slash',edit(files,P,s=>s.replace('href="../cli/"','href="../cli"')),/^privacy\/index\.html: the link \.\.\/cli has no trailing slash/],
+    ['a limit in the table that is not the one in the core',edit(files,L,s=>s.replace(/(<tr data-platform="x">[\s\S]*?<td class="n">)280/,'$1300')),/^character-limits\/index\.html: the row for x reads "300", the core says "280"/],
+    ['a platform missing from the table',edit(files,L,s=>s.replace(/<tr data-platform="slack">[\s\S]*?<\/tr>/,'')),/the limits table does not list the platforms of the core/],
+    ['a note that is not the one in the core',edit(files,L,s=>s.replace(/(<dd data-note="reddit">[^<]*?)40,000/,'$150,000')),/^character-limits\/index\.html: the note for reddit is not the note in the core/],
+    ['a quoted warning that is not the one in the core',edit(files,'what-is-zalgo-text/index.html',s=>s.replace(/(<span data-flat="x">[^<]*?)Firefox/,'$1every browser')),/the warning for x is not the warning in the core/],
+    ['a quoted note that is not the one in the core',edit(files,'what-is-zalgo-text/index.html',s=>s.replace(/(<span data-note="telegram">[^<]*?)at most 2/,'$1at most 5')),/the note for telegram is not the note in the core/],
+    ['a tagged figure that differs from its source',edit(files,'what-is-zalgo-text/index.html',s=>s.replace(/(<span data-n="stack">)[^<]*/,'$199')),/the number stack reads 99, the source says 30/],
+    ['a figure typed by hand',edit(files,P,s=>s.replace('</article>','<p>It holds up to 5000 marks.</p></article>')),/^privacy\/index\.html: the figure 5000 in the copy is typed by hand/],
+    ['a figure typed into a description',edit(files,C,s=>s.replace(descOf(C),descOf(C).replace('Install','Install in 30 seconds'))),/^cli\/index\.html: the figure 30 in the description is typed by hand/],
+    ['a question in the data that the page does not show',edit(files,H,s=>s.replace(/("@type":"Question","name":")/,'$1Is it the best? ')),/^index\.html: the FAQ data has/],
+    ['a question on the page that the data lacks',edit(files,H,s=>s.replace(/(<h2 data-faq[\s\S]*?<h3[^>]*>)/,'$1Really? ')),/^index\.html: the FAQ data has|^index\.html: the page shows questions/],
+    ['a rating in the data',edit(files,H,s=>s.replace('"@type":"WebApplication"','"@type":"WebApplication","aggregateRating":{"@type":"AggregateRating","ratingValue":"5","reviewCount":"1"}')),/^index\.html: JSON-LD holds a rating/],
+    ['a price that is not zero',edit(files,H,s=>s.replace('"price":"0"','"price":"5"')),/^index\.html: WebApplication is not offered at price 0/],
+    ['a script from another site',edit(files,P,s=>s.replace('</article>','</article><script src="https://example.com/a.js"></'+'script>')),/^privacy\/index\.html: loads https:\/\/example\.com\/a\.js from another site/],
+    ['a font from another site',edit(files,P,s=>s.replace('<style>','<style>@import url(https://example.com/a.css);')),/^privacy\/index\.html: a stylesheet loads from another site/],
+    // With a publisher id in site.config.json, one script from Google is allowed, and only as the privacy page describes it.
+    ...(SITE.ADS?[
+      ['an advertising script the privacy page does not name',edit(files,P,s=>s.replace('<code>'+SITE.ADS_HOST+'</code>','Google')),/^privacy\/index\.html: pages load a script from pagead2\.googlesyndication\.com, which the privacy page does not name/],
+      ['an advertising script for another publisher',edit(files,C,s=>s.replace(SITE.ADS,'ca-pub-0000000000000000')),/^cli\/index\.html: loads https:\/\/pagead2\.googlesyndication\.com\S* from another site/],
+      ['the advertising script twice on a page',edit(files,C,s=>s.replace(SITE.ADS_TAG,SITE.ADS_TAG+SITE.ADS_TAG)),/^cli\/index\.html: the advertising script is there 2 times/],
+      ['a page without the advertising script',edit(files,C,s=>s.replace(SITE.ADS_TAG,'')),/^cli\/index\.html: the advertising script is there 0 times/],
+      ['the advertising script on the error page',edit(files,'404.html',s=>s.replace('<style>',SITE.ADS_TAG+'<style>')),/^404\.html: the advertising script is there 1 times/],
+      ['an ads.txt for another publisher',edit(files,'ads.txt',s=>s.replace(/pub-[0-9]+/,'pub-0000000000000000')),/^ads\.txt: does not name Google as the direct seller/],
+    ]:[]),
+    ['an error page that asks to be indexed',edit(files,'404.html',s=>s.replace('<meta name="robots" content="noindex">','')),/^404\.html: the error page does not say noindex/],
+    ['an error page with relative links',edit(files,'404.html',s=>s.replace('href="https://zalgoart.com/cli/"','href="cli/"')),/^404\.html: the relative link cli\//],
+    ['a robots.txt that shuts crawlers out',edit(files,'robots.txt',s=>s.replace('Allow: /','Disallow: /')),/^robots\.txt: does not allow everything/],
+    ['a robots.txt with no sitemap',edit(files,'robots.txt',s=>s.replace(/^Sitemap:.*$/m,'')),/^robots\.txt: does not name/],
+    ['an old-address redirect that goes to the wrong place',edit(files,P,s=>s.replace("replace(/^\\/ZalgoArt(?=\\/|$)/i,'')","replace(/^\\/Zalgo(?=\\/|$)/i,'')")),/^privacy\/index\.html: the old address goes to/],
+    ['a redirect that fires on the new address',edit(files,P,s=>s.replace("if(location.hostname==='jackulau.github.io')","if(location.hostname!=='jackulau.github.io')")),/^privacy\/index\.html: the (old address goes to|redirect fires)/],
+  ];
+  const missed=[];
+  for(const [name,broken,want] of cases){
+    const found=SITE.problems(broken);
+    if(!found.some(m=>want.test(m)))missed.push(name+' was not caught'+(found.length?' (it said: '+found[0]+')':''));
+  }
+  none(missed,cases.length);
+  return cases.length+' mistakes';
+});
+const TOOLS={'index.html':'image','zalgo-text-generator/index.html':'glitch','image-to-zalgo/index.html':'image','zalgo-text-art/index.html':'text','draw/index.html':'draw'};
+// What the pages' own code does that the privacy page has to say: one line for each thing the two disagree on.
+function privacyGaps(files){
+  const privacy=files.get('privacy/index.html').toString('utf8'),says=/paste a picture/.test(privacy),found=[];
+  let pastes=0;
+  for(const [f,v] of files){
+    if(!f.endsWith('.html'))continue;
+    const code=[...v.toString('utf8').matchAll(/<script\b(?![^>]*ld\+json)[^>]*>([\s\S]*?)<\/script>/g)].map(m=>m[1]).join(NL);
+    for(const m of code.matchAll(/\bfetch\s*\(|XMLHttpRequest|sendBeacon|WebSocket|EventSource|document\.cookie|sessionStorage|indexedDB|clipboard\.read\w*|clipboardData\.getData|\.src\s*=\s*["'`]https?:/g))found.push(f+' uses '+m[0]);
+    // A paste is the one time the page takes anything from the clipboard, and only a picture file out of it.
+    if(/clipboardData/.test(code)){pastes++;if(!says)found.push(f+' takes a pasted picture, which the privacy page does not say');}
+    const keys=new Set([...code.matchAll(/\b(?:const|let|var)\s+(\w+)\s*=\s*'([^']*)'/g)].filter(m=>new RegExp('localStorage\\.\\w+\\('+m[1]+'\\b').test(code)).map(m=>m[2]));
+    for(const k of keys)if(!privacy.includes('<code>'+k+'</code>'))found.push(f+' stores '+k+', which the privacy page does not name');
+    if(/localStorage\.\w+\(\s*["'`]/.test(code))found.push(f+' stores something under a name written in place');
+    if(TOOLS[f]&&!keys.size)found.push(f+' no longer stores the drawing, which the privacy page says it does');
+  }
+  if(says&&!pastes)found.push('privacy/index.html says a pasted picture is used, which no page does');
+  if(!privacy.includes('<code>zalgoart.pad.1</code>'))found.push('privacy/index.html no longer names what is stored');
+  return found;
+}
+test('site: the privacy page says what the code does',()=>{
+  // The page promises that the site's own code sends nothing, stores one thing, writes to the clipboard on Copy and
+  // takes a picture from it only when one is pasted. Any of these changing in the page's code means the privacy page
+  // has to change with it. The one script from another site, Google's advertising script, is held to the privacy
+  // page by the checks in test/site.js.
+  const files=BUILD.build(),P='privacy/index.html',H='index.html';
+  none(privacyGaps(files),files.size);
+  const cases=[
+    ['paste that the privacy page does not mention',edit(files,P,s=>s.replace(/If you paste a picture[^<]*/,'It never reads from the clipboard.')),/takes a pasted picture, which the privacy page does not say/],
+    ['a privacy page that speaks of a paste no page takes',new Map([...files].map(([f,v])=>[f,f.endsWith('.html')&&f!==P?Buffer.from(v.toString('utf8').split('clipboardData').join('pasted')):v])),/says a pasted picture is used, which no page does/],
+    ['pasted text being read',edit(files,H,s=>s.replace("addEventListener('paste',e=>{","addEventListener('paste',e=>{e.clipboardData.getData('text');")),/index\.html uses clipboardData\.getData/],
+    ['the clipboard being read outside a paste',edit(files,H,s=>s.replace("addEventListener('paste',e=>{","navigator.clipboard.readText();addEventListener('paste',e=>{")),/index\.html uses clipboard\.readText/],
+    ['a request sent by the page',edit(files,H,s=>s.replace("addEventListener('paste',e=>{","fetch('/log');addEventListener('paste',e=>{")),/index\.html uses fetch\(/],
+    ['a stored name the privacy page does not give',edit(files,P,s=>s.replace('<code>zalgoart.pad.1</code>','a saved drawing')),/stores zalgoart\.pad\.1, which the privacy page does not name/],
+  ];
+  const missed=[];
+  for(const [name,broken,want] of cases){
+    const found=privacyGaps(broken);
+    if(!found.some(m=>want.test(m)))missed.push(name+' was not caught'+(found.length?' (it said: '+found[0]+')':''));
+  }
+  none(missed,cases.length);
+  return cases.length+' mistakes';
+});
+if(!wanted('site: in Chrome'));
+else if(chrome.find())test('site: in Chrome, each tool page opens in its own mode and makes text, and no page scrolls sideways at 390 px',()=>{
+  // The pages are opened from disk, each inside a frame of the width under test, because a headless window
+  // is never as narrow as a phone. One extra page is too wide on purpose, to show the measurement can fail.
+  const files=BUILD.build(),dir=tmp('site'),pages=[...files.keys()].filter(f=>f.endsWith('.html')),WIDE='too-wide/index.html';
+  // The copies under test leave out Google's advertising script: a test does not call another company's servers,
+  // and a frame would wait on that request before it reported that it had loaded.
+  const local=v=>SITE.ADS?v.toString('utf8').split(SITE.ADS_TAG).join(''):v.toString('utf8');
+  for(const [f,v] of files){fs.mkdirSync(path.dirname(path.join(dir,f)),{recursive:true});fs.writeFileSync(path.join(dir,f),f.endsWith('.html')?local(v):v);}
+  fs.mkdirSync(path.join(dir,'too-wide'));
+  fs.writeFileSync(path.join(dir,WIDE),local(files.get('privacy/index.html')).replace('</article>','<div style="width:700px;height:8px"></div></article>'));
+  const body=`<script>(function(){
+    const out=document.getElementById('out'),base=${JSON.stringify('file://'+dir+'/')},jobs=[],res=[];
+    for(const p of ${JSON.stringify(pages.concat(WIDE))})for(const w of [390,1280])jobs.push([p,w]);
+    (function next(){
+      if(!jobs.length){out.textContent=JSON.stringify(res);return;}
+      const job=jobs.shift(),f=document.createElement('iframe');let tries=0;
+      f.style.cssText='position:fixed;left:0;top:0;border:0;height:844px;width:'+job[1]+'px';
+      const look=()=>{
+        const r={page:job[0],width:job[1]};
+        try{
+          const d=f.contentDocument,win=f.contentWindow,mode=d.getElementById('mode');
+          if(mode&&!(win.zalgo&&win.zalgo.ready)&&tries++<200)return setTimeout(look,50);
+          r.scroll=d.documentElement.scrollWidth;r.client=d.documentElement.clientWidth;r.h1=d.querySelectorAll('h1').length;
+          r.shown=!!d.querySelector('h1')&&d.querySelector('h1').getBoundingClientRect().width>0;
+          if(mode){
+            r.mode=mode.value;r.ready=!!(win.zalgo&&win.zalgo.ready);r.units=win.zalgo&&win.zalgo.last?win.zalgo.last.text.length:0;
+            r.open=[].filter.call(d.querySelectorAll('[id^="src-"]'),e=>!e.hidden).map(e=>e.id.slice(4)).join();
+            r.tab=[].filter.call(d.querySelectorAll('[role="tab"][aria-selected="true"],[aria-pressed="true"][data-mode]'),e=>true).map(e=>e.dataset.mode||e.id).join();
+          }
+        }catch(e){r.error=String(e);}
+        res.push(r);f.remove();next();
+      };
+      f.onload=look;f.src=base+job[0];document.body.appendChild(f);
+    })();
+  })();</`+`script>`;
+  const res=JSON.parse(chrome.run(body,{args:['--allow-file-access-from-files']})||'[]'),wrong=[];
+  eq(res.length,(pages.length+1)*2,'pages measured');
+  for(const r of res){
+    const at=r.page+' at '+r.width+' px';
+    if(r.error){wrong.push(at+': '+r.error);continue;}
+    if(r.page===WIDE){if(r.width===390&&r.scroll<=r.client)wrong.push('the page made too wide on purpose measured as fitting, so this test cannot fail');continue;}
+    if(r.scroll>r.client)wrong.push(at+' scrolls sideways: '+r.scroll+' px of content in '+r.client);
+    if(r.h1!==1||!r.shown)wrong.push(at+' shows '+r.h1+' h1 headings');
+    const mode=TOOLS[r.page];
+    if(!mode){if(r.mode)wrong.push(at+' has the tool, but is not a tool page');continue;}
+    if(r.mode!==mode||r.open!==mode)wrong.push(at+' opens in '+r.mode+' with the '+r.open+' panel, expected '+mode);
+    if(!r.ready||!r.units)wrong.push(at+' made no text');
+  }
+  none(wrong,res.length);
+  return res.length+' views';
+});else skip('site: in Chrome, each tool page opens in its own mode and makes text, and no page scrolls sideways at 390 px','Chrome was not found. Set CHROME=/path/to/chrome to run it');
 
 if(!wanted('parity: '));
 else if(chrome.find())parity();
