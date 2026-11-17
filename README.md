@@ -39,11 +39,11 @@ How the marks stack depends on the reader's fonts. The picture was taken on a Ma
 
 ## Demo
 
-Four short recordings, one for each kind of source. Each is the real site driven by a script ([tools/demo.js](tools/demo.js)) and ends on Copy. Click a recording to open the site, or follow the MP4 link for the video file.
+Four short recordings, one for each kind of source. Each is the real site driven by a script ([tools/demo.js](tools/demo.js)) and ends on Copy. Click a recording to open the site, or follow its video link for the MP4.
 
 ### Image
 
-A picture becomes one line of text. Switching from X to Discord gives it room for more columns and tones. ([MP4](assets/demo-image.mp4))
+A picture becomes one line of text. Switching from X to Discord gives it room for more columns and tones. ([watch as video](https://jackulau.github.io/ZalgoArt/demo/image.mp4))
 
 <p align="center">
   <a href="https://jackulau.github.io/ZalgoArt/"><img alt="The site turning a drawing of a burger into one line of text, then fitting it to Discord and showing it on a dark theme" src="assets/demo-image.gif" width="760"></a>
@@ -51,7 +51,7 @@ A picture becomes one line of text. Switching from X to Discord gives it room fo
 
 ### Text
 
-Words in big letters built from marks: type, pick a platform, copy. ([MP4](assets/demo-text.mp4))
+Words in big letters built from marks: type, pick a platform, copy. ([watch as video](https://jackulau.github.io/ZalgoArt/demo/text.mp4))
 
 <p align="center">
   <a href="https://jackulau.github.io/ZalgoArt/"><img alt="The word hello typed into the site and drawn in big letters made of stacked marks" src="assets/demo-text.gif" width="760"></a>
@@ -59,7 +59,7 @@ Words in big letters built from marks: type, pick a platform, copy. ([MP4](asset
 
 ### Draw
 
-Draw on the canvas and the text follows. Above the red line grows up, below it grows down. ([MP4](assets/demo-draw.mp4))
+Draw on the canvas and the text follows. Above the red line grows up, below it grows down. ([watch as video](https://jackulau.github.io/ZalgoArt/demo/draw.mp4))
 
 <p align="center">
   <a href="https://jackulau.github.io/ZalgoArt/"><img alt="A house, a tree and the ground drawn on the canvas, with the text version updating underneath" src="assets/demo-draw.gif" width="760"></a>
@@ -67,7 +67,7 @@ Draw on the canvas and the text follows. Above the red line grows up, below it g
 
 ### Glitch
 
-Classic glitch text, with the pile heights under your control and a reroll for new marks. ([MP4](assets/demo-glitch.mp4))
+Classic glitch text, with the pile heights under your control and a reroll for new marks. ([watch as video](https://jackulau.github.io/ZalgoArt/demo/glitch.mp4))
 
 <p align="center">
   <a href="https://jackulau.github.io/ZalgoArt/"><img alt="The words zalgo art with piles of marks growing above and below the letters as sliders move" src="assets/demo-glitch.gif" width="760"></a>

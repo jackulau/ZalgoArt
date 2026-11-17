@@ -3,7 +3,7 @@
    Each clip drives docs/index.html in headless Chromium with real mouse and keyboard input from a fresh
    page load, captures the screen, and is written twice with ffmpeg: a looping GIF and an MP4.
    Usage: node tools/demo.js [image|text|draw|glitch ...]     (default: all four)
-   Output: assets/demo-<name>.gif and assets/demo-<name>.mp4
+   Output: assets/demo-<name>.gif for the README, and docs/demo/<name>.mp4, which GitHub Pages serves as a video
    PLAYWRIGHT=/path/to/node_modules/playwright picks a Playwright install, FFMPEG=/path/to/ffmpeg an ffmpeg. */
 'use strict';
 const fs=require('fs'),os=require('os'),path=require('path'),{pathToFileURL}=require('url'),{execFileSync}=require('child_process');
@@ -140,9 +140,9 @@ async function record(browser,name){
     // Frames arrive only when the screen changes: each stays up until the next one.
     const list=frames.map((f,i)=>"file '"+f.file+"'\nduration "+Math.max(.001,(i+1<frames.length?frames[i+1].t:end)-f.t).toFixed(4)).join('\n')+"\nfile '"+last.file+"'\n";
     fs.writeFileSync(path.join(dir,'list.txt'),list);
-    fs.mkdirSync(ASSETS,{recursive:true});
+    fs.mkdirSync(ASSETS,{recursive:true});fs.mkdirSync(path.join(ROOT,'docs','demo'),{recursive:true});
     const ff=process.env.FFMPEG||'ffmpeg',src=['-y','-loglevel','error','-f','concat','-safe','0','-i',path.join(dir,'list.txt')];
-    const gif=path.join(ASSETS,'demo-'+name+'.gif'),mp4=path.join(ASSETS,'demo-'+name+'.mp4');
+    const gif=path.join(ASSETS,'demo-'+name+'.gif'),mp4=path.join(ROOT,'docs','demo',name+'.mp4');
     execFileSync(ff,[...src,'-vf',
       'fps='+FPS+',scale='+GIF_W+':-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=128:stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle',
       '-loop','0',gif],{stdio:'inherit'});
