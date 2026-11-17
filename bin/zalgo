@@ -1,0 +1,474 @@
+#!/usr/bin/env node
+/* zalgo: pictures, lettering and glitch text made of stacked combining marks, sized so a post arrives intact.
+   All the real work is in src/zalgo-core.js, which the web page shares, so both give the same text.
+   This file only reads arguments and images, calls the core and prints. Node built-ins only.
+
+   Exit codes: 0 = done and the checks pass, 1 = a check failed, 2 = the command could not be run. */
+'use strict';
+const fs=require('fs'),os=require('os'),path=require('path'),tty=require('tty'),{execFileSync,spawnSync}=require('child_process');
+const ROOT=path.join(__dirname,'..');
+const Zalgo=require(path.join(ROOT,'src','zalgo-core.js')),png=require(path.join(ROOT,'src','png.js'));
+
+const NL=String.fromCodePoint(10),ESC=String.fromCodePoint(27);
+// Phone cameras reach about 48 megapixels. Past this the image is shrunk before it is decoded: the core
+// works on a 220 pixel copy, so nothing is lost, and memory stays bounded.
+const MAX_PIXELS=50e6,SHRINK_TO=2048;
+
+// An error the user can act on. It is printed as one line, never as a stack trace.
+class Fail extends Error{}
+const fail=msg=>{throw new Fail(msg);};
+
+/* ---------- arguments ---------- */
+// arg: the option takes a value. cmds: the commands that use it; elsewhere it is ignored with a note.
+const OPTIONS={
+  platform:{short:'p',arg:true,cmds:['image','text','glitch','check']},
+  limit:{arg:true,cmds:['image','text','glitch','check']},
+  cols:{arg:true,cmds:['image']},
+  tones:{arg:true,cmds:['image']},
+  marks:{arg:true,cmds:['image']},
+  base:{arg:true,cmds:['image','text']},
+  baseline:{arg:true,cmds:['image']},
+  cutoff:{arg:true,cmds:['image']},
+  invert:{cmds:['image']},
+  theme:{arg:true,cmds:['image']},
+  dither:{cmds:['image']},
+  'no-room':{cmds:['image','text','glitch']},
+  pad:{arg:true,cmds:['image','text','glitch']},
+  'no-phone':{cmds:['image','text']},
+  dense:{cmds:['image','text','glitch']},
+  size:{arg:true,cmds:['text']},
+  rows:{arg:true,cmds:['text']},
+  caption:{arg:true,cmds:['text']},
+  side:{arg:true,cmds:['text']},
+  font:{arg:true,cmds:['image','text','glitch','check']},
+  metrics:{arg:true,cmds:['image','text','glitch','check']},
+  up:{arg:true,cmds:['glitch']},
+  down:{arg:true,cmds:['glitch']},
+  through:{arg:true,cmds:['glitch']},
+  seed:{arg:true,cmds:['glitch']},
+  'no-fit':{cmds:['glitch']},
+  output:{short:'o',arg:true,cmds:['image','text','glitch']},
+  json:{cmds:['image','text','glitch','count','check','platforms']},
+  copy:{cmds:['image','text','glitch']},
+  help:{short:'h',cmds:['image','text','glitch','count','check','platforms','help']}
+};
+const COMMANDS=['image','text','glitch','count','check','platforms','help'];
+const SHORT={};for(const k in OPTIONS)if(OPTIONS[k].short)SHORT[OPTIONS[k].short]=k;
+
+// Edit distance, for "did you mean" on a mistyped option or command.
+function distance(a,b){
+  let row=Array.from({length:b.length+1},(_,i)=>i);
+  for(let i=1;i<=a.length;i++){
+    const next=[i];
+    for(let j=1;j<=b.length;j++)next[j]=Math.min(row[j]+1,next[j-1]+1,row[j-1]+(a[i-1]===b[j-1]?0:1));
+    row=next;
+  }
+  return row[b.length];
+}
+function closest(word,list){
+  let best=null,bd=3;
+  for(const w of list){const d=distance(word,w);if(d<bd){bd=d;best=w;}}
+  return best;
+}
+
+function parseArgs(argv){
+  const pos=[],opt={};
+  for(let i=0;i<argv.length;i++){
+    const a=argv[i];
+    // Everything after a bare "--" is text or a file name, even if it starts with a dash.
+    if(a==='--'){pos.push(...argv.slice(i+1));break;}
+    if(a==='-'||a[0]!=='-'){pos.push(a);continue;}
+    let name,value=null;
+    if(a.startsWith('--')){
+      const eq=a.indexOf('=');
+      name=eq<0?a.slice(2):a.slice(2,eq);if(eq>=0)value=a.slice(eq+1);
+      if(!OPTIONS[name]){const near=closest(name,Object.keys(OPTIONS));fail('unknown option --'+name+(near?' (did you mean --'+near+'?)':'')+'. Run "zalgo help" for the list.');}
+    }else{
+      name=SHORT[a.slice(1)];
+      if(!name)fail('unknown option '+a+'. Run "zalgo help" for the list.');
+    }
+    const def=OPTIONS[name];
+    if(def.arg){
+      if(value===null){if(i+1>=argv.length)fail(a+' needs a value.');value=argv[++i];}
+      opt[name]=value;
+    }else{
+      if(value!==null)fail('--'+name+' does not take a value.');
+      opt[name]=true;
+    }
+  }
+  return {pos,opt};
+}
+
+const show=name=>OPTIONS[name]&&OPTIONS[name].short&&name!=='output'?'-'+OPTIONS[name].short+'/--'+name:name==='output'?'-o':'--'+name;
+function whole(opt,name,lo,hi){
+  if(opt[name]==null)return undefined;
+  const v=Number(opt[name]);
+  if(!/^-?\d+$/.test(opt[name].trim())||v<lo||v>hi)fail(show(name)+' needs a whole number from '+lo+' to '+hi+', not "'+opt[name]+'".');
+  return v;
+}
+function number(opt,name,lo,hi){
+  if(opt[name]==null)return undefined;
+  const v=Number(opt[name]);
+  if(opt[name].trim()===''||!Number.isFinite(v)||v<lo||v>hi)fail(show(name)+' needs a number from '+lo+' to '+hi+', not "'+opt[name]+'".');
+  return v;
+}
+function choice(opt,name,list,dflt){
+  if(opt[name]==null)return dflt;
+  const v=opt[name].toLowerCase();
+  if(!list.includes(v))fail(show(name)+' must be one of: '+list.join(', ')+'. Got "'+opt[name]+'".');
+  return v;
+}
+
+/* ---------- inputs ---------- */
+function why(e){
+  return e.code==='ENOENT'?'no such file':e.code==='EISDIR'?'it is a folder':e.code==='EACCES'||e.code==='EPERM'?'permission denied':(e.code||e.message);
+}
+function getPlatform(opt){
+  const id=(opt.platform||'x').toLowerCase(),P=Zalgo.PLATFORMS.find(p=>p.id===id);
+  if(!P)fail('unknown platform "'+opt.platform+'". Choose one of: '+Zalgo.PLATFORMS.map(p=>p.id).join(', ')+'.');
+  const limit=whole(opt,'limit',1,1e9);
+  return limit==null?P:Object.assign({},P,{limit,name:P.name+', limit set to '+limit});
+}
+// A profile is what the page's calibration measured for one font. See src/zalgo-cal.js and tools/profile.js.
+function getMetrics(opt){
+  let file,label;
+  if(opt.metrics!=null){file=opt.metrics;label=file;}
+  else{
+    const dir=path.join(ROOT,'profiles'),name=(opt.font||'helvetica').toLowerCase();
+    let have=[];try{have=fs.readdirSync(dir).filter(f=>f.endsWith('.json')).map(f=>f.slice(0,-5)).sort();}catch(e){}
+    if(!have.includes(name))fail('unknown font "'+opt.font+'". Choose one of: '+(have.join(', ')||'(no profiles found in '+dir+')')+', or pass --metrics <file>.');
+    file=path.join(dir,name+'.json');label='the '+name+' profile';
+  }
+  let text,p;
+  try{text=fs.readFileSync(file,'utf8');}catch(e){fail('cannot read '+label+': '+why(e)+'.');}
+  try{p=JSON.parse(text);}catch(e){fail(label+' is not valid JSON.');}
+  const triples=l=>Array.isArray(l)&&l.length>0&&l.every(m=>Array.isArray(m)&&m.length>=3&&m.slice(0,3).every(v=>typeof v==='number'&&Number.isFinite(v)));
+  const bases=p&&p.bases&&typeof p.bases==='object'&&Object.keys(p.bases).length>0&&Object.values(p.bases).every(b=>Array.isArray(b)&&b.length>=3&&b.slice(0,3).every(v=>typeof v==='number'));
+  if(!p||!triples(p.up)||!triples(p.dn)||!bases)fail(label+' is not a font profile: it needs "up", "dn" and "bases" as saved by the page.');
+  return {M:Zalgo.metrics(p),font:String(p.font||path.basename(file))};
+}
+function readStdin(){
+  try{return fs.readFileSync(0,'utf8');}catch(e){fail('cannot read standard input: '+why(e)+'.');}
+}
+// Text for count and check, byte for byte, so the numbers match what the file really holds.
+function readText(pos,cmd){
+  if(pos.length>1)fail(cmd+' takes one file (or - for standard input).');
+  if(!pos.length||pos[0]==='-'){
+    if(!pos.length&&tty.isatty(0))fail(cmd+' needs text: give a file, or pipe text in.');
+    return readStdin();
+  }
+  try{return fs.readFileSync(pos[0],'utf8');}catch(e){fail('cannot read '+pos[0]+': '+why(e)+'.');}
+}
+
+/* ---------- images ---------- */
+// PNG is decoded here. Everything else goes through sips, which ships with macOS, and comes back as PNG.
+// A turned phone photo keeps its pixels as shot and notes the turn in the file (sips copies the note into
+// the PNG). Browsers apply it, so the decoder is asked to as well.
+const DECODE={maxPixels:MAX_PIXELS,orient:true};
+function viaSips(file,shrink){
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'zalgo-')),tmp=path.join(dir,'image.png');
+  const convert=small=>{
+    // An absolute path, so a file name that starts with a dash is not read as an option.
+    const args=(small?['-Z',String(SHRINK_TO)]:[]).concat(['-s','format','png',path.resolve(file),'--out',tmp]);
+    try{execFileSync('sips',args,{stdio:['ignore','ignore','ignore'],timeout:120000});}
+    catch(e){
+      if(e.code==='ENOENT')fail('cannot read '+file+': only PNG'+(small?' up to '+MAX_PIXELS/1e6+' megapixels':'')+' is read directly. JPEG, GIF, HEIC, WebP and other formats need the macOS "sips" tool, which is not on this system. Convert the image to '+(small?'a smaller ':'')+'PNG first.');
+      fail('cannot read '+file+': it is not an image this tool can open (PNG, JPEG, GIF, HEIC, WebP, TIFF).');
+    }
+    try{return fs.readFileSync(tmp);}catch(e){fail('cannot read '+file+': the conversion to PNG produced nothing.');}
+  };
+  try{
+    let buf=convert(shrink);
+    if(!shrink){const h=png.header(buf);if(h.w*h.h>MAX_PIXELS)buf=convert(true);}
+    return png.decode(buf,DECODE);
+  }catch(e){
+    if(e instanceof png.PngError)fail('cannot read '+file+': '+e.message+'.');
+    throw e;
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
+}
+function loadImage(file){
+  let buf;
+  try{buf=fs.readFileSync(file);}catch(e){fail('cannot read '+file+': '+why(e)+'.');}
+  if(!buf.length)fail('cannot read '+file+': the file is empty.');
+  if(!png.isPng(buf))return viaSips(file,false);
+  try{return png.decode(buf,DECODE);}
+  catch(e){
+    if(!(e instanceof png.PngError))throw e;
+    if(e.code==='PNG_TOO_BIG')return viaSips(file,true);
+    fail('cannot read '+file+': '+e.message+'.');
+  }
+}
+
+/* ---------- output ---------- */
+const coloured=fd=>tty.isatty(fd)&&!process.env.NO_COLOR&&process.env.TERM!=='dumb';
+const MARK={ok:['[ok]  ',32],warn:['[warn]',33],fail:['[FAIL]',31],note:['[note]',2]};
+function itemLine(item,colour){
+  const [label,code]=MARK[item.level]||MARK.note;
+  return (colour?ESC+'['+code+'m'+label+ESC+'[0m':label)+' '+item.msg;
+}
+const em=v=>(Math.round(v*10)/10).toFixed(1);
+const plural=(n,word)=>n+' '+word+(n===1?'':'s');
+function allCounts(text){
+  const out={};for(const k in Zalgo.count)out[k]=Zalgo.count[k](text);
+  return out;
+}
+function platformJson(P){
+  return {id:P.id,name:P.name,limit:P.limit,unit:P.unit,second:P.second||null,src:P.src};
+}
+function copy(text){
+  // pbcopy reads its input in the locale's encoding, so name UTF-8 or the marks are mangled.
+  const r=spawnSync('pbcopy',[],{input:text,env:Object.assign({},process.env,{LC_ALL:'en_US.UTF-8',LANG:'en_US.UTF-8'})});
+  if(r.error&&r.error.code==='ENOENT')fail('--copy needs pbcopy, which is part of macOS. Elsewhere, pipe the output to your clipboard tool, for example: zalgo ... | xclip -selection clipboard');
+  if(r.error||r.status!==0)fail('--copy failed: pbcopy '+(r.error?why(r.error):'exited with status '+r.status)+'.');
+}
+// Sends the finished text where it was asked to go, then the summary. The text is written exactly as
+// produced: a newline is added only on a terminal, where it keeps the prompt off the picture.
+function deliver(text,ck,opt,json,summary){
+  const err=[];
+  if(opt.output!=null){
+    try{fs.writeFileSync(opt.output,text);}catch(e){fail('cannot write '+opt.output+': '+why(e)+'.');}
+    err.push('Wrote '+opt.output+' ('+Buffer.byteLength(text)+' bytes).');
+  }
+  if(opt.json)process.stdout.write(JSON.stringify(json,null,2)+NL);
+  else if(opt.output==null)process.stdout.write(text+(text&&tty.isatty(1)?NL:''));
+  if(opt.copy&&text){copy(text);err.push('Copied to the clipboard.');}
+  // With --json the summary would only repeat what the JSON already says.
+  if(!opt.json){
+    const c=coloured(2);
+    process.stderr.write(summary.concat(ck.items.map(i=>'  '+itemLine(i,c)),err).join(NL)+NL);
+  }
+  if(!ck.ok)process.exitCode=1;
+}
+
+/* ---------- commands ---------- */
+function cmdImage(pos,opt){
+  if(pos.length!==1)fail(pos.length?'image takes one file, got '+pos.length+'.':'image needs a file, for example: zalgo image photo.png');
+  const P=getPlatform(opt),{M,font}=getMetrics(opt);
+  const cols=whole(opt,'cols',1,400);
+  const tones=opt.tones!=null&&opt.tones.toLowerCase()==='auto'?0:whole(opt,'tones',0,12);
+  const marks=choice(opt,'marks',['tall','short'],'tall');
+  const base=choice(opt,'base',Zalgo.BASES.map(b=>b.id),P.base||'blank');   // Slack needs its own, see PLATFORMS
+  const baseline=opt.baseline!=null&&opt.baseline.toLowerCase()==='auto'?undefined:number(opt,'baseline',0,100);
+  const cutoff=number(opt,'cutoff',0,100);
+  const theme=choice(opt,'theme',['light','dark'],'light');
+  const pad=choice(opt,'pad',['blank','dot'],'blank');
+  const img=loadImage(pos[0]);
+  const r=Zalgo.picture(img,{cols,tones:tones||0,tall:marks==='tall',base,baseline:baseline==null?null:baseline/100,
+    cutoff:cutoff==null?.10:cutoff/100,invert:!!opt.invert,light:theme==='dark',dither:!!opt.dither,room:!opt['no-room'],pad,phone:!opt['no-phone'],dense:!!opt.dense},M,P);
+  const used=r.opts||{},info=r.check.info;
+  const options={platform:P.id,limit:P.limit,font,cols:used.cols==null?null:used.cols,colsFitted:cols==null,tones:used.tones==null?null:used.tones,tonesAutomatic:!tones,
+    marks,base,baseline:used.baseline==null?null:Math.round(used.baseline*1000)/10,baselineAutomatic:baseline==null,cutoff:cutoff==null?10:cutoff,
+    invert:!!opt.invert,theme,dither:!!opt.dither,room:!opt['no-room'],pad,phone:!opt['no-phone'],dense:!!opt.dense};
+  const json={command:'image',platform:platformJson(P),text:r.text,counts:allCounts(r.text),count:r.check.count,ok:r.check.ok,check:r.check.items,
+    image:{width:img.w,height:img.h},
+    size:r.result?{columns:r.result.cols,width:info.width,up:r.result.up,down:r.result.dn,lines:info.lines,reservedAbove:r.layout.above,reservedBelow:r.layout.below,tallest:r.result.tallest}:null,
+    options};
+  let summary;
+  if(!r.text){
+    // Nothing failed a check, so this is not an error, but an empty result with no word of why would be.
+    summary=['No picture: nothing in this image stands out from its background. Try a lower --cutoff (now '+options.cutoff+') or --invert.'];
+  }else{
+    summary=[P.name+': '+r.check.count+' of '+P.limit+' '+Zalgo.UNIT[P.unit],
+      '  '+plural(r.result.cols,'column')+', '+em(info.width)+' em wide, '+em(r.result.up)+' em up, '+em(r.result.dn)+' em down',
+      '  '+plural(info.lines,'line')+': '+r.layout.above+' reserved above, '+r.layout.below+' below',
+      '  tones '+used.tones+(tones?'':' (automatic)')+', base '+base+', baseline '+options.baseline+'%'+(baseline==null?' (automatic)':'')+', font '+font];
+  }
+  deliver(r.text,r.check,opt,json,summary);
+}
+
+// Words drawn as letters, each letter built from piles of marks. See banner() in the core.
+function cmdText(pos,opt){
+  let text;
+  if(pos.length)text=pos.join(' ');
+  else if(tty.isatty(0))fail('text needs words, for example: zalgo text "hello world"   (or pipe them in)');
+  else text=readStdin().replace(/\r?\n$/,'');
+  const P=getPlatform(opt),{M,font}=getMetrics(opt);
+  const auto=name=>opt[name]!=null&&opt[name].toLowerCase()==='auto';
+  const ids=Zalgo.SIZES.map(z=>z.id),size=auto('size')?undefined:whole(opt,'size',Math.min(...ids),Math.max(...ids));
+  const rows=auto('rows')?undefined:whole(opt,'rows',1,2);
+  const base=choice(opt,'base',Zalgo.BASES.map(b=>b.id),P.base||'blank'),pad=choice(opt,'pad',['blank','dot'],'blank');
+  // A caption is one plain line above the art. Line breaks in it would move the art.
+  const caption=opt.caption==null?'':opt.caption.replace(/\s+/g,' ').trim();
+  // One row can stand on the line or hang from it. Left alone, the core takes the side with fewer marks.
+  const side=choice(opt,'side',['above','below','auto'],'auto'),hang=side==='auto'?undefined:side==='below';
+  const r=Zalgo.banner(text,{size,rows,hang,caption,base,room:!opt['no-room'],pad,phone:!opt['no-phone'],dense:!!opt.dense},M,P);
+  if(!r.result){
+    if(rows===2&&Zalgo.banner(text,{rows:1},M,P).result)fail('--rows 2 needs at least two words that can be drawn.');
+    fail('text needs letters, digits or common punctuation. None of "'+text+'" can be drawn.');
+  }
+  const info=r.check.info,z=Zalgo.SIZES.find(s=>s.id===r.result.size),skipped=r.result.skipped;
+  const options={platform:P.id,limit:P.limit,font,size:r.result.size,sizeAutomatic:size==null,rows:r.result.rows,rowsAutomatic:rows==null,side:r.result.rows===2?'both':r.result.hang?'below':'above',sideAutomatic:hang==null,
+    caption,base,room:!opt['no-room'],pad,phone:!opt['no-phone'],dense:!!opt.dense};
+  const json={command:'text',platform:platformJson(P),text:r.text,counts:allCounts(r.text),count:r.check.count,ok:r.check.ok,fits:r.fits,check:r.check.items,
+    size:{columns:r.result.cols,width:info.width,up:r.result.up,down:r.result.dn,lines:info.lines,reservedAbove:r.layout.above,reservedBelow:r.layout.below,tallest:r.result.tallest},
+    skipped,options};
+  const summary=[P.name+': '+r.check.count+' of '+P.limit+' '+Zalgo.UNIT[P.unit],
+    '  '+plural(r.result.cols,'column')+', '+em(info.width)+' em wide, '+em(r.result.up)+' em up, '+em(r.result.dn)+' em down',
+    '  '+plural(info.lines,'line')+': '+r.layout.above+' reserved above, '+r.layout.below+' below',
+    '  size '+r.result.size+(size==null?' (automatic)':'')+', '+plural(r.result.rows,'row')+(rows==null?' (automatic)':'')+(r.result.rows===2?'':r.result.hang?' hanging below the line':' standing on the line')+', letters '+Zalgo.FONTS[z.font].h+' high, base '+base+', font '+font];
+  if(skipped.length)summary.push('  Left out, no letter shape for: '+skipped.join(' '));
+  if(!r.fits){
+    const small=Math.min(...ids);
+    summary.push(size==null||size===small
+      ?'  Does not fit even at the smallest size. Use fewer letters'+(caption?'':', move some words to --caption')+', or a platform with a higher limit.'
+      :'  Size '+size+' does not fit. Leave --size out to pick the largest that does.');
+  }
+  deliver(r.text,r.check,opt,json,summary);
+}
+
+function cmdGlitch(pos,opt){
+  let text;
+  if(pos.length)text=pos.join(' ');
+  else if(tty.isatty(0))fail('glitch needs text, for example: zalgo glitch "hello"   (or pipe text in)');
+  // The final newline of piped text belongs to the shell, not to the message.
+  else text=readStdin().replace(/\r?\n$/,'');
+  const P=getPlatform(opt),{M,font}=getMetrics(opt);
+  const or=(v,d)=>v==null?d:v;
+  const asked={up:or(whole(opt,'up',0,200),12),dn:or(whole(opt,'down',0,200),12),mid:or(whole(opt,'through',0,10),1),
+    seed:or(whole(opt,'seed',-2147483648,2147483647),7),room:!opt['no-room'],pad:choice(opt,'pad',['blank','dot'],'blank'),dense:!!opt.dense};
+  const g=opt['no-fit']?asked:Zalgo.fitGlitch(text,asked,M,P);
+  const line=Zalgo.glitch(text,g,M).line,L=Zalgo.layout(line,M,P,g),ck=Zalgo.check(L.text,P,M),info=ck.info;
+  const thinned=g.up!==asked.up||g.dn!==asked.dn||g.mid!==asked.mid;
+  const options={platform:P.id,limit:P.limit,font,up:g.up,down:g.dn,through:g.mid,seed:asked.seed,fit:!opt['no-fit'],
+    asked:{up:asked.up,down:asked.dn,through:asked.mid},room:asked.room,pad:asked.pad,dense:asked.dense};
+  const json={command:'glitch',platform:platformJson(P),text:L.text,counts:allCounts(L.text),count:ck.count,ok:ck.ok,check:ck.items,
+    size:{letters:info.cols,width:info.width,up:info.up,down:info.dn,lines:info.lines,reservedAbove:L.above,reservedBelow:L.below,tallest:info.tallest},options};
+  const summary=[P.name+': '+ck.count+' of '+P.limit+' '+Zalgo.UNIT[P.unit],
+    '  '+em(info.width)+' em wide, '+em(info.up)+' em up, '+em(info.dn)+' em down',
+    '  '+plural(info.lines,'line')+': '+L.above+' reserved above, '+L.below+' below',
+    '  marks: '+g.up+' above, '+g.dn+' below, '+g.mid+' through'+(thinned?' (thinned from '+asked.up+', '+asked.dn+', '+asked.mid+' to fit)':'')+', seed '+asked.seed+', font '+font];
+  deliver(L.text,ck,opt,json,summary);
+}
+
+function fits(text,P){
+  const n=Zalgo.measure(text,P),second=P.second?{count:Zalgo.count[P.second.unit](text),limit:P.second.limit,unit:P.second.unit}:null;
+  return {id:P.id,name:P.name,count:n,limit:P.limit,unit:P.unit,second,fits:n<=P.limit&&(!second||second.count<=second.limit)};
+}
+// Pads plain text into columns. Widths are counted in code points, which is right for these ASCII tables.
+function table(rows){
+  const width=[];
+  for(const r of rows)r.forEach((c,i)=>{width[i]=Math.max(width[i]||0,String(c).length);});
+  return rows.map(r=>r.map((c,i)=>i===r.length-1?String(c):String(c).padEnd(width[i])).join('  ').trimEnd());
+}
+function cmdCount(pos,opt){
+  const text=readText(pos,'count'),counts=allCounts(text),rows=Zalgo.PLATFORMS.map(P=>fits(text,P));
+  if(opt.json){process.stdout.write(JSON.stringify({command:'count',counts,platforms:rows},null,2)+NL);return;}
+  const out=table(Object.keys(counts).map(k=>[Zalgo.UNIT[k],String(counts[k]).padStart(8)]));
+  out.push('');
+  out.push(...table([['platform','count','limit','unit','fits']].concat(rows.map(r=>[r.id,r.count,r.limit,r.unit,
+    r.fits?'yes':r.count>r.limit?'no, over by '+(r.count-r.limit):'no, '+r.second.count+' of '+r.second.limit+' '+Zalgo.UNIT[r.second.unit]]))));
+  const yes=rows.filter(r=>r.fits).length;
+  out.push('','Fits '+yes+' of '+rows.length+' platforms.');
+  process.stdout.write(out.join(NL)+NL);
+}
+function cmdCheck(pos,opt){
+  const text=readText(pos,'check'),P=getPlatform(opt),{M,font}=getMetrics(opt),ck=Zalgo.check(text,P,M);
+  if(opt.json)process.stdout.write(JSON.stringify({command:'check',platform:platformJson(P),font,ok:ck.ok,count:ck.count,counts:allCounts(text),check:ck.items,
+    size:{letters:ck.info.cols,width:ck.info.width,up:ck.info.up,down:ck.info.dn,lines:ck.info.lines,tallest:ck.info.tallest}},null,2)+NL);
+  else{
+    const c=coloured(1);
+    process.stdout.write([P.name+': '+(ck.ok?'passes':'does not pass')].concat(ck.items.map(i=>'  '+itemLine(i,c))).join(NL)+NL);
+  }
+  if(!ck.ok)process.exitCode=1;
+}
+function cmdPlatforms(pos,opt){
+  if(opt.json){process.stdout.write(JSON.stringify(Zalgo.PLATFORMS.map(platformJson),null,2)+NL);return;}
+  const rows=[['id','name','limit','unit','verified']].concat(Zalgo.PLATFORMS.map(P=>[P.id,P.name,P.limit,
+    Zalgo.UNIT[P.unit]+(P.second?' (and '+P.second.limit+' '+Zalgo.UNIT[P.second.unit]+')':''),P.src]));
+  process.stdout.write(table(rows).join(NL)+NL);
+}
+
+const HELP=[
+'zalgo: pictures, lettering and glitch text made of stacked combining marks, sized so a post arrives intact.',
+'',
+'Usage',
+'  zalgo image <file>           turn a picture into one line of text',
+'  zalgo text <words...>        write words in big letters built from marks (or pipe them in)',
+'  zalgo glitch <text...>       classic glitch text (or pipe the text in)',
+'  zalgo count [file|-]         count text every way a platform might',
+'  zalgo check [file|-]         will this text arrive intact on a platform',
+'  zalgo platforms              the platforms, their limits and how well each is verified',
+'  zalgo help                   this text',
+'',
+'Options',
+'  -p, --platform <id>          where the text will be posted (default x). See: zalgo platforms',
+'      --limit <n>              use this length limit instead of the platform\'s (mainly for -p custom)',
+'      --font <name>            font profile: helvetica (default) or arial',
+'      --metrics <file>         a font profile saved from the page, instead of --font',
+'  -o <file>                    write the text to a file instead of standard output',
+'      --copy                   also put the text on the clipboard (macOS)',
+'      --json                   print text, counts, checks and the options used as JSON',
+'',
+'  image',
+'      --cols <n>               columns. Leave out to fit the platform',
+'      --tones <n>              shades of grey, 1 to 12. Leave out for automatic',
+'      --marks tall|short       tall marks cost fewer characters, short ones give more detail (default tall)',
+'      --base <id>              what each column stands on: '+Zalgo.BASES.map(b=>b.id).join(', ')+' (default: low on x, point on slack, blank elsewhere)',
+'      --baseline <n|auto>      where the letter row sits, percent from the top (default auto)',
+'      --cutoff <n>             how far from the background counts as subject, percent (default 10)',
+'      --invert                 swap ink and paper',
+'      --theme light|dark       the reader\'s theme: dark text on light, or light on dark (default light)',
+'      --dither                 mix tones for smoother shading',
+'      --no-room                do not reserve empty lines for tall stacks',
+'      --pad blank|dot          what a reserved line holds: an invisible character or a full stop (default blank)',
+'      --no-phone               allow lines wider than a phone screen',
+'      --dense                  allow more than '+Zalgo.STACK+' marks in a column. Bigger pictures, but Safari and the',
+'                               iPhone, iPad and Mac apps stack only the first '+Zalgo.STACK+' (also for glitch)',
+'',
+'  text',
+'      --size <n|auto>          letter size, 1 (smallest) to '+Math.max(...Zalgo.SIZES.map(z=>z.id))+'. Leave out for the largest that fits',
+'      --rows <1|2|auto>        one row of letters, or two: the second hangs below the line (default auto)',
+'      --caption <text>         a line of ordinary text above the letters',
+'      --side above|below|auto  one row of letters stands on the line or hangs from it.',
+'                               Leave out for whichever needs fewer marks',
+'      --base, --no-room, --pad, --no-phone, --dense   as for image',
+'',
+'  glitch',
+'      --up <n> --down <n>      marks above and below each letter (default 12 and 12)',
+'      --through <n>            strike-through marks per letter (default 1)',
+'      --seed <n>               same seed, same text (default 7)',
+'      --no-fit                 do not thin the marks to fit the platform',
+'      --no-room, --pad         as for image',
+'',
+'The text goes to standard output and a summary to standard error, so pipes carry only the text.',
+'Exit code: 0 the checks pass, 1 a check failed, 2 the command could not be run.',
+'PNG is read directly. JPEG, GIF, HEIC, WebP and other formats are converted with sips (macOS).',
+'',
+'Examples',
+'  zalgo image photo.png                         fit X, print the text',
+'  zalgo image photo.jpg -p bluesky --copy       fit Bluesky, copy to the clipboard',
+'  zalgo image logo.png -p discord --cols 40 --tones 3 -o post.txt',
+'  zalgo image photo.png -p custom --limit 1000 --json',
+'  zalgo text "zalgo art" -p xpremium             two rows of big letters',
+'  zalgo text zalgoart --caption Introducing     a normal X post: plain caption, letters below',
+'  zalgo glitch "he comes" -p mastodon --up 20 --seed 3',
+'  echo hello | zalgo glitch -p sms',
+'  zalgo check post.txt -p x',
+'  zalgo image photo.png | zalgo count'
+].join(NL)+NL;
+
+function main(argv){
+  const {pos,opt}=parseArgs(argv);
+  if(opt.help||!pos.length||pos[0]==='help'){process.stdout.write(HELP);return;}
+  const cmd=pos.shift();
+  if(!COMMANDS.includes(cmd)){
+    const near=closest(cmd,COMMANDS);
+    fail('unknown command "'+cmd+'"'+(near?' (did you mean '+near+'?)':fs.existsSync(cmd)?' (for a picture: zalgo image '+cmd+')':'')+'. Run "zalgo help" for usage.');
+  }
+  // A known option that this command has no use for is not an error, but silence would hide a typo.
+  const unused=Object.keys(opt).filter(k=>!OPTIONS[k].cmds.includes(cmd));
+  if(unused.length)process.stderr.write('zalgo: '+unused.map(show).join(', ')+(unused.length===1?' is':' are')+' not used by "'+cmd+'" and '+(unused.length===1?'was':'were')+' ignored.'+NL);
+  if(cmd!=='image'&&cmd!=='text'&&cmd!=='glitch'&&cmd!=='count'&&cmd!=='check'&&pos.length)fail(cmd+' takes no arguments.');
+  ({image:cmdImage,text:cmdText,glitch:cmdGlitch,count:cmdCount,check:cmdCheck,platforms:cmdPlatforms})[cmd](pos,opt);
+}
+
+// A reader that stops early (| head) closes the pipe. That is not an error worth a message.
+process.stdout.on('error',e=>{if(e.code==='EPIPE')process.exit(process.exitCode||0);throw e;});
+try{main(process.argv.slice(2));}
+catch(e){
+  // Set the exit code instead of exiting, so text already written to a pipe is not cut off.
+  process.exitCode=2;
+  if(e instanceof Fail)process.stderr.write('zalgo: '+e.message+NL);
+  else if(process.env.ZALGO_DEBUG)process.stderr.write(String(e&&e.stack||e)+NL);
+  else process.stderr.write('zalgo: unexpected error: '+String(e&&e.message||e).split(NL)[0]+' (set ZALGO_DEBUG=1 for details)'+NL);
+}

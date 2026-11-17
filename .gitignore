@@ -1,0 +1,6 @@
+tasks/
+.claude-workspace/
+.claude/
+node_modules/
+.DS_Store
+*.log

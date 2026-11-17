@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 480" width="480" height="480">
+  <title>Burger</title>
+  <desc>Drawn from scratch for ZalgoArt out of plain shapes. MIT licence, like the rest of the project. examples/burger.jpg is this file rendered at 480 by 480.</desc>
+  <rect width="480" height="480" fill="#ffffff"/>
+
+  <!-- bottom bun -->
+  <path d="M70 344h340v20c0 26-20 44-48 44H118c-28 0-48-18-48-44z" fill="#d38a3b"/>
+  <path d="M70 344h340v16H70z" fill="#e2a45a"/>
+
+  <!-- patty -->
+  <rect x="56" y="292" width="368" height="60" rx="28" fill="#5a3421"/>
+  <rect x="78" y="304" width="324" height="8" rx="4" fill="#6f4229"/>
+
+  <!-- cheese, with corners hanging over the patty -->
+  <path d="M60 272h360l-46 30-36-12-40 40-44-36-52 20-46-24-50 12z" fill="#f5c431"/>
+
+  <!-- tomato -->
+  <rect x="68" y="246" width="344" height="32" rx="15" fill="#d8402e"/>
+  <rect x="88" y="254" width="304" height="6" rx="3" fill="#e9634f"/>
+
+  <!-- lettuce: a band with a scalloped lower edge -->
+  <rect x="50" y="222" width="380" height="22" rx="11" fill="#5caa45"/>
+  <g fill="#5caa45">
+    <circle cx="72" cy="244" r="15"/>
+    <circle cx="114" cy="246" r="15"/>
+    <circle cx="156" cy="244" r="15"/>
+    <circle cx="198" cy="246" r="15"/>
+    <circle cx="240" cy="244" r="15"/>
+    <circle cx="282" cy="246" r="15"/>
+    <circle cx="324" cy="244" r="15"/>
+    <circle cx="366" cy="246" r="15"/>
+    <circle cx="408" cy="244" r="15"/>
+  </g>
+
+  <!-- top bun -->
+  <path d="M62 214c0-80 80-136 178-136s178 56 178 136c0 9-7 14-16 14H78c-9 0-16-5-16-14z" fill="#d38a3b"/>
+  <path d="M96 176c14-46 70-78 144-78 40 0 76 10 102 26-28-10-62-16-102-16-66 0-118 26-144 68z" fill="#e2a45a"/>
+
+  <!-- sesame seeds -->
+  <g fill="#fbeccb">
+    <ellipse cx="150" cy="150" rx="9" ry="5" transform="rotate(-28 150 150)"/>
+    <ellipse cx="204" cy="122" rx="9" ry="5" transform="rotate(-12 204 122)"/>
+    <ellipse cx="262" cy="118" rx="9" ry="5" transform="rotate(10 262 118)"/>
+    <ellipse cx="318" cy="140" rx="9" ry="5" transform="rotate(26 318 140)"/>
+    <ellipse cx="232" cy="160" rx="9" ry="5" transform="rotate(-4 232 160)"/>
+    <ellipse cx="178" cy="186" rx="9" ry="5" transform="rotate(-18 178 186)"/>
+    <ellipse cx="292" cy="182" rx="9" ry="5" transform="rotate(16 292 182)"/>
+    <ellipse cx="350" cy="190" rx="9" ry="5" transform="rotate(30 350 190)"/>
+    <ellipse cx="118" cy="196" rx="9" ry="5" transform="rotate(-34 118 196)"/>
+  </g>
+</svg>
