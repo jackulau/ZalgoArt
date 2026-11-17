@@ -194,7 +194,7 @@ Limits and how each was checked, as `zalgo platforms` prints them:
 
 - X: output rendered with X's own fonts in Chrome, Firefox and Safari's engine on macOS, where the piles stack in all three. Glitch text on X is flat in Firefox, and the site warns about it.
 - This README: the lettering on the published GitHub page stacks in Chrome (desktop and phone width, light and dark) and Firefox on macOS. Safari's engine was checked on a local copy with the same fonts, not on github.com.
-- Safari and the iPhone, iPad and Mac apps stack only the first 30 marks of a column, so 30 is the default cap. `--dense` lifts it.
+- Safari's engine on the Mac stacked only the first 30 marks of a column, so 30 is the default cap. `--dense` lifts it. Apps built on the same engine may do the same, or cut lower, as the next line shows.
 
 - X's iPhone app: seen once, in a screenshot of one post. It drew only the first three marks above each column and dropped the rest, so tall pictures and lettering posted to X are for desktop browsers for now.
 
