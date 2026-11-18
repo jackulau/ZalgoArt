@@ -195,15 +195,15 @@ cd ZalgoArt
 <h2>What a run looks like</h2>
 <div class="body">
 <p>The text goes to standard output and a summary to standard error, so a pipe or a redirect carries only the text. This is the summary for <code>zalgo glitch "hello" -p x</code>:</p>
-<pre>X (280): 122 of 280 weighted characters
+<pre>X (280): 125 of 280 weighted characters
   2.1 em wide, 3.5 em up, 2.9 em down
-  6 lines: 2 reserved above, 3 below
+  7 lines: 3 reserved above, 3 below
   marks: 12 above, 12 below, 1 through, seed 7, font Helvetica
-  [ok]   122 of 280 weighted characters.
+  [ok]   125 of 280 weighted characters.
   [warn] A pile on a blank or an ordinary letter comes out flat on X in Firefox: X's own font draws the letter and the marks are left with nothing to stack on. Chrome and Safari stack it. Only a column standing on ˍ stacks in all three.
   [ok]   Already normalised (NFC), so the platform has nothing to rewrite.
   [ok]   About 2.1 em wide, inside a phone column (20.5 em).
-  [ok]   Stacks stay inside the post box (6 lines).
+  [ok]   Stacks stay inside the post box (7 lines).
   [note] X counts every mark as 1 and an invisible spacer as 2. Picture columns stand on ˍ, which X's own font lacks, so the system font draws the whole column and stacks it. Checked with X's fonts in Chrome, Firefox and Safari's engine on macOS. The compose box, Windows and the phone apps were not.
   [note] Layout measured on the live site (Chrome, macOS). Other devices use other fonts.</pre>
 <p>The exit code is 0 when the checks pass, 1 when a check failed and 2 when the command could not be run, so <code>zalgo check</code> can gate a script. <code>--json</code> prints the text, the counts, the checks and the options used.</p>

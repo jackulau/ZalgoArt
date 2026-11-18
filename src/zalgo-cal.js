@@ -5,6 +5,9 @@
 'use strict';
 const S=String.fromCodePoint,F=50,CW=180,CH=1600,BL=800,X0=70;
 const A_UP=0x33f,A_DN=0x333;                       // anchors, see ANCHOR in zalgo-core.js
+// Apple's text engine draws only the first 30 marks on a letter, above and below together, and drops the rest.
+// Each test pile is two anchors plus at most HI marks, so it stays under that in every browser.
+const LO=4,HI=24;
 const BASES=['i','l','o','.',S(0x2013),S(0xa0),S(0x2206),S(0x2027),S(0x2cd)];   // the last three are for Slack and X, see PLATFORMS
 const r4=v=>Math.round(v*1e4)/1e4,r3=v=>Math.round(v*1e3)/1e3;
 let g=null;
@@ -39,13 +42,13 @@ function calibrate(family){
     const ch=S(cp),str=n=>c===230?'o'+ad+au+ch.repeat(n):'o'+ad+ch.repeat(n)+au;
     // A mark the font lacks sends the whole column to another font, which would change every other pitch.
     g.font=font;if(Math.abs(g.measureText(str(1)).width-wide)>.01)continue;
-    const a=ext(font,str(10)),b=ext(font,str(40));let ink=0;
+    const a=ext(font,str(LO)),b=ext(font,str(HI));let ink=0;
     if(c===230){
-      const p=(b.up-a.up)/30;if(p<1||Math.abs(b.dn-a.dn)>1)continue;
+      const p=(b.up-a.up)/(HI-LO);if(p<1||Math.abs(b.dn-a.dn)>1)continue;
       for(let y=BL-b.up;y<BL-a.up;y++)ink+=b.rows[y];
       up.push([cp,r4(p/F),r3(ink/((b.up-a.up)*oAdv))]);
     }else{
-      const p=(b.dn-a.dn)/30;if(p<1||Math.abs(b.up-a.up)>1)continue;
+      const p=(b.dn-a.dn)/(HI-LO);if(p<1||Math.abs(b.up-a.up)>1)continue;
       for(let y=BL+a.dn;y<BL+b.dn;y++)ink+=b.rows[y];
       dn.push([cp,r4(p/F),r3(ink/((b.dn-a.dn)*oAdv))]);
     }
