@@ -450,6 +450,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border:0;border-radiu
         <div class="bar">
           <div class="state"><span class="pill" id="verdict">Preview</span><span class="tally" id="tally"></span></div>
           <span class="sp"></span>
+          <button class="btn" id="refitBtn" title="Turn Auto-fit back on" hidden>Fit to post</button>
           <button class="btn primary swap" id="copyBtn"><span class="a"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5"/><path d="M10.5 5.5v-2a1 1 0 0 0-1-1h-6a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2"/></svg>Copy text</span><span class="b" id="copyDone"></span></button>
         </div>
       </div>
@@ -546,7 +547,7 @@ const ANCHOR=new Set([0x33f,0x30d,0x333]);
 const MID=[0x334,0x335,0x336,0x337,0x338].map(c=>S(c));
 // Apple's text engine (Safari, and the iPhone, iPad and Mac apps built on it) stacks the first 30 marks of a
 // column and draws every later one on a single line. Measured in WebKit on macOS with Helvetica alone, so it
-// belongs to the engine and not to a platform. Chrome and Firefox stacked 90.
+// belongs to the engine and not to a platform. Safari on iOS 18 drops the later ones instead. Chrome and Firefox stacked 90.
 const STACK=30;
 
 /* ---------- counting, the way each platform does it ---------- */
@@ -966,7 +967,7 @@ function check(text,P,M){
   if(P.marks==='stripped')add('fail','This platform removes combining marks, so the picture will not survive.');
   if(P.marks==='capped'&&i.tallest>P.cap)add('warn','Tallest pile is '+i.tallest+' marks. '+P.note);
   if(i.flat)add(P.flatLevel||'fail',P.flat);
-  if(i.tallest>STACK)add('warn','Tallest pile is '+i.tallest+' marks. Safari and the iPhone, iPad and Mac apps stack only the first '+STACK+' of a column and draw the rest on one line.');
+  if(i.tallest>STACK)add('warn','Tallest pile is '+i.tallest+' marks. Safari and the iPhone, iPad and Mac apps stack only the first '+STACK+' of a column. The rest are dropped or drawn on one line.');
   if(P.maxMarks&&i.tallest>P.maxMarks)add('fail','Tallest pile is '+i.tallest+' marks. This platform keeps at most '+P.maxMarks+' per letter.');
   if(text.normalize('NFC')!==text)add('warn','Not in normalised (NFC) order, so a platform may rewrite it and the count can change.');
   else add('ok','Already normalised (NFC), so the platform has nothing to rewrite.');
@@ -1456,6 +1457,8 @@ function verdict(t,ck){
   if(lv)v.insertAdjacentHTML('afterbegin','<svg viewBox="0 0 16 16" aria-hidden="true"><path d="'+(lv==='fail'?'M4 4l8 8M12 4l-8 8':'M3 8.5l3.2 3L13 4.5')+'"/></svg>');
   $('tally').textContent=t?ck.count.toLocaleString('en')+' / '+P.limit.toLocaleString('en'):'';
   $('copyBtn').disabled=$('saveBtn').disabled=!t;
+  // Auto-fit turns itself off when a size slider moves. Offer the way back where the verdict is read.
+  $('refitBtn').hidden=!(lv==='fail'&&!$('fit').checked);
   $('srcBadge').textContent=P.src==='measured'?'Measured on the live site':P.src==='font'?'Measured in its font':P.src==='documented'?'From documentation':'Not verified';
 }
 function stats(t,ck){
@@ -1508,6 +1511,7 @@ document.addEventListener('input',e=>{
   schedule();
 });
 $('reroll').addEventListener('click',()=>{seed++;schedule();});
+$('refitBtn').addEventListener('click',()=>{$('fit').checked=true;render();});
 $('clearBtn').addEventListener('click',()=>{if(stroke||!padMask.some(v=>v))return;const b=snap();padMask.fill(0);padInk.fill(0);commit(b);paintPad();schedule();});
 $('undoBtn').addEventListener('click',()=>step(hist,redo));
 $('redoBtn').addEventListener('click',()=>step(redo,hist));

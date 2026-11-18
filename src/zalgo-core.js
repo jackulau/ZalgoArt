@@ -18,7 +18,7 @@ const ANCHOR=new Set([0x33f,0x30d,0x333]);
 const MID=[0x334,0x335,0x336,0x337,0x338].map(c=>S(c));
 // Apple's text engine (Safari, and the iPhone, iPad and Mac apps built on it) stacks the first 30 marks of a
 // column and draws every later one on a single line. Measured in WebKit on macOS with Helvetica alone, so it
-// belongs to the engine and not to a platform. Chrome and Firefox stacked 90.
+// belongs to the engine and not to a platform. Safari on iOS 18 drops the later ones instead. Chrome and Firefox stacked 90.
 const STACK=30;
 
 /* ---------- counting, the way each platform does it ---------- */
@@ -438,7 +438,7 @@ function check(text,P,M){
   if(P.marks==='stripped')add('fail','This platform removes combining marks, so the picture will not survive.');
   if(P.marks==='capped'&&i.tallest>P.cap)add('warn','Tallest pile is '+i.tallest+' marks. '+P.note);
   if(i.flat)add(P.flatLevel||'fail',P.flat);
-  if(i.tallest>STACK)add('warn','Tallest pile is '+i.tallest+' marks. Safari and the iPhone, iPad and Mac apps stack only the first '+STACK+' of a column and draw the rest on one line.');
+  if(i.tallest>STACK)add('warn','Tallest pile is '+i.tallest+' marks. Safari and the iPhone, iPad and Mac apps stack only the first '+STACK+' of a column. The rest are dropped or drawn on one line.');
   if(P.maxMarks&&i.tallest>P.maxMarks)add('fail','Tallest pile is '+i.tallest+' marks. This platform keeps at most '+P.maxMarks+' per letter.');
   if(text.normalize('NFC')!==text)add('warn','Not in normalised (NFC) order, so a platform may rewrite it and the count can change.');
   else add('ok','Already normalised (NFC), so the platform has nothing to rewrite.');
