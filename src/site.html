@@ -33,10 +33,12 @@ __CSS__
 .hint{color:var(--dim);font-size:12px;margin:0}
 
 /* Copy swaps its label in place. The blur hides the moment both labels are on screen. */
-.swap>span{display:inline-flex;align-items:center;gap:6px;transition:opacity .18s ease,filter .18s ease,transform .18s var(--out)}
-.swap>.b{position:absolute;inset:0;justify-content:center;opacity:0;filter:blur(3px);transform:translateY(3px)}
-.swap.done>.a{opacity:0;filter:blur(3px);transform:translateY(-3px)}
-.swap.done>.b{opacity:1;filter:none;transform:none}
+/* The label fading out is also hidden once it has faded, so a screen reader hears only the one on show. */
+.swap>span{display:inline-flex;align-items:center;gap:6px;transition:opacity .18s ease,filter .18s ease,transform .18s var(--out),visibility 0s .18s}
+.swap>.b{position:absolute;inset:0;justify-content:center;opacity:0;filter:blur(3px);transform:translateY(3px);visibility:hidden}
+.swap.done>.a{opacity:0;filter:blur(3px);transform:translateY(-3px);visibility:hidden}
+.swap.done>.b{opacity:1;filter:none;transform:none;visibility:visible}
+.swap:not(.done)>.a,.swap.done>.b{transition-delay:0s}
 
 /* select */
 .nw{white-space:nowrap}

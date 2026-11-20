@@ -1671,7 +1671,8 @@ else if(chrome.find())test(REVIEW,()=>{
             res.copied=$('copyBtn').classList.contains('done');
             $('ttext').value='Brightline Studios';$('ttext').dispatchEvent(new w.Event('input',{bubbles:true}));
             later(()=>{
-              res.afterEdit=$('copyBtn').classList.contains('done');pick('platform','custom');
+              res.afterEdit=$('copyBtn').classList.contains('done');
+              later(()=>{res.label=$('copyBtn').innerText.replace(/\\s+/g,' ').trim();},400);pick('platform','custom');
               later(()=>{
                 res.limitShown=!$('limit').hidden;res.custom=$('tally').textContent;pick('platform','bluesky');mode('draw');
                 later(()=>{
@@ -1692,11 +1693,13 @@ else if(chrome.find())test(REVIEW,()=>{
   if(!/\/ 2,000$/.test(r.discord||''))wrong.push('after choosing Discord the tally still read '+r.discord);
   if(!r.copied)wrong.push('Copy text showed no result');
   if(r.afterEdit)wrong.push('Copy text still said Copied after the text changed');
+  // The faded label must be hidden too: a screen reader reads a transparent word as well as a visible one.
+  if(r.label!=='Copy text')wrong.push('after the text changed the Copy button reads '+JSON.stringify(r.label));
   if(!r.limitShown)wrong.push('Custom limit did not show the limit box');
   if(!/\/ 2,000$/.test(r.custom||''))wrong.push('after choosing Custom limit the tally read '+r.custom);
   if(r.base==='low'||/ˍ/.test(r.draw||''))wrong.push('Draw on Bluesky still stands on X’s letter ('+r.drawTally+')');
   if(!/\/ 300$/.test(r.drawTally||''))wrong.push('Draw on Bluesky tally was '+r.drawTally);
-  none(wrong,8);
+  none(wrong,9);
   return r.discord+', '+r.drawTally;
 });else skip(REVIEW,'Chrome was not found. Set CHROME=/path/to/chrome to run it');
 
