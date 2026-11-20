@@ -551,6 +551,8 @@ function padSource(){return padMask.some(v=>v)?{w:PW,h:PH,ink:padInk,mask:padMas
 
 /* ---------- view ---------- */
 let mode='image',raf=0,seed=7,last={text:'',line:'',check:null,opts:null};
+let copyTimer=0,copied=null;
+function copyReset(){clearTimeout(copyTimer);copied=null;$('copyBtn').classList.remove('done');}
 const baselines={image:50,draw:68},colsBy={image:40,draw:100};
 function schedule(){if(!raf)raf=requestAnimationFrame(()=>{raf=0;render();});}
 function opts(){return {cols:+$('cols').value,baseline:+$('baseline').value/100,tones:+$('tones').value,tall:$('marks').value==='tall',base:$('base').value,dither:$('dither').checked,
@@ -631,6 +633,8 @@ function render(){
   $('warn').textContent=why;
   const L=Z.layout(r?r.line:'',M,P,o),ck=Z.check(L.text,P,M.ok?M:null);
   last={text:L.text,line:r?r.line:'',check:ck,opts:o,layout:L,pal:r&&r.pal,cols:r&&mode==='text'?r.cols:null};
+  // 'Copied' describes the text that was copied, so it goes as soon as the text is different.
+  if(L.text!==copied)copyReset();
   paint(L.text);place(ck.info);
   for(const id of ['box','ghostTop','ghostBot'])$(id).hidden=!L.text;
   verdict(L.text,ck);stats(L.text,ck);checks(ck,L);legend(last.pal);
@@ -683,7 +687,7 @@ function setMode(m){
 }
 
 /* ---------- wiring ---------- */
-document.addEventListener('input',e=>{
+function onControl(e){
   const id=e.target.id;
   if(id==='mode')setMode(e.target.value);
   if(id==='baseline'&&pic())baselines[mode]=+e.target.value;
@@ -695,7 +699,10 @@ document.addEventListener('input',e=>{
   // Emptied afterwards, so choosing the same file again (after a sample, say) is still a change.
   if(id==='file'){take(e.target.files[0]);e.target.value='';return;}
   schedule();
-});
+}
+document.addEventListener('input',onControl);
+// Some browsers report a menu or switch only as 'change'. Running the handler twice is harmless.
+document.addEventListener('change',e=>{if(e.target.matches('select,input[type=checkbox]'))onControl(e);});
 $('reroll').addEventListener('click',()=>{seed++;schedule();});
 $('refitBtn').addEventListener('click',()=>{$('fit').checked=true;render();});
 $('clearBtn').addEventListener('click',()=>{if(stroke||!padMask.some(v=>v))return;const b=snap();padMask.fill(0);padInk.fill(0);commit(b);paintPad();schedule();});
@@ -708,16 +715,15 @@ addEventListener('keydown',e=>{
   if(t&&t.matches&&t.matches('input:not([type=range],[type=checkbox],[type=hidden]),textarea,select'))return;
   e.preventDefault();if(k==='y'||e.shiftKey)step(redo,hist);else step(hist,redo);
 });
-let copyTimer=0;
 $('copyBtn').addEventListener('click',async()=>{
-  if(!last.text)return;
+  const t=last.text;if(!t)return;
   let ok=false;
-  try{await navigator.clipboard.writeText(last.text);ok=true;}catch(_){
-    const ta=document.createElement('textarea');ta.value=last.text;ta.style.cssText='position:fixed;left:-9999px;opacity:0';
+  try{await navigator.clipboard.writeText(t);ok=true;}catch(_){
+    const ta=document.createElement('textarea');ta.value=t;ta.style.cssText='position:fixed;left:-9999px;opacity:0';
     document.body.append(ta);ta.select();try{ok=document.execCommand('copy');}catch(_){}ta.remove();
   }
   $('copyDone').innerHTML='<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+(ok?'M3 8.5l3.2 3L13 4.5':'M4 4l8 8M12 4l-8 8')+'"/></svg>'+(ok?'Copied':'Blocked here');
-  $('copyBtn').classList.add('done');clearTimeout(copyTimer);copyTimer=setTimeout(()=>$('copyBtn').classList.remove('done'),1400);
+  $('copyBtn').classList.add('done');clearTimeout(copyTimer);copied=t;copyTimer=setTimeout(copyReset,1400);
 });
 function save(name,text,type){
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;

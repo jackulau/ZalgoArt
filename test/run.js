@@ -1643,6 +1643,63 @@ else if(chrome.find())test('site: in Chrome, each tool page opens in its own mod
   return res.length+' views';
 });else skip('site: in Chrome, each tool page opens in its own mode and makes text, and no page scrolls sideways at 390 px','Chrome was not found. Set CHROME=/path/to/chrome to run it');
 
+const REVIEW='site: menus that report only a change event still redraw, and Copied goes when the text changes';
+if(!wanted(REVIEW));
+else if(chrome.find())test(REVIEW,()=>{
+  // A reader's browser sent the Post to menu only a 'change' event. The page kept X's numbers and X's letter,
+  // and Draw then offered a row of X's letter as ready for Bluesky. This replays what they did, with no 'input'.
+  const files=BUILD.build(),dir=tmp('review');
+  const local=v=>SITE.ADS?v.toString('utf8').split(SITE.ADS_TAG).join(''):v.toString('utf8');
+  for(const [f,v] of files){fs.mkdirSync(path.dirname(path.join(dir,f)),{recursive:true});fs.writeFileSync(path.join(dir,f),f.endsWith('.html')?local(v):v);}
+  const body=`<script>(function(){
+    const out=document.getElementById('out'),f=document.createElement('iframe'),res={};let tries=0;
+    f.style.cssText='position:fixed;left:0;top:0;border:0;height:844px;width:390px';
+    const later=(fn,ms)=>setTimeout(()=>{try{fn();}catch(e){res.error=String(e);out.textContent=JSON.stringify(res);}},ms||300);
+    f.onload=function look(){
+      const d=f.contentDocument,w=f.contentWindow,$=id=>d.getElementById(id);
+      if(!(w.zalgo&&w.zalgo.ready)&&tries++<200)return setTimeout(look,50);
+      // Headless Chrome under a virtual time budget does not run animation frames, so a timer stands in for them.
+      w.requestAnimationFrame=fn=>w.setTimeout(fn,16);
+      const pick=(id,v)=>{$(id).value=v;$(id).dispatchEvent(new w.Event('change',{bubbles:true}));};
+      const mode=m=>{$('mode').value=m;$('mode').dispatchEvent(new w.Event('input',{bubbles:true}));};
+      pick('platform','x');mode('text');$('ttext').value='Brightline Studio';$('ttext').dispatchEvent(new w.Event('input',{bubbles:true}));
+      later(()=>{
+        res.x=$('tally').textContent;pick('platform','discord');
+        later(()=>{
+          res.discord=$('tally').textContent;$('copyBtn').click();
+          later(()=>{
+            res.copied=$('copyBtn').classList.contains('done');
+            $('ttext').value='Brightline Studios';$('ttext').dispatchEvent(new w.Event('input',{bubbles:true}));
+            later(()=>{
+              res.afterEdit=$('copyBtn').classList.contains('done');pick('platform','custom');
+              later(()=>{
+                res.limitShown=!$('limit').hidden;res.custom=$('tally').textContent;pick('platform','bluesky');mode('draw');
+                later(()=>{
+                  res.base=$('base').value;res.draw=w.zalgo.last.text;res.drawTally=$('tally').textContent;
+                  out.textContent=JSON.stringify(res);
+                },400);
+              });
+            },100);
+          });
+        });
+      });
+    };
+    f.src=${JSON.stringify('file://'+dir+'/index.html')};document.body.appendChild(f);
+  })();</`+`script>`;
+  const r=JSON.parse(chrome.run(body,{args:['--allow-file-access-from-files']})||'{}'),wrong=[];
+  if(r.error)wrong.push(r.error);
+  if(!/\/ 280$/.test(r.x||''))wrong.push('X tally was '+r.x);
+  if(!/\/ 2,000$/.test(r.discord||''))wrong.push('after choosing Discord the tally still read '+r.discord);
+  if(!r.copied)wrong.push('Copy text showed no result');
+  if(r.afterEdit)wrong.push('Copy text still said Copied after the text changed');
+  if(!r.limitShown)wrong.push('Custom limit did not show the limit box');
+  if(!/\/ 2,000$/.test(r.custom||''))wrong.push('after choosing Custom limit the tally read '+r.custom);
+  if(r.base==='low'||/ˍ/.test(r.draw||''))wrong.push('Draw on Bluesky still stands on X’s letter ('+r.drawTally+')');
+  if(!/\/ 300$/.test(r.drawTally||''))wrong.push('Draw on Bluesky tally was '+r.drawTally);
+  none(wrong,8);
+  return r.discord+', '+r.drawTally;
+});else skip(REVIEW,'Chrome was not found. Set CHROME=/path/to/chrome to run it');
+
 if(!wanted('parity: '));
 else if(chrome.find())parity();
 else skip('parity: page text equals CLI text (5 tests)','Chrome was not found. Set CHROME=/path/to/chrome to run them');
